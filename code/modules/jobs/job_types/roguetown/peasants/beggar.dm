@@ -14,11 +14,12 @@
 		"Half-Elf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	outfit = /datum/outfit/job/roguetown/vagrant
 	bypass_lastclass = TRUE
-	bypass_jobban = TRUE
+	banned_leprosy = FALSE
 
 	tutorial = "The stench of your piss-laden clothes dont bug you anymore, the glances of disgust and loathing others give you is just a friendly greeting; the only reason youve not been killed already is because Volfs are known to be repelled by decaying flesh. Youre going to be a solemn reminder what happens when something unwanted is born into this world."
 	display_order = JDO_VAGRANT
@@ -26,7 +27,8 @@
 	min_pq = -100
 	can_random = FALSE
 
-	cmode_music = 'sound/music/combat_bum.ogg'
+	cmode_music = 'sound/music/cmode/towner/CombatBeggar.ogg'
+	can_have_apprentices = FALSE
 
 /datum/job/roguetown/vagrant/New()
 	. = ..()
@@ -60,7 +62,7 @@
 		H.mind?.adjust_skillrank(/datum/skill/misc/climbing, pick(2,3,4,5), TRUE)
 		H.mind?.adjust_skillrank(/datum/skill/combat/wrestling, pick(1,2,3), TRUE) // Street-fu
 		H.mind?.adjust_skillrank(/datum/skill/combat/unarmed, pick(1,2,3), TRUE)
-		H.STALUC = rand(1, 20)
+		H.TOTALLUC = rand(1, 20)
 	if(prob(5))
 		r_hand = /obj/item/rogueweapon/mace/woodclub
 	H.change_stat("intelligence", -3)

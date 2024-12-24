@@ -1,11 +1,38 @@
 //used in various places
-#define ALL_RACES_LIST			list("human", "dwarf", "elf", "tiefling", "aasimar", "orc", "zizombie")
+#define ALL_RACES_LIST			list("human", "dwarf", "elf", "tiefling", "aasimar", "halforc", "orc", "zizombie")
 
-#define ALL_PLAYER_RACES_BY_NAME		list("Humen", "Half-Elf", "Dark Elf", "Elf", "Dwarf","Tiefling", "Aasimar")
+#define ALL_PLAYER_RACES_BY_NAME		list("Humen", "Half-Elf", "Dark Elf", "Elf", "Dwarf","Tiefling", "Half-Orc", "Aasimar")
 
-#define ALL_TEMPLE_PATRONS 		list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/eora, /datum/patron/divine/necra, /datum/patron/divine/pestra)
-#define ALL_CLERIC_PATRONS 		list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/eora, /datum/patron/divine/necra, /datum/patron/divine/pestra, /datum/patron/divine/dendor)
-#define ALL_TEMPLAR_PATRONS 	list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/eora, /datum/patron/divine/necra, /datum/patron/divine/pestra)
+#define ALL_TEMPLE_PATRONS 		list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/eora, /datum/patron/divine/necra, /datum/patron/divine/pestra, /datum/patron/divine/dendor, /datum/patron/divine/abyssor)
+#define ALL_CLERIC_PATRONS 		list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/eora, /datum/patron/divine/necra, /datum/patron/divine/pestra, /datum/patron/divine/dendor, /datum/patron/divine/abyssor)
+#define ALL_TEMPLAR_PATRONS 	list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/eora, /datum/patron/divine/necra, /datum/patron/divine/pestra, /datum/patron/divine/dendor, /datum/patron/divine/abyssor)
+
+GLOBAL_LIST_INIT(curse_names, list())
+
+#define TEN_CURSES list(\
+	/datum/curse/astrata,\
+	/datum/curse/noc,\
+	/datum/curse/ravox,\
+	/datum/curse/necra,\
+	/datum/curse/xylix,\
+	/datum/curse/pestra,\
+	/datum/curse/eora\
+)
+
+#define INHUMEN_CURSES list(\
+	/datum/curse/zizo,\
+	/datum/curse/graggar,\
+	/datum/curse/matthios,\
+	/datum/curse/baotha\
+)
+#define SPECIAL_CURSES list(\
+	/datum/curse/atheism\
+)
+#define ALL_CURSES list(\
+	SPECIAL_CURSES,\
+	TEN_CURSES,\
+	INHUMEN_CURSES\
+)
 
 #define PLATEHIT "plate"
 #define CHAINHIT "chain"
@@ -57,7 +84,6 @@ GLOBAL_LIST_INIT(wolf_suffixes, list("Fang", "Claw", "Stalker", "Prowler", "Roar
 #define FAMILY_OMMER "Parents Sibling"
 #define FAMILY_INLAW "In Law"
 
-GLOBAL_LIST_EMPTY(sunlights)
 GLOBAL_LIST_EMPTY(job_respawn_delays)
 
 //stress levels
@@ -112,7 +138,11 @@ GLOBAL_LIST_EMPTY(job_respawn_delays)
 #define CTAG_MERCENARY		"CAT_MERCENARY"
 #define CTAG_GARRISON		"CAT_GARRISON"
 #define CTAG_ADEPT			"CAT_ADEPT" // Used for Adept class selection
-
+#define CTAG_SQUIRE 		"CAT_SQUIRE" // Squire Love, Classes, as above.
+#define CTAG_HEIR			"CAT_HEIR"
+#define CTAG_HAND			"CAT_HAND"			// Hand class - Handles Hand class selector
+#define CTAG_CONSORT 		"CAT_CONSORT" 		// Consort classes
+#define CTAG_VETERAN		"CAT_VETERAN"		// Veteran class - Handles Veteran class selector
 /*
 	Defines for the triumph buy datum categories
 */
@@ -264,32 +294,32 @@ Thing can move up or down an armor class by significant changes to coverage & cr
 
 
 /*--------------------\
-| ARMOR VALUE DEFINES |	- So armor makes sense. Basic arrow got 25 AP so less than 25 "bullet" does nothing vs arrows generally
+| ARMOR VALUE DEFINES |	- So armor makes sense. Basic arrow got 25 AP so less than 25 "piercing" does nothing vs arrows generally
 \--------------------*/
 
 // Light AC
-#define ARMOR_MINIMAL		list("melee" = 5, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_WEAK			list("melee" = 10, "bullet" = 5, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_MINIMAL		list("blunt" = 5, "slash" = 5, "stab" = 5, "piercing" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_WEAK			list("blunt" = 10, "slash" = 10, "stab" = 10, "piercing" = 5, "fire" = 0, "acid" = 0)
 
-#define ARMOR_PADDED_BAD	list("melee" = 15, "bullet" = 15, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_PADDED		list("melee" = 25, "bullet" = 30, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_PADDED_GOOD	list("melee" = 30, "bullet" = 35, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_PADDED_BAD	list("blunt" = 15, "slash" = 15, "stab" = 15, "piercing" = 15, "fire" = 0, "acid" = 0)
+#define ARMOR_PADDED		list("blunt" = 25, "slash" = 25, "stab" = 25, "piercing" = 30, "fire" = 0, "acid" = 0)
+#define ARMOR_PADDED_GOOD	list("blunt" = 30, "slash" = 30, "stab" = 30, "piercing" = 35, "fire" = 0, "acid" = 0)
 
-#define ARMOR_LEATHER_BAD	list("melee" = 30, "bullet" = 10, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_LEATHER		list("melee" = 35, "bullet" = 15, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define	ARMOR_LEATHER_GOOD	list("melee" = 40, "bullet" = 20, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_LEATHER_BAD	list("blunt" = 30, "slash" = 30, "stab" = 30, "piercing" = 10, "fire" = 0, "acid" = 0)
+#define ARMOR_LEATHER		list("blunt" = 35, "slash" = 35, "stab" = 35, "piercing" = 15, "fire" = 0, "acid" = 0)
+#define	ARMOR_LEATHER_GOOD	list("blunt" = 40, "slash" = 40, "stab" = 40, "piercing" = 20, "fire" = 0, "acid" = 0)
 
 // Medium AC
-#define ARMOR_MAILLE_IRON	list("melee" = 50, "bullet" = 30, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_MAILLE		list("melee" = 55, "bullet" = 40, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_MAILLE_GOOD	list("melee" = 60, "bullet" = 45, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_MAILLE_IRON	list("blunt" = 5, "slash" = 5, "stab" = 50, "piercing" = 30, "fire" = 0, "acid" = 0)
+#define ARMOR_MAILLE		list("blunt" = 5, "slash" = 5, "stab" = 55, "piercing" = 40, "fire" = 0, "acid" = 0)
+#define ARMOR_MAILLE_GOOD	list("blunt" = 60, "slash" = 60, "stab" = 60, "piercing" = 45, "fire" = 0, "acid" = 0)
 
-#define ARMOR_SCALE			list("melee" = 65, "bullet" = 65, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_SCALE			list("blunt" = 65, "slash" = 65, "stab" = 65, "piercing" = 65, "fire" = 0, "acid" = 0)
 
 // Heavy AC
-#define ARMOR_PLATE_BAD		list("melee" = 70, "bullet" = 50, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_PLATE			list("melee" = 85, "bullet" = 70, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_PLATE_GOOD	list("melee" = 90, "bullet" = 85, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_PLATE_BAD		list("blunt" = 70, "slash" = 70, "stab" = 70, "piercing" = 50, "fire" = 0, "acid" = 0)
+#define ARMOR_PLATE			list("blunt" = 85, "slash" = 85, "stab" = 85, "piercing" = 70, "fire" = 0, "acid" = 0)
+#define ARMOR_PLATE_GOOD	list("blunt" = 90, "slash" = 90, "stab" = 90, "piercing" = 85, "fire" = 0, "acid" = 0)
 
 
 /*-----------------------\

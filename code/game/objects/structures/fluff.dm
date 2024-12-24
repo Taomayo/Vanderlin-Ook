@@ -136,6 +136,7 @@
 	var/lay = getwlayer(dir)
 	if(lay)
 		layer = lay
+	. = ..()
 
 /obj/structure/fluff/railing/corner
 	icon_state = "railing_corner"
@@ -147,6 +148,7 @@
 	layer = ABOVE_MOB_LAYER
 
 /obj/structure/fluff/railing/stonehedge
+	name = "stone railing"
 	icon_state = "stonehedge"
 	blade_dulling = DULLING_BASHCHOP
 	layer = ABOVE_MOB_LAYER
@@ -251,7 +253,7 @@
 
 /obj/structure/bars/alt
 	icon_state = "bars_alt"
-	plane = -3
+	plane = GAME_PLANE
 	layer = WALL_OBJ_LAYER+0.05
 
 /obj/structure/bars/obj_break(damage_flag)
@@ -352,6 +354,7 @@
 	blade_dulling = DULLING_BASHCHOP
 	obj_flags = CAN_BE_HIT | BLOCK_Z_OUT_DOWN | BLOCK_Z_IN_UP
 	attacked_sound = list('sound/combat/hits/onmetal/grille (1).ogg', 'sound/combat/hits/onmetal/grille (2).ogg', 'sound/combat/hits/onmetal/grille (3).ogg')
+	smeltresult = /obj/item/ingot/bronze
 	var/togg = FALSE
 
 /obj/structure/bars/pipe/left
@@ -382,9 +385,10 @@
 	var/broke = FALSE
 	var/datum/looping_sound/clockloop/soundloop
 	drag_slowdown = 3
+	metalizer_result = /obj/item/roguegear
 
 /obj/structure/fluff/clock/Initialize()
-	soundloop = new(list(src), FALSE)
+	soundloop = new(src, FALSE)
 	soundloop.start()
 	. = ..()
 
@@ -452,6 +456,7 @@
 	attacked_sound = 'sound/combat/hits/onglass/glasshit.ogg'
 	var/broke = FALSE
 	pixel_y = 32
+	metalizer_result = /obj/item/roguegear
 
 /obj/structure/fluff/wallclock/Destroy()
 	if(soundloop)
@@ -465,7 +470,7 @@
 		. += "(Round Time: [gameTimestamp("hh:mm:ss", REALTIMEOFDAY - SSticker.round_start_irl)].)"
 
 /obj/structure/fluff/wallclock/Initialize()
-	soundloop = new(list(src), FALSE)
+	soundloop = new(src, FALSE)
 	soundloop.start()
 	. = ..()
 
@@ -525,7 +530,7 @@
 		user.mind.adjust_experience(/datum/skill/misc/reading, 2, FALSE)
 		. += "I have no idea what it says."
 	else
-		. += "It says \"TOWN ON ROCKHILL\""
+		. += "It says something."
 
 /obj/structure/fluff/buysign
 	icon_state = "signwrote"
@@ -538,7 +543,7 @@
 		user.mind.adjust_experience(/datum/skill/misc/reading, 2, FALSE)
 		. += "I have no idea what it says."
 	else
-		. += "It says \"IMPORTS\""
+		. += "It says something."
 
 /obj/structure/fluff/sellsign
 	icon_state = "signwrote"
@@ -551,7 +556,7 @@
 		user.mind.adjust_experience(/datum/skill/misc/reading, 2, FALSE)
 		. += "I have no idea what it says."
 	else
-		. += "It says \"EXPORTS\""
+		. += "It says something."
 
 
 /obj/structure/fluff/customsign
@@ -587,20 +592,6 @@
 					wrotesign = inputty
 					icon_state = "signwrote"
 	..()
-
-/obj/structure/fluff/dryingrack
-	name = "drying rack"
-	desc = "A rack of sticks, made to dry produce and smokeleaves in the sun."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "dryrack"
-	density = TRUE
-	anchored = TRUE
-	layer = BELOW_OBJ_LAYER
-	blade_dulling = DULLING_BASHCHOP
-	max_integrity = 150
-	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
-	attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
-
 
 /obj/structure/fluff/statue
 	name = "statue"
@@ -740,7 +731,7 @@
 
 /obj/structure/fluff/globe
 	name = "globe"
-	desc = "A model representing the known world of Grimoria."
+	desc = "A model representing the known world of Psydonia."
 	icon = 'icons/roguetown/misc/structure.dmi'
 	icon_state = "globe"
 	density = TRUE
@@ -751,7 +742,7 @@
 		return
 
 	var/mob/living/carbon/human/H = user
-	var/random_message = pick("You spin the globe!", "You land on Rockhill!", "You land on Zybantu!", "You land on Port Thornvale!", "You land on Grenzelhoft!", "You land on Valoria!", "You land on the Fog Islands!")
+	var/random_message = pick("You spin the globe!", "You land on Rockhill!", "You land on Vanderlin!", "You land on Heartfelt!", "You land on Zybantu!", "You land on Port Thornvale!", "You land on Grenzelhoft!", "You land on Valoria!", "You land on the Fog Islands!")
 	to_chat(H, "<span class='notice'>[random_message]</span>")
 
 /obj/structure/fluff/statue/femalestatue/Initialize()
@@ -782,7 +773,7 @@
 					user.changeNext_move(CLICK_CD_MELEE)
 					if(W.max_blade_int)
 						W.remove_bintegrity(5)
-					if(!L.rogfat_add(rand(4,6)))
+					if(!L.adjust_stamina(rand(4,6)))
 						if(ishuman(L))
 							var/mob/living/carbon/human/H = L
 							if(H.tiredness >= 50)
@@ -899,9 +890,9 @@
 							I = new /obj/item/clothing/under/roguetown/chainlegs(user.loc)
 					if(I)
 						I.sellprice = 0
-					playsound(loc,'sound/items/carvgood.ogg', 50, TRUE)
+					playsound(loc,'sound/items/matidol2.ogg', 50, TRUE)
 				else
-					playsound(loc,'sound/items/carvty.ogg', 50, TRUE)
+					playsound(loc,'sound/items/matidol1.ogg', 50, TRUE)
 				playsound(loc,'sound/misc/eat.ogg', rand(30,60), TRUE)
 				qdel(W)
 				return

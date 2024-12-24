@@ -77,7 +77,9 @@
 /datum/status_effect/debuff/silver_curse
 	id = "silver_curse"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/silver_curse
-	duration = 5 SECONDS
+	effectedstats = list("strength" = -2,"perception" = -2,"intelligence" = -2, "constitution" = -2, "endurance" = -2,"speed" = -2)
+	duration = 45 SECONDS
+
 /*	Pointless subtype, code doesnt handle it well, dont use
 /datum/status_effect/debuff/silver_curse/greater
 	duration = 10 SECONDS
@@ -87,56 +89,15 @@
 	desc = "My BANE!"
 	icon_state = "hunger3"
 
-
-// PINTLEDESTRUCTION
-
-/datum/status_effect/debuff/pintledestruction
-	id = "pintlegone"
-	alert_type = /atom/movable/screen/alert/status_effect/debuff/pintledestruction
-	duration = 60 MINUTES
-
-/atom/movable/screen/alert/status_effect/debuff/pintledestruction
-	name = "Wine-Curse"
-	desc = "Oh Gods...it's dead..."
-	icon_state = "muscles"
-
-/datum/status_effect/debuff/pintledestruction/on_apply()
-	. = ..()
-	if(iscarbon(owner))
-		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/sadfate)
-	ADD_TRAIT(owner, TRAIT_LIMPDICK, TRAIT_GENERIC)
-
-/datum/status_effect/debuff/pintledestruction/on_remove()
-	. = ..()
-	REMOVE_TRAIT(owner, TRAIT_LIMPDICK, TRAIT_GENERIC)
-	if(iscarbon(owner))
-		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/sadfate)
-
-
-//BROKEN CELIBACY
-
-/datum/status_effect/debuff/chastity
-	id = "chastity"
-	alert_type = /atom/movable/screen/alert/status_effect/debuff/chastity
-	effectedstats = list("fortune" = -6)
-	duration = 999 MINUTES
-
-/atom/movable/screen/alert/status_effect/debuff/chastity
-	name = "Pantheons Curse"
-	desc = "I have broken my oath of celibacy... what have I done"
-	icon_state = "hunger3"
-
 /datum/status_effect/debuff/wiz
 	id = "wiz"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/wiz
 	effectedstats = list("intelligence" = -5)
-	duration = 999 MINUTES
+	duration = -1
 
 /atom/movable/screen/alert/status_effect/debuff/wiz
 	name = "Fading Power"
-	desc = "My magical power wanes as I defile my body"
+	desc = "My magical power wanes..."
 	icon_state = "hunger3"
 ////////////////////
 
@@ -226,6 +187,8 @@
 
 /datum/status_effect/debuff/uncookedfood/on_apply()
 	. = ..()
+	if(HAS_TRAIT(owner, TRAIT_NASTY_EATER) || HAS_TRAIT(owner, TRAIT_ORGAN_EATER))
+		return ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		C.add_nausea(100)
@@ -239,7 +202,7 @@
 
 /atom/movable/alert/status_effect/debuff/badmeal
 	name = "Foul Food!"
-	desc = "<span class='warning'>That tasted like zcum!"
+	desc = "<span class='warning'>That tasted vile!"
 	icon_state = "badmeal"
 
 /datum/status_effect/debuff/badmeal/on_apply()
@@ -279,7 +242,7 @@
 
 /datum/status_effect/debuff/rotfood/on_apply()
 	. = ..()
-	if(iscarbon(owner))
+	if(iscarbon(owner) && !(HAS_TRAIT(owner, TRAIT_ROT_EATER)))
 		var/mob/living/carbon/C = owner
 		C.add_nausea(200)
 		C.add_stress(/datum/stressevent/rotfood)
@@ -390,7 +353,7 @@
 /datum/status_effect/debuff/viciousmockery
 	id = "viciousmockery"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/viciousmockery
-	duration = 600 // One minute
+	duration = 1 MINUTES
 	effectedstats = list("strength" = -2, "speed" = -2,"endurance" = -2)
 
 /atom/movable/screen/alert/status_effect/debuff/viciousmockery
@@ -408,3 +371,12 @@
 	name = "Chilled"
 	desc = "I can barely feel my limbs!"
 	icon_state = "chilled"
+
+/datum/status_effect/debuff/vamp_dreams
+	id = "sleepytime"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/vamp_dreams
+
+/atom/movable/screen/alert/status_effect/debuff/vamp_dreams
+	name = "Insight"
+	desc = "With some sleep in a coffin I feel like I could become better."
+	icon_state = "sleepy"

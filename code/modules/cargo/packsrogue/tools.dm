@@ -106,6 +106,18 @@
 	cost = 3
 	contains = /obj/item/reagent_containers/glass/bottle/rogue
 
+/datum/supply_pack/rogue/tools/alch_bottle
+	name = "Alchemy Bottle"
+	cost = 1
+	contains = /obj/item/reagent_containers/glass/alchemical
+
+/datum/supply_pack/rogue/tools/alch_bottles
+	name = "Bulk Alchemy Bottles" //Buy 8 now get 1 free!
+	cost = 8
+	contains = list(/obj/item/reagent_containers/glass/alchemical,/obj/item/reagent_containers/glass/alchemical,/obj/item/reagent_containers/glass/alchemical,
+	/obj/item/reagent_containers/glass/alchemical,/obj/item/reagent_containers/glass/alchemical,/obj/item/reagent_containers/glass/alchemical,
+	/obj/item/reagent_containers/glass/alchemical,/obj/item/reagent_containers/glass/alchemical,/obj/item/reagent_containers/glass/alchemical)
+
 /datum/supply_pack/rogue/tools/bucket
 	name = "Bucket"
 	cost = 6
@@ -142,28 +154,38 @@
 
 /datum/supply_pack/rogue/tools/bait
 	name = "Fishing Grub"
-	cost = 3
-	contains = /obj/item/natural/worms/grubs
+	cost = 6
+	contains = /obj/item/fishing/bait/deluxe
+
+/datum/supply_pack/rogue/tools/fishingline
+	name = "Premium Fishing line"
+	cost = 25
+	contains = /obj/item/fishing/reel/deluxe
+
+/datum/supply_pack/rogue/tools/fishinghook
+	name = "Premium Fishing hook"
+	cost = 25
+	contains = /obj/item/fishing/hook/deluxe
 
 /datum/supply_pack/rogue/tools/prarml
-	name = "Wooden Arm LEFT"
+	name = "Prosthetic Left Wooden Arm"
 	cost = 15
-	contains = /obj/item/bodypart/l_arm/rproesthetic
+	contains = /obj/item/bodypart/l_arm/prosthetic/wood
 
 /datum/supply_pack/rogue/tools/prarmr
-	name = "Wooden Arm RIGHT"
+	name = "Prosthetic Right Wooden Arm"
 	cost = 15
-	contains = /obj/item/bodypart/r_arm/rproesthetic
+	contains = /obj/item/bodypart/r_arm/prosthetic/wood
 
 /datum/supply_pack/rogue/tools/prlegl
-	name = "Pegleg LEFT"
+	name = "Pegleg Left Leg"
 	cost = 15
-	contains = /obj/item/bodypart/l_leg/rproesthetic
+	contains = /obj/item/bodypart/l_leg/prosthetic/wood
 
 /datum/supply_pack/rogue/tools/prlegr
-	name = "Pegleg RIGHT"
+	name = "Pegleg Right Leg"
 	cost = 15
-	contains = /obj/item/bodypart/r_leg/rproesthetic
+	contains = /obj/item/bodypart/r_leg/prosthetic/wood
 
 /datum/supply_pack/rogue/tools/surgerybag
 	name = "Set of Surgical Tools"

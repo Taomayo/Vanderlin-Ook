@@ -53,6 +53,7 @@
 	swingdelay = 0
 	icon_state = "instrike"
 	misscost = 5
+	item_damage_type = "blunt"
 
 /datum/intent/mace/strike/wood
 	hitsound = list('sound/combat/hits/blunt/woodblunt (1).ogg', 'sound/combat/hits/blunt/woodblunt (2).ogg')
@@ -77,6 +78,7 @@
 	swingdelay = 0
 	icon_state = "insmash"
 	misscost = 5
+	item_damage_type = "blunt"
 
 /datum/intent/mace/smash/wood
 	hitsound = list('sound/combat/hits/blunt/woodblunt (1).ogg', 'sound/combat/hits/blunt/woodblunt (2).ogg')
@@ -106,6 +108,7 @@
 	penfactor = 40
 	swingdelay = 1
 	misscost = 15
+	item_damage_type = "blunt"
 
 
 //................ Bell ringer ............... //
@@ -231,6 +234,7 @@
 	wbalance = 0
 	associated_skill = /datum/skill/combat/swords
 	wdefense = ULTMATE_PARRY
+	metalizer_result = /obj/item/rogueweapon/sword/iron
 
 /obj/item/rogueweapon/mace/woodclub/train_sword/getonmobprop(tag)
 	. = ..()
@@ -288,7 +292,7 @@
 /obj/item/rogueweapon/mace/goden/steel
 	gripped_intents = list(/datum/intent/mace/smash/heavy) // It's a 2h flanged mace, not a goedendag.
 	name = "grand mace"
-	desc = "A casted polearm, rumored to be the weapon-design used by the Forgotten God himself."
+	desc = "A casted polearm, rumored to be the weapon-design used by Psydon himself."
 	icon_state = "polemace"
 	resistance_flags = FIRE_PROOF
 	smeltresult = /obj/item/ingot/steel
@@ -296,6 +300,7 @@
 //	slowdown = 1
 	sellprice = 60
 	wbalance = DODGE_CHANCE_NORMAL
+	smeltresult = /obj/item/ingot/steel
 
 /obj/item/rogueweapon/mace/goden/steel/getonmobprop(tag)
 	. = ..()

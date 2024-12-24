@@ -68,8 +68,6 @@
 			HMN.regenerate_icons()
 		else
 			eye_color = HMN.eye_color
-		if(HAS_TRAIT(HMN, TRAIT_NIGHT_VISION) && !lighting_alpha)
-			lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
 	for(var/datum/wound/facial/eyes/eye_wound as anything in M.get_wounds())
 		qdel(eye_wound)
 	M.update_tint()
@@ -412,3 +410,14 @@
 	eye_icon_state = "snail_eyes"
 	icon_state = "snail_eyeballs"
 
+/proc/set_eye_color(mob/living/carbon/mob, color_one, color_two)
+	var/obj/item/organ/eyes/eyes = mob.getorganslot(ORGAN_SLOT_EYES)
+	if(!eyes)
+		return
+	if(color_one)
+		eyes.eye_color = color_one
+	if(color_two)
+		eyes.second_color = color_two
+	eyes.update_accessory_colors()
+	if(eyes.owner)
+		eyes.owner.update_body_parts(TRUE)

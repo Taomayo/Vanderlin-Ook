@@ -13,7 +13,8 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	tutorial = "Some say youre a strange individual, some say youre a cheat while some claim you are a savant in the art of sausage making. Without your skilled hands and knifework most of the livestock around the town would be wasted. "
 
@@ -23,13 +24,14 @@
 	give_bank_account = TRUE
 	min_pq = -20
 	bypass_lastclass = TRUE
+	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
 
 /datum/outfit/job/roguetown/beastmaster/pre_equip(mob/living/carbon/human/H)
 	..()
 
 	belt = /obj/item/storage/belt/rogue/leather
 	beltr= /obj/item/storage/meatbag
-	beltl= /obj/item/roguekey/butcher
+	beltl= /obj/item/key/butcher
 	backl = /obj/item/storage/backpack/rogue/satchel
 	armor = /obj/item/clothing/suit/roguetown/armor/leather/vest/butcher
 	shoes = /obj/item/clothing/shoes/roguetown/boots/leather

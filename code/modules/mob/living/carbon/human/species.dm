@@ -1,7 +1,6 @@
 // This code handles different species in the game.
 
 GLOBAL_LIST_EMPTY(roundstart_races)
-
 /datum/species
 	var/id	// if the game needs to manually check my race to do something not included in a proc here, it will use this
 	var/limbs_id		//this is used if you want to use a different species limb sprites. Mainly used for angels as they look like humans.
@@ -13,7 +12,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/icon_override
 	var/icon_override_m
 	var/icon_override_f
-	var/list/possible_ages = ALL_AGES_LIST
+	var/list/possible_ages = ALL_AGES_LIST_WITH_CHILD
 	var/sexes = 1		// whether or not the race has sexual characteristics. at the moment this is only 0 for skeletons and shadows
 	var/patreon_req
 	var/max_age = 75
@@ -47,7 +46,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/exotic_blood = ""	// If my race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If my race uses a non standard bloodtype (A+, O-, AB-, etc)
 	var/meat = /obj/item/reagent_containers/food/snacks/meat/slab/human //What the species drops on gibbing
-	var/skinned_type
 	var/liked_food = NONE
 	var/disliked_food = GROSS
 	var/toxic_food = TOXIC
@@ -74,7 +72,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/siemens_coeff = 1 //base electrocution coefficient
 	var/damage_overlay_type = "human" //what kind of damage overlays (if any) appear on our species when wounded?
 	var/fixed_mut_color = "" //to use MUTCOLOR with a fixed color that's independent of dna.feature["mcolor"]
-	var/inert_mutation 	= DWARFISM //special mutation that can be found in the genepool. Dont leave empty or changing species will be a headache
 	var/deathsound //used to set the mobs deathsound on species change
 	var/grab_sound //Special sound for grabbing
 	var/datum/outfit/outfit_important_for_life /// A path to an outfit that is important for species life e.g. plasmaman outfit
@@ -151,6 +148,21 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	)
 	/// List all of body markings that the player can choose from in customization. Body markings from sets get added to here
 	var/list/body_markings
+
+	///can we be a youngling?
+	var/can_be_youngling = TRUE
+	var/child_icon = 'icons/roguetown/mob/bodies/c/child.dmi'
+	var/child_dam_icon = 'icons/roguetown/mob/bodies/dam/dam_child.dmi'
+	var/list/offset_features_child = list(OFFSET_ID = list(0,0), OFFSET_GLOVES = list(0,0),\
+	OFFSET_CLOAK = list(0,-4), OFFSET_FACEMASK = list(0,0), OFFSET_HEAD = list(0,-4), \
+	OFFSET_FACE = list(0,-4), OFFSET_BELT = list(0,0), OFFSET_BACK = list(0,0), \
+	OFFSET_NECK = list(0,-4), OFFSET_MOUTH = list(0,0), OFFSET_PANTS = list(0,0), \
+	OFFSET_SHIRT = list(0,0), OFFSET_ARMOR = list(0,0), OFFSET_HANDS = list(0,-3), \
+	OFFSET_ID_F = list(0,0), OFFSET_GLOVES_F = list(0,0), OFFSET_HANDS_F = list(0,-3), \
+	OFFSET_CLOAK_F = list(0,-4), OFFSET_FACEMASK_F = list(0,0), OFFSET_HEAD_F = list(0,-4), \
+	OFFSET_FACE_F = list(0,-4), OFFSET_BELT_F = list(0,0), OFFSET_BACK_F = list(0,0), \
+	OFFSET_NECK_F = list(0,-4), OFFSET_MOUTH_F = list(0,0), OFFSET_PANTS_F = list(0,0), \
+	OFFSET_SHIRT_F = list(0,0), OFFSET_ARMOR_F = list(0,0), OFFSET_UNDIES = list(0,0), OFFSET_UNDIES_F = list(0,0))
 
 ///////////
 // PROCS //
@@ -299,7 +311,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 						spec_hair += X
 		if(FEMALE)
 			for(var/O in GLOB.facial_hairstyles_female_list)
-				X = GLOB.facial_hairstyles_list[O]
+				if(!istype(src, /datum/species/dwarf))
+					X = null
+				else
+					X = GLOB.facial_hairstyles_list[O]
 				if(X)
 					if(id in X.specuse)
 						spec_hair += X
@@ -410,8 +425,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 //Please override this locally if you want to define when what species qualifies for what rank if human authority is enforced.
 /datum/species/proc/qualifies_for_rank(rank, list/features)
-	if(rank in GLOB.command_positions)
-		return 0
 	return 1
 
 //Will regenerate missing organs
@@ -619,9 +632,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(TRAIT_NOMETABOLISM in inherent_traits)
 		C.reagents.end_metabolization(C, keep_liverless = TRUE)
 
-	if(TRAIT_RADIMMUNE in inherent_traits)
-		C.dna.remove_all_mutations() // Radiation immune mobs can't get mutations normally
-
 	if(inherent_factions)
 		for(var/i in inherent_factions)
 			C.faction += i //Using +=/-= for this in case you also gain the faction from a different source.
@@ -656,14 +666,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	for(var/X in inherent_traits)
 		REMOVE_TRAIT(C, X, SPECIES_TRAIT)
 
-	//If their inert mutation is not the same, swap it out
-	if((inert_mutation != new_species.inert_mutation) && LAZYLEN(C.dna.mutation_index) && (inert_mutation in C.dna.mutation_index))
-		C.dna.remove_mutation(inert_mutation)
-		//keep it at the right spot, so we can't have people taking shortcuts
-		var/location = C.dna.mutation_index.Find(inert_mutation)
-		C.dna.mutation_index[location] = new_species.inert_mutation
-		C.dna.mutation_index[new_species.inert_mutation] = create_sequence(new_species.inert_mutation)
-
 	if(inherent_factions)
 		for(var/i in inherent_factions)
 			C.faction -= i
@@ -684,6 +686,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	SEND_SIGNAL(C, COMSIG_SPECIES_LOSS, src)
 
 /datum/species/proc/handle_hair(mob/living/carbon/human/H, forced_colour)
+	var/list/offsets = H.dna.species.offset_features
+	if(H.age == AGE_CHILD)
+		offsets = H.dna.species.offset_features_child
 	H.remove_overlay(HAIR_LAYER)
 	H.remove_overlay(HAIREXTRA_LAYER)
 	var/obj/item/bodypart/head/HD = H.get_bodypart(BODY_ZONE_HEAD)
@@ -765,13 +770,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			facial_overlay.alpha = hair_alpha
 			if(H.gender == "male")
-				if(OFFSET_FACE in H.dna.species.offset_features)
-					facial_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-					facial_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+				if(OFFSET_FACE in offsets)
+					facial_overlay.pixel_x += offsets[OFFSET_FACE][1]
+					facial_overlay.pixel_y += offsets[OFFSET_FACE][2]
 			else
-				if(OFFSET_FACE_F in H.dna.species.offset_features)
-					facial_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-					facial_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+				if(OFFSET_FACE_F in offsets)
+					facial_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+					facial_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 			standing += facial_overlay
 
 	if(H.head)
@@ -847,13 +852,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					hair_overlay.color = forced_colour
 				hair_overlay.alpha = hair_alpha
 				if(H.gender == "male")
-					if(OFFSET_FACE in H.dna.species.offset_features)
-						hair_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-						hair_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+					if(OFFSET_FACE in offsets)
+						hair_overlay.pixel_x += offsets[OFFSET_FACE][1]
+						hair_overlay.pixel_y += offsets[OFFSET_FACE][2]
 				else
-					if(OFFSET_FACE_F in H.dna.species.offset_features)
-						hair_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-						hair_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+					if(OFFSET_FACE_F in offsets)
+						hair_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+						hair_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 		if(hair_overlay.icon)
 			S = GLOB.hairstyles_list[H.hairstyle]
 			if(S)
@@ -872,6 +877,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	H.apply_overlay(HAIREXTRA_LAYER)
 
 /datum/species/proc/handle_body(mob/living/carbon/human/H)
+	var/list/offsets = H.dna.species.offset_features
+	if(H.age == AGE_CHILD)
+		offsets = H.dna.species.offset_features_child
 	H.remove_overlay(BODY_LAYER)
 	H.remove_overlay(ABOVE_BODY_FRONT_LAYER)
 
@@ -885,13 +893,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/human_face.dmi', "lips_[H.lip_style]", -BODY_LAYER)
 			lip_overlay.color = H.lip_color
 			if(H.gender == MALE)
-				if(OFFSET_FACE in H.dna.species.offset_features)
-					lip_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-					lip_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+				if(OFFSET_FACE in offsets)
+					lip_overlay.pixel_x += offsets[OFFSET_FACE][1]
+					lip_overlay.pixel_y += offsets[OFFSET_FACE][2]
 			else
-				if(OFFSET_FACE_F in H.dna.species.offset_features)
-					lip_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-					lip_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+				if(OFFSET_FACE_F in offsets)
+					lip_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+					lip_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 			standing += lip_overlay
 
 		// eyes
@@ -905,13 +913,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			if((EYECOLOR in species_traits) && E)
 				eye_overlay.color = "#" + H.eye_color
 			if(H.gender == FEMALE)
-				if(OFFSET_FACE_F in H.dna.species.offset_features)
-					eye_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-					eye_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+				if(OFFSET_FACE_F in offsets)
+					eye_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+					eye_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 			else
-				if(OFFSET_FACE in H.dna.species.offset_features)
-					eye_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-					eye_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+				if(OFFSET_FACE in offsets)
+					eye_overlay.pixel_x += offsets[OFFSET_FACE][1]
+					eye_overlay.pixel_y += offsets[OFFSET_FACE][2]
 			standing += eye_overlay
 
 		//detail
@@ -926,13 +934,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					else
 						accessory_overlay.color = "#" + H.detail_color
 				if(H.gender == FEMALE)
-					if(OFFSET_FACE_F in H.dna.species.offset_features)
-						accessory_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-						accessory_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+					if(OFFSET_FACE_F in offsets)
+						accessory_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+						accessory_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 				else
-					if(OFFSET_FACE in H.dna.species.offset_features)
-						accessory_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-						accessory_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+					if(OFFSET_FACE in offsets)
+						accessory_overlay.pixel_x += offsets[OFFSET_FACE][1]
+						accessory_overlay.pixel_y += offsets[OFFSET_FACE][2]
 				standing += accessory_overlay
 
 		if(H.accessory)
@@ -941,13 +949,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			if(accessory)
 				accessory_overlay = mutable_appearance(accessory.icon, "[accessory.icon_state]_BODY", -BODY_LAYER)
 				if(H.gender == FEMALE)
-					if(OFFSET_FACE_F in H.dna.species.offset_features)
-						accessory_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-						accessory_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+					if(OFFSET_FACE_F in offsets)
+						accessory_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+						accessory_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 				else
-					if(OFFSET_FACE in H.dna.species.offset_features)
-						accessory_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-						accessory_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+					if(OFFSET_FACE in offsets)
+						accessory_overlay.pixel_x += offsets[OFFSET_FACE][1]
+						accessory_overlay.pixel_y += offsets[OFFSET_FACE][2]
 				standing += accessory_overlay
 
 #ifdef MATURESERVER
@@ -980,13 +988,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			if(underwear)
 				underwear_overlay = mutable_appearance(underwear.icon, underwear.icon_state, -BODY_LAYER)
 				if(H.gender == FEMALE)
-					if(OFFSET_FACE_F in H.dna.species.offset_features)
-						underwear_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-						underwear_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+					if(OFFSET_FACE_F in offsets)
+						underwear_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+						underwear_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 				else
-					if(OFFSET_FACE in H.dna.species.offset_features)
-						underwear_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-						underwear_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+					if(OFFSET_FACE in offsets)
+						underwear_overlay.pixel_x += offsets[OFFSET_FACE][1]
+						underwear_overlay.pixel_y += offsets[OFFSET_FACE][2]
 				if(!underwear.use_static)
 					if(H.underwear_color)
 						underwear_overlay.color = H.underwear_color
@@ -996,9 +1004,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				standing += underwear_overlay
 				if(!hide_boob && H.gender == FEMALE)
 					underwear_overlay = mutable_appearance(underwear.icon, "[underwear.icon_state]_boob", -BODY_LAYER)
-					if(OFFSET_FACE_F in H.dna.species.offset_features)
-						underwear_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-						underwear_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+					if(OFFSET_FACE_F in offsets)
+						underwear_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+						underwear_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 					if(!underwear.use_static)
 						if(H.underwear_color)
 							underwear_overlay.color = H.underwear_color
@@ -1028,6 +1036,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	handle_mutant_bodyparts(H)
 
 /datum/species/proc/handle_mutant_bodyparts(mob/living/carbon/human/H, forced_colour)
+	var/list/offsets = H.dna.species.offset_features
+	if(H.age == AGE_CHILD)
+		offsets = H.dna.species.offset_features_child
 	var/list/bodyparts_to_add = mutant_bodyparts.Copy()
 	var/list/relevent_layers = list(BODY_BEHIND_LAYER, BODY_ADJ_LAYER, BODY_FRONT_LAYER)
 	var/list/standing	= list()
@@ -1099,13 +1110,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(accessory)
 			accessory_overlay = mutable_appearance(accessory.icon, "[accessory.icon_state]_FRONT", -BODY_FRONT_LAYER)
 			if(H.gender == FEMALE)
-				if(OFFSET_FACE_F in H.dna.species.offset_features)
-					accessory_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE_F][1]
-					accessory_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE_F][2]
+				if(OFFSET_FACE_F in offsets)
+					accessory_overlay.pixel_x += offsets[OFFSET_FACE_F][1]
+					accessory_overlay.pixel_y += offsets[OFFSET_FACE_F][2]
 			else
-				if(OFFSET_FACE in H.dna.species.offset_features)
-					accessory_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
-					accessory_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
+				if(OFFSET_FACE in offsets)
+					accessory_overlay.pixel_x += offsets[OFFSET_FACE][1]
+					accessory_overlay.pixel_y += offsets[OFFSET_FACE][2]
 			standing += accessory_overlay
 
 	if("wings" in mutant_bodyparts)
@@ -1229,14 +1240,24 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				else
 					accessory_overlay.color = forced_colour
 			if(S.offsetti)
-				if(H.gender == FEMALE)
-					if(OFFSET_FACE_F in offset_features)
-						accessory_overlay.pixel_x += offset_features[OFFSET_FACE_F][1]
-						accessory_overlay.pixel_y += offset_features[OFFSET_FACE_F][2]
+				if(H.age == AGE_CHILD)
+					if(H.gender == FEMALE)
+						if(OFFSET_FACE_F in offset_features_child)
+							accessory_overlay.pixel_x += offset_features_child[OFFSET_FACE_F][1]
+							accessory_overlay.pixel_y += offset_features_child[OFFSET_FACE_F][2]
+					else
+						if(OFFSET_FACE in offset_features_child)
+							accessory_overlay.pixel_x += offset_features_child[OFFSET_FACE][1]
+							accessory_overlay.pixel_y += offset_features_child[OFFSET_FACE][2]
 				else
-					if(OFFSET_FACE in H.dna.species.offset_features)
-						accessory_overlay.pixel_x += offset_features[OFFSET_FACE][1]
-						accessory_overlay.pixel_y += offset_features[OFFSET_FACE][2]
+					if(H.gender == FEMALE)
+						if(OFFSET_FACE_F in offset_features)
+							accessory_overlay.pixel_x += offset_features[OFFSET_FACE_F][1]
+							accessory_overlay.pixel_y += offset_features[OFFSET_FACE_F][2]
+					else
+						if(OFFSET_FACE in offset_features)
+							accessory_overlay.pixel_x += offset_features[OFFSET_FACE][1]
+							accessory_overlay.pixel_y += offset_features[OFFSET_FACE][2]
 
 			standing += accessory_overlay
 
@@ -1250,14 +1271,24 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				if(S.center)
 					inner_accessory_overlay = center_image(inner_accessory_overlay, S.dimension_x, S.dimension_y)
 				if(S.offsetti)
-					if(H.gender == FEMALE)
-						if(OFFSET_FACE_F in offset_features)
-							inner_accessory_overlay.pixel_x += offset_features[OFFSET_FACE_F][1]
-							inner_accessory_overlay.pixel_y += offset_features[OFFSET_FACE_F][2]
+					if(H.age == AGE_CHILD)
+						if(H.gender == FEMALE)
+							if(OFFSET_FACE_F in offset_features_child)
+								inner_accessory_overlay.pixel_x += offset_features_child[OFFSET_FACE_F][1]
+								inner_accessory_overlay.pixel_y += offset_features_child[OFFSET_FACE_F][2]
+						else
+							if(OFFSET_FACE in offset_features_child)
+								inner_accessory_overlay.pixel_x += offset_features_child[OFFSET_FACE][1]
+								inner_accessory_overlay.pixel_y += offset_features_child[OFFSET_FACE][2]
 					else
-						if(OFFSET_FACE in offset_features)
-							inner_accessory_overlay.pixel_x += offset_features[OFFSET_FACE][1]
-							inner_accessory_overlay.pixel_y += offset_features[OFFSET_FACE][2]
+						if(H.gender == FEMALE)
+							if(OFFSET_FACE_F in offset_features)
+								inner_accessory_overlay.pixel_x += offset_features[OFFSET_FACE_F][1]
+								inner_accessory_overlay.pixel_y += offset_features[OFFSET_FACE_F][2]
+						else
+							if(OFFSET_FACE in offset_features)
+								inner_accessory_overlay.pixel_x += offset_features[OFFSET_FACE][1]
+								inner_accessory_overlay.pixel_y += offset_features[OFFSET_FACE][2]
 				standing += inner_accessory_overlay
 
 		H.overlays_standing[layer] = standing.Copy()
@@ -1695,7 +1726,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	switch(H.nutrition)
 //		if(NUTRITION_LEVEL_FAT to INFINITY) //currently disabled/999999 define
-//			if(H.rogstam >= H.maxrogstam)
+//			if(H.energy >= H.max_energy)
 //				H.apply_status_effect(/datum/status_effect/debuff/fat)
 		if(NUTRITION_LEVEL_HUNGRY to NUTRITION_LEVEL_FED)
 			H.apply_status_effect(/datum/status_effect/debuff/hungryt1)
@@ -1719,35 +1750,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 /datum/species/proc/update_health_hud(mob/living/carbon/human/H)
 	return 0
-
-/datum/species/proc/handle_mutations_and_radiation(mob/living/carbon/human/H)
-	. = FALSE
-	var/radiation = H.radiation
-
-	if(HAS_TRAIT(H, TRAIT_RADIMMUNE))
-		radiation = 0
-		return TRUE
-
-	if(radiation > RAD_MOB_KNOCKDOWN && prob(RAD_MOB_KNOCKDOWN_PROB))
-		if(!H.IsParalyzed())
-			H.emote("collapse", TRUE)
-		H.Paralyze(RAD_MOB_KNOCKDOWN_AMOUNT)
-		to_chat(H, "<span class='danger'>I feel weak.</span>")
-
-	if(radiation > RAD_MOB_VOMIT && prob(RAD_MOB_VOMIT_PROB))
-		H.vomit(10, TRUE)
-
-	if(radiation > RAD_MOB_MUTATE)
-		if(prob(1))
-			to_chat(H, "<span class='danger'>I mutate!</span>")
-			H.easy_randmut(NEGATIVE+MINOR_NEGATIVE)
-			H.emote("gasp")
-			H.domutcheck()
-
-	if(radiation > RAD_MOB_HAIRLOSS)
-		if(prob(15) && !(H.hairstyle == "Bald") && (HAIR in species_traits))
-			to_chat(H, "<span class='danger'>My hair starts to fall out in clumps...</span>")
-			addtimer(CALLBACK(src, PROC_REF(go_bald), H), 50)
 
 /datum/species/proc/go_bald(mob/living/carbon/human/H)
 	if(QDELETED(H))	//may be called from a timer
@@ -1793,6 +1795,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 						"<span class='danger'>I block [user]'s grab!</span>", "<span class='hear'>I hear a swoosh!</span>", COMBAT_MESSAGE_RANGE, user)
 		to_chat(user, "<span class='warning'>My grab at [target] was blocked!</span>")
 		return FALSE
+
 	if(attacker_style && attacker_style.grab_act(user,target))
 		return TRUE
 	else
@@ -1882,7 +1885,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(!target.lying_attack_check(user))
 			return 0
 
-		var/armor_block = target.run_armor_check(selzone, "melee", blade_dulling = user.used_intent.blade_class)
+		var/armor_block = target.run_armor_check(selzone, "blunt", blade_dulling = user.used_intent.blade_class)
 
 		target.lastattacker = user.real_name
 		if(target.mind)
@@ -1890,6 +1893,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		target.lastattackerckey = user.ckey
 		user.dna.species.spec_unarmedattacked(user, target)
 
+		user.do_attack_animation(target, visual_effect_icon = user.used_intent.animname)
 		target.next_attack_msg.Cut()
 
 		var/nodmg = FALSE
@@ -1982,7 +1986,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 //		var/obj/machinery/disposal/bin/target_disposal_bin
 		var/shove_blocked = FALSE //Used to check if a shove is blocked so that if it is knockdown logic can be applied
 
-		if(prob(30 + generic_stat_comparison(user.STASTR, target.STACON) ))//check if we actually shove them
+		if(prob(clamp(30 + (user.stat_fight(target,STATKEY_CON,STATKEY_STR)*10),0,100)))//check if we actually shove them
 			//Thank you based whoneedsspace
 			target_collateral_mob = locate(/mob/living) in target_shove_turf.contents
 			if(target_collateral_mob)
@@ -2073,9 +2077,25 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(user == target)
 		return FALSE
 	if(user.check_leg_grabbed(1) || user.check_leg_grabbed(2))
-		to_chat(user, "<span class='notice'>I can't move my leg!</span>")
-		return
-	if(user.rogfat >= user.maxrogfat)
+		if(user.check_leg_grabbed(1) && user.check_leg_grabbed(2))		//If both legs are grabbed
+			to_chat(user, span_notice("I can't move my leg!"))
+			return
+		else															//If only one leg is grabbed
+			var/mob/living/G = user.pulledby
+			var/userskill = 1
+			if(user.mind)
+				userskill = ((user.mind.get_skill_level(/datum/skill/combat/wrestling) * 0.1) + 1)
+			var/grabberskill = 1
+			if(G?.mind)
+				grabberskill = ((G.mind.get_skill_level(/datum/skill/combat/wrestling) * 0.1) + 1)
+			if(((user.STASTR + rand(1, 6)) * userskill) < ((G.STASTR + rand(1, 6)) * grabberskill))
+				to_chat(user, span_notice("I can't move my leg!"))
+				user.changeNext_move(CLICK_CD_GRABBING)
+				return
+			else
+				user.resist_grab()
+
+	if(user.stamina >= user.maximum_stamina)
 		return FALSE
 	if(!(user.mobility_flags & MOBILITY_STAND))
 		return FALSE
@@ -2090,8 +2110,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				target.mind.attackedme[user.real_name] = world.time
 			var/selzone = accuracy_check(user.zone_selected, user, target, /datum/skill/combat/unarmed, user.used_intent)
 			var/obj/item/bodypart/affecting = target.get_bodypart(check_zone(selzone))
-			var/armor_block = target.run_armor_check(selzone, "melee", blade_dulling = BCLASS_BLUNT)
-			var/damage = user.get_punch_dmg() * 1.4
+			var/damage = (user.get_punch_dmg() * 1.4)
+			if(user.shoes)
+				damage *= (1 + (user.shoes.armor_class * 0.2))
+			var/armor_block = target.run_armor_check(selzone, "blunt", blade_dulling = BCLASS_BLUNT)
 			var/balance = 10
 			target.next_attack_msg.Cut()
 			var/nodmg = FALSE
@@ -2116,7 +2138,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 						to_chat(user, "<span class='danger'>I stomp on [target]![target.next_attack_msg.Join()]</span>")
 			target.next_attack_msg.Cut()
 			log_combat(user, target, "kicked")
-			user.do_attack_animation(target, ATTACK_EFFECT_DISARM)
 			user.OffBalance(balance)
 			if(!nodmg)
 				playsound(target, 'sound/combat/hits/kick/stomp.ogg', 100, TRUE, -1)
@@ -2128,7 +2149,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(!target.kick_attack_check(user))
 			return 0
 
-		user.do_attack_animation(target, ATTACK_EFFECT_DISARM)
 		playsound(target, 'sound/combat/hits/kick/kick.ogg', 100, TRUE, -1)
 
 		var/turf/target_oldturf = target.loc
@@ -2149,7 +2169,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					target_table = locate(/obj/structure/table) in target_shove_turf.contents
 					shove_blocked = TRUE
 			else
-				if(stander && target.rogfat >= target.maxrogfat) //if you are kicked while fatigued, you are knocked down no matter what
+				if(stander && target.stamina >= target.maximum_stamina) //if you are kicked while fatigued, you are knocked down no matter what
 					target.Knockdown(100)
 
 		if(shove_blocked && !target.is_shove_knockdown_blocked() && !target.buckled)
@@ -2195,8 +2215,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		var/obj/item/bodypart/affecting = target.get_bodypart(check_zone(selzone))
 		if(!affecting)
 			affecting = target.get_bodypart(BODY_ZONE_CHEST)
-		var/armor_block = target.run_armor_check(selzone, "melee", blade_dulling = BCLASS_BLUNT)
-		var/damage = user.get_punch_dmg()
+		var/armor_block = target.run_armor_check(selzone, "blunt", blade_dulling = BCLASS_BLUNT)
+		var/damage = (user.get_punch_dmg() * 2.5)
+		if(user.shoes)
+			damage *= (1 + (user.shoes.armor_class * 0.2))
 		if(!target.apply_damage(damage, user.dna.species.attack_type, affecting, armor_block))
 			target.next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
 		else
@@ -2206,7 +2228,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		target.lastattackerckey = user.ckey
 		if(target.mind)
 			target.mind.attackedme[user.real_name] = world.time
-		user.rogfat_add(15)
+		user.adjust_stamina(15)
 		user.OffBalance(15)
 		target.forcesay(GLOB.hit_appends)
 
@@ -2251,8 +2273,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 /datum/species/proc/spec_attacked_by(obj/item/I, mob/living/user, obj/item/bodypart/affecting, intent, mob/living/carbon/human/H, selzone)
 	// Allows you to put in item-specific reactions based on species
 	if(user != H)
-		if(H.check_shields(I, I.force, "the [I.name]", MELEE_ATTACK, I.armor_penetration))
-			return 0
+		if(H.can_see_cone(user))
+			if(H.check_shields(I, I.force, "the [I.name]", MELEE_ATTACK, I.armor_penetration))
+				return 0
 	if(H.check_block())
 		H.visible_message("<span class='warning'>[H] blocks [I]!</span>", \
 						"<span class='danger'>I block [I]!</span>")
@@ -2276,7 +2299,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 //	var/armor_block = H.run_armor_check(affecting, "melee", "<span class='notice'>My armor has protected my [hit_area]!</span>", "<span class='warning'>My armor has softened a hit to my [hit_area]!</span>",pen)
 
 	var/Iforce = get_complex_damage(I, user) //to avoid runtimes on the forcesay checks at the bottom. Some items might delete themselves if you drop them. (stunning yourself, ninja swords)
-	var/armor_block = H.run_armor_check(selzone, "melee", "", "",pen, damage = Iforce, blade_dulling=user.used_intent.blade_class)
+	var/armor_block = H.run_armor_check(selzone, I.damage_type, "", "",pen, damage = Iforce, blade_dulling=user.used_intent.blade_class)
 
 	var/nodmg = FALSE
 
@@ -2289,7 +2312,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			nodmg = TRUE
 			H.next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
 			if(I)
-				I.take_damage(1, BRUTE, "melee")
+				I.take_damage(1, BRUTE, I.damage_type)
 		if(!nodmg)
 			var/datum/wound/crit_wound = affecting.bodypart_attacked_by(user.used_intent.blade_class, (Iforce * weakness) * ((100-(armor_block+armor))/100), user, selzone, crit_message = TRUE)
 			if(should_embed_weapon(crit_wound, I))
@@ -2389,7 +2412,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 /datum/species/proc/apply_damage(damage, damagetype = BRUTE, def_zone = null, blocked, mob/living/carbon/human/H, forced = FALSE, spread_damage = FALSE)
 	SEND_SIGNAL(H, COMSIG_MOB_APPLY_DAMGE, damage, damagetype, def_zone)
 	var/hit_percent = 1
-	damage = max(damage-blocked+armor,0)
+	damage = max(damage - (blocked + armor),0)
 //	var/hit_percent =  (100-(blocked+armor))/100
 	hit_percent = (hit_percent * (100-H.physiology.damage_resistance))/100
 	if(!damage || (!forced && hit_percent <= 0))
@@ -2461,13 +2484,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(CLONE)
 			var/damage_amount = forced ? damage : damage * hit_percent * H.physiology.clone_mod
 			H.adjustCloneLoss(damage_amount)
-		if(STAMINA)
-			var/damage_amount = forced ? damage : damage * hit_percent * H.physiology.stamina_mod
-			if(BP)
-				if(BP.receive_damage(0, 0, damage_amount))
-					H.update_stamina()
-			else
-				H.adjustStaminaLoss(damage_amount)
 		if(BRAIN)
 			var/damage_amount = forced ? damage : damage * hit_percent * H.physiology.brain_mod
 			H.adjustOrganLoss(ORGAN_SLOT_BRAIN, damage_amount)
@@ -2487,12 +2503,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 /obj/item/proc/blockproj(mob/living/carbon/human/H)
 	return
 
-/datum/species/proc/handle_environment(datum/gas_mixture/environment, mob/living/carbon/human/H)
-	if(!environment)
-		return
-
-	var/loc_temp = H.get_temperature(environment)
-
+/datum/species/proc/handle_environment(mob/living/carbon/human/H)
+	var/loc_temp = BODYTEMP_NORMAL //TODO VANDERLIN: make proximity based temperature
 	//Body temperature is adjusted in two parts: first there my body tries to naturally preserve homeostasis (shivering/sweating), then it reacts to the surrounding environment
 	//Thermal protection (insulation) has mixed benefits in two situations (hot in hot places, cold in hot places)
 	if(!H.on_fire) //If you're on fire, you do not heat up or cool down based on surrounding gases
@@ -2570,28 +2582,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "cold")
 		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "hot")
 
-	var/pressure = environment.return_pressure()
-	var/adjusted_pressure = H.calculate_affecting_pressure(pressure) //Returns how much pressure actually affects the mob.
-	switch(adjusted_pressure)
-		if(HAZARD_HIGH_PRESSURE to INFINITY)
-			if(!HAS_TRAIT(H, TRAIT_RESISTHIGHPRESSURE))
-				H.adjustBruteLoss(min(((adjusted_pressure / HAZARD_HIGH_PRESSURE) -1 ) * PRESSURE_DAMAGE_COEFFICIENT, MAX_HIGH_PRESSURE_DAMAGE) * H.physiology.pressure_mod)
-				H.throw_alert("pressure", /atom/movable/screen/alert/highpressure, 2)
-			else
-				H.clear_alert("pressure")
-		if(WARNING_HIGH_PRESSURE to HAZARD_HIGH_PRESSURE)
-			H.throw_alert("pressure", /atom/movable/screen/alert/highpressure, 1)
-		if(WARNING_LOW_PRESSURE to WARNING_HIGH_PRESSURE)
-			H.clear_alert("pressure")
-		if(HAZARD_LOW_PRESSURE to WARNING_LOW_PRESSURE)
-			H.throw_alert("pressure", /atom/movable/screen/alert/lowpressure, 1)
-		else
-			if(HAS_TRAIT(H, TRAIT_RESISTLOWPRESSURE))
-				H.clear_alert("pressure")
-			else
-				H.adjustBruteLoss(LOW_PRESSURE_DAMAGE * H.physiology.pressure_mod)
-				H.throw_alert("pressure", /atom/movable/screen/alert/lowpressure, 2)
-
 //////////
 // FIRE //
 //////////
@@ -2650,9 +2640,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 		var/thermal_protection = H.get_thermal_protection()
 
-		if(thermal_protection >= FIRE_IMMUNITY_MAX_TEMP_PROTECT && !no_protection)
+		if(thermal_protection >= 30000 && !no_protection)
 			return
-		if(thermal_protection >= FIRE_SUIT_MAX_TEMP_PROTECT && !no_protection)
+		if(thermal_protection >= 30000 && !no_protection)
 			H.adjust_bodytemperature(11)
 		else
 			H.adjust_bodytemperature(BODYTEMP_HEATING_MAX + (H.fire_stacks * 12))
@@ -2739,13 +2729,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/turf/T = get_turf(H)
 	if(!T)
 		return FALSE
-
-	var/datum/gas_mixture/environment = T.return_air()
-	if(environment && !(environment.return_pressure() > 30))
-		to_chat(H, "<span class='warning'>The atmosphere is too thin for you to fly!</span>")
-		return FALSE
-	else
-		return TRUE
+	return TRUE
 
 /datum/species/proc/flyslip(mob/living/carbon/human/H)
 	var/obj/buckled_obj

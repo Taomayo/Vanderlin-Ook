@@ -6,7 +6,7 @@
 	category_tags = list(CTAG_PILGRIM)
 	tutorial = "Stoic gardeners or flesh-eating predators, all can follow Dendors path. <br>His Briars scorn civilized living, many embracing their animal nature, being fickle and temperamental."
 //	allowed_patrons = list(/datum/patron/divine/dendor)		this doesn't work so long its a subclass type. Besides its preferable to forceswitch as it does to make selection less clunky.
-	cmode_music = 'sound/music/combat_dendor.ogg'
+	cmode_music = 'sound/music/cmode/combat_dendor.ogg'
 	maximum_possible_slots = 4	// to be lowered to 2? once testing is done
 
 /datum/outfit/job/roguetown/adventurer/briar/pre_equip(mob/living/carbon/human/H)
@@ -29,7 +29,7 @@
 
 	if(H.mind)
 		if(H.patron != /datum/patron/divine/dendor)
-			H.patron = GLOB.patronlist[/datum/patron/divine/dendor]
+			H.set_patron(/datum/patron/divine/dendor)
 
 		H.mind?.adjust_skillrank(/datum/skill/combat/axesmaces, 2, TRUE)
 		H.mind?.adjust_skillrank(/datum/skill/combat/knives, 1, TRUE)

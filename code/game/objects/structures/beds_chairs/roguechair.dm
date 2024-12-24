@@ -9,6 +9,7 @@
 	sleepy = 0.5
 //	pixel_y = 10
 	layer = OBJ_LAYER
+	metalizer_result = /obj/item/roguestatue/iron/deformed
 
 /obj/structure/chair/bench/church
 	icon_state = "church_benchleft"
@@ -44,13 +45,17 @@
 
 
 /obj/structure/chair/bench/CanPass(atom/movable/mover, turf/target)
+	if(istype(mover, /obj/projectile))
+		return TRUE
 	if(get_dir(mover,loc) == dir)
-		return 0
+		return FALSE
 	return !density
 
-/obj/structure/chair/bench/CheckExit(atom/movable/O, turf/target)
-	if(get_dir(target, O.loc) == dir)
-		return 0
+/obj/structure/chair/bench/CheckExit(atom/movable/mover, turf/target)
+	if(istype(mover, /obj/projectile))
+		return TRUE
+	if(get_dir(target, mover.loc) == dir)
+		return FALSE
 	return !density
 
 /obj/structure/chair/bench/couch
@@ -116,14 +121,18 @@
 	blade_dulling = DULLING_BASHCHOP
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = "woodimpact"
+	metalizer_result = /obj/item/roguestatue/iron/deformed
 
 /obj/structure/chair/wood/rogue/chair3
 	icon_state = "chair3"
 	icon = 'icons/roguetown/misc/structure.dmi'
-	item_chair = /obj/item/chair/rogue
+	item_chair = /obj/item/chair/rogue/chair3
 	blade_dulling = DULLING_BASHCHOP
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = "woodimpact"
+/obj/item/chair/rogue/chair3
+	icon_state = "chair3"
+	origin_type = /obj/structure/chair/wood/rogue/chair3
 
 /*	..................   "Noble" chairs   ................... */
 /obj/structure/chair/wood/rogue/chair_noble
@@ -267,6 +276,7 @@
 	blade_dulling = DULLING_BASHCHOP
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = "woodimpact"
+	metalizer_result = /obj/item/cooking/pan
 
 /obj/item/chair/stool/bar/rogue
 	name = "stool"
@@ -303,7 +313,7 @@
 	pixel_y = 5
 	sleepy = 2
 	debris = list(/obj/item/grown/log/tree/small = 1)
-
+	metalizer_result = /obj/machinery/anvil/crafted
 
 // ------------ GOOD BEDS ----------------------
 /obj/structure/bed/rogue/inn
@@ -312,32 +322,23 @@
 
 /obj/structure/bed/rogue/inn/double
 	icon_state = "double"
+	max_buckled_mobs = 2
 	pixel_y = 0
 	sleepy = 3
 	debris = list(/obj/item/grown/log/tree/small = 2)
-//////WIP  This will essentially allow for multiple mobs to buckle, just needs to change mousedrop function
-/obj/structure/bed/rogue/inn/double
-//	var/list/buckled_mobs = list()  shouldnts be needed
-/*
-/obj/structure/bed/rogue/inn/double/post_buckle_mob(mob/living/M)
+	/// The mob who buckled to this bed second, to avoid other mobs getting pixel-shifted before they unbuckle.
+	var/mob/living/goldilocks
+
+/obj/structure/bed/rogue/inn/double/post_buckle_mob(mob/living/target)
 	. = ..()
-	if(!buckled_mobs)
-		buckled_mobs = list()
-	buckled_mobs += M
-	M.set_mob_offsets("bed_buckle", _x = buckled_mobs.len * 10, _y = 5)
+	if(length(buckled_mobs) > 1 && !goldilocks) //  Push the second buckled mob a bit higher from the normal lying position
+		target.set_mob_offsets("bed_buckle", _x = 0, _y = 12)
+		goldilocks = target
 
-/obj/structure/bed/rogue/inn/double/post_unbuckle_mob(mob/living/M)
+/obj/structure/bed/rogue/inn/double/post_unbuckle_mob(mob/living/target)
 	. = ..()
-	if(M in buckled_mobs)
-		buckled_mobs -= M
-	M.reset_offsets("bed_buckle")
-
-	var/x_offset = 0
-	for(var/mob/living/buckled_mob in buckled_mobs)
-		buckled_mob.set_mob_offsets("bed_buckle", _x = x_offset, _y = 5)
-		x_offset += 10
-*/
-
+	if(target == goldilocks)
+		goldilocks = null
 
 // ------------ DECENT BEDS ----------------------
 /obj/structure/bed/rogue/wool
@@ -360,6 +361,7 @@
 /obj/structure/bed/rogue/mediocre
 	icon_state = "shitbed2"
 	sleepy = 1
+	metalizer_result = null
 
 // Inhumen boss bed. Sleeping on a bear! Kinda comfy, sort of
 /obj/structure/bed/rogue/bear
@@ -376,6 +378,7 @@
 	name = "uncomfortable bed"
 	icon_state = "shitbed"
 	sleepy = 0.5
+	metalizer_result = null
 
 /obj/structure/bed/rogue/sleepingbag
 	name = "sleepcloth"
@@ -418,7 +421,7 @@
 
 /obj/structure/bed/rogue/post_buckle_mob(mob/living/M)
 	..()
-	M.set_mob_offsets("bed_buckle", _x = 0, _y = 5)
+	M.set_mob_offsets("bed_buckle", _x = 0 + src.pixel_x, _y = 5 + src.pixel_y)
 
 /obj/structure/bed/rogue/post_unbuckle_mob(mob/living/M)
 	..()

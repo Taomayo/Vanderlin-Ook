@@ -5,7 +5,7 @@
 	allowed_races = ALL_PLAYER_RACES_BY_NAME
 	outfit = /datum/outfit/job/roguetown/bandit/brigand
 	category_tags = list(CTAG_BANDIT)
-	cmode_music = 'sound/music/combat_bandit_brigand.ogg'
+	cmode_music = 'sound/music/cmode/antag/combat_bandit_brigand.ogg'
 
 /datum/outfit/job/roguetown/bandit/brigand/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -34,10 +34,10 @@
 	neck = /obj/item/clothing/neck/roguetown/coif
 	head = /obj/item/clothing/head/roguetown/helmet/leather/volfhelm
 	armor = /obj/item/clothing/suit/roguetown/armor/leather/hide
-	H.change_stat("strength", 3)
-	H.change_stat("endurance", 2)
-	H.change_stat("constitution", 2)
-	H.change_stat("intelligence", -3)
+	H.change_stat(STATKEY_STR, 3)
+	H.change_stat(STATKEY_END, 2)
+	H.change_stat(STATKEY_CON, 2)
+	H.change_stat(STATKEY_INT, -3)
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 	H.adjust_blindness(-3)
 	var/weapons = list("Battleaxe & Cudgel","Flail & Shield")

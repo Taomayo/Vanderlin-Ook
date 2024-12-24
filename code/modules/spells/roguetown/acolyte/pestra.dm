@@ -28,7 +28,7 @@
 	if(ishuman(targets[1]))
 		var/mob/living/carbon/human/human_target = targets[1]
 		human_target.check_for_injuries(user)
-		return TRUE
+		return ..()
 	return FALSE
 
 // Limb or organ attachment
@@ -48,7 +48,7 @@
 	antimagic_allowed = TRUE
 	charge_max = 60 SECONDS //attaching a limb is pretty intense
 	miracle = TRUE
-	devotion_cost = -80
+	devotion_cost = 80
 
 /obj/effect/proc_holder/spell/invoked/attach_bodypart/proc/get_organs(mob/living/target, mob/living/user)
 	var/list/missing_organs = list(
@@ -126,7 +126,7 @@
 				limb.rotted = FALSE
 				limb.skeletonized = FALSE
 		human_target.update_body()
-		return TRUE
+		return ..()
 	return FALSE
 
 // Cure rot
@@ -147,7 +147,7 @@
 	antimagic_allowed = TRUE
 	charge_max = 2 MINUTES
 	miracle = TRUE
-	devotion_cost = -100
+	devotion_cost = 100
 	/// Amount of PQ gained for curing zombos
 	var/unzombification_pq = 0.4
 
@@ -198,7 +198,7 @@
 			target.visible_message("<span class='notice'>The rot leaves [target]'s body!</span>", "<span class='green'>I feel the rot leave my body!</span>")
 		else
 			target.visible_message("<span class='warning'>The rot fails to leave [target]'s body!</span>", "<span class='warning'>I feel no different...</span>")
-		return TRUE
+		return ..()
 	return FALSE
 
 /obj/effect/proc_holder/spell/invoked/cure_rot/cast_check(skipcharge = 0,mob/user = usr)
@@ -208,6 +208,6 @@
 	for(var/obj/structure/fluff/psycross/S in oview(5, user))
 		found = S
 	if(!found)
-		to_chat(user, "<span class='warning'>I need a holy cross.</span>")
+		to_chat(user, span_warning("I need a holy cross."))
 		return FALSE
 	return TRUE

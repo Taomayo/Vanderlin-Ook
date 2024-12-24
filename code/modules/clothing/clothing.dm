@@ -37,6 +37,10 @@
 
 	var/clothing_flags = NONE
 
+	//Here we have salvage vars!
+	salvage_result = /obj/item/natural/cloth
+	salvage_amount = 2
+	fiber_salvage = TRUE
 
 	var/toggle_icon_state = TRUE //appends _t to our icon state when toggled
 
@@ -83,6 +87,14 @@
 		if(armor_class == AC_LIGHT)
 			to_chat(usr, "AC: <b>LIGHT</b>")
 
+/obj/item/clothing/examine(mob/user)
+	. = ..()
+	if(torn_sleeve_number)
+		if(torn_sleeve_number == 1)
+			. += span_notice("It has one torn sleeve.")
+		else
+			. += span_notice("Both its sleeves have been torn!")
+
 /obj/item/proc/get_detail_tag() //this is for extra layers on clothes
 	return detail_tag
 
@@ -91,73 +103,17 @@
 
 /obj/item/clothing/MiddleClick(mob/user, params)
 	..()
-	var/shiftheld
+	var/mob/living/L = user
+	var/altheld //Is the user pressing alt?
 	var/list/modifiers = params2list(params)
 	if(modifiers["alt"])
-		shiftheld = TRUE
+		altheld = TRUE
 	if(!isliving(user))
 		return
 	if(nodismemsleeves)
 		return
-	var/mob/living/L = user
-	if(user.zone_selected == r_sleeve_zone)
-		if(r_sleeve_status == SLEEVE_NOMOD)
-			return
-		if(r_sleeve_status == SLEEVE_TORN)
-			to_chat(user, "<span class='info'>It's torn away.</span>")
-			return
-		if(!shiftheld)
-			if(!do_after(user, 20, target = user))
-				return
-			if(prob(L.STASTR * 8))
-				r_sleeve_status = SLEEVE_TORN
-				user.visible_message("<span class='notice'>[user] tears [src].</span>")
-				playsound(src, 'sound/foley/cloth_rip.ogg', 50, TRUE)
-				if(r_sleeve_zone == BODY_ZONE_R_ARM)
-					body_parts_covered &= ~ARM_RIGHT
-				if(r_sleeve_zone == BODY_ZONE_R_LEG)
-					body_parts_covered &= ~LEG_RIGHT
-				var/obj/item/natural/cloth/C = new get_turf(src)
-				C.color = color
-				user.put_in_hands(C)
-			else
-				user.visible_message("<span class='warning'>[user] tries to tear [src].</span>")
-		else
-			if(r_sleeve_status == SLEEVE_ROLLED)
-				if(r_sleeve_zone == BODY_ZONE_R_ARM)
-					body_parts_covered |= ARM_RIGHT
-				if(r_sleeve_zone == BODY_ZONE_R_LEG)
-					body_parts_covered |= LEG_RIGHT
-				r_sleeve_status = SLEEVE_NORMAL
-			else
-				if(r_sleeve_zone == BODY_ZONE_R_ARM)
-					body_parts_covered &= ~ARM_RIGHT
-				if(r_sleeve_zone == BODY_ZONE_R_LEG)
-					body_parts_covered &= ~LEG_RIGHT
-				r_sleeve_status = SLEEVE_ROLLED
-	if(user.zone_selected == l_sleeve_zone)
-		if(l_sleeve_status == SLEEVE_NOMOD)
-			return
-		if(l_sleeve_status == SLEEVE_TORN)
-			to_chat(user, "<span class='info'>It's torn away.</span>")
-			return
-		if(!shiftheld) //tear
-			if(!do_after(user, 20, target = user))
-				return
-			if(prob(L.STASTR * 8))
-				l_sleeve_status = SLEEVE_TORN
-				user.visible_message("<span class='notice'>[user] tears [src].</span>")
-				playsound(src, 'sound/foley/cloth_rip.ogg', 50, TRUE)
-				if(l_sleeve_zone == BODY_ZONE_L_ARM)
-					body_parts_covered &= ~ARM_LEFT
-				if(l_sleeve_zone == BODY_ZONE_L_LEG)
-					body_parts_covered &= ~LEG_LEFT
-				var/obj/item/natural/cloth/C = new get_turf(src)
-				C.color = color
-				user.put_in_hands(C)
-			else
-				user.visible_message("<span class='warning'>[user] tries to tear [src].</span>")
-		else
+	if(altheld)
+		if(user.zone_selected == l_sleeve_zone)
 			if(l_sleeve_status == SLEEVE_ROLLED)
 				l_sleeve_status = SLEEVE_NORMAL
 				if(l_sleeve_zone == BODY_ZONE_L_ARM)
@@ -170,7 +126,76 @@
 				if(l_sleeve_zone == BODY_ZONE_L_LEG)
 					body_parts_covered &= ~LEG_LEFT
 				l_sleeve_status = SLEEVE_ROLLED
-
+			return
+		else if(user.zone_selected == r_sleeve_zone)
+			if(r_sleeve_status == SLEEVE_ROLLED)
+				if(r_sleeve_zone == BODY_ZONE_R_ARM)
+					body_parts_covered |= ARM_RIGHT
+				if(r_sleeve_zone == BODY_ZONE_R_LEG)
+					body_parts_covered |= LEG_RIGHT
+				r_sleeve_status = SLEEVE_NORMAL
+			else
+				if(r_sleeve_zone == BODY_ZONE_R_ARM)
+					body_parts_covered &= ~ARM_RIGHT
+				if(r_sleeve_zone == BODY_ZONE_R_LEG)
+					body_parts_covered &= ~LEG_RIGHT
+				r_sleeve_status = SLEEVE_ROLLED
+			return
+	else
+		if(user.zone_selected == r_sleeve_zone)
+			if(r_sleeve_status == SLEEVE_NOMOD)
+				return
+			if(r_sleeve_status == SLEEVE_TORN)
+				to_chat(user, span_info("It's torn away."))
+				return
+			if(!do_after(user, 20, target = user))
+				return
+			if(prob(L.STASTR * 8))
+				torn_sleeve_number += 1
+				r_sleeve_status = SLEEVE_TORN
+				user.visible_message(span_notice("[user] tears [src]."))
+				playsound(src, 'sound/foley/cloth_rip.ogg', 50, TRUE)
+				if(r_sleeve_zone == BODY_ZONE_R_ARM)
+					body_parts_covered &= ~ARM_RIGHT
+				if(r_sleeve_zone == BODY_ZONE_R_LEG)
+					body_parts_covered &= ~LEG_RIGHT
+				if(salvage_result == /obj/item/natural/hide/cured)
+					to_chat(user, span_info("You ruined a piece of leather."))
+					return
+				var/obj/item/Sr = new salvage_result(get_turf(src))
+				Sr.color = color
+				user.put_in_hands(Sr)
+				return
+			else
+				user.visible_message("<span class='warning'>[user] tries to tear [src].</span>")
+				return
+		if(user.zone_selected == l_sleeve_zone)
+			if(l_sleeve_status == SLEEVE_NOMOD)
+				return
+			if(l_sleeve_status == SLEEVE_TORN)
+				to_chat(user, span_info("It's torn away."))
+				return
+			if(!do_after(user, 20, target = user))
+				return
+			if(prob(L.STASTR * 8))
+				torn_sleeve_number += 1
+				l_sleeve_status = SLEEVE_TORN
+				user.visible_message(span_notice("[user] tears [src]."))
+				playsound(src, 'sound/foley/cloth_rip.ogg', 50, TRUE)
+				if(l_sleeve_zone == BODY_ZONE_L_ARM)
+					body_parts_covered &= ~ARM_LEFT
+				if(l_sleeve_zone == BODY_ZONE_L_LEG)
+					body_parts_covered &= ~LEG_LEFT
+				if(salvage_result == /obj/item/natural/hide/cured)
+					to_chat(user, span_info("You ruined a piece of leather."))
+					return
+				var/obj/item/Sr = new salvage_result(get_turf(src))
+				Sr.color = color
+				user.put_in_hands(Sr)
+				return
+			else
+				user.visible_message(span_warning("[user] tries to tear [src]."))
+				return
 	if(loc == L)
 		L.regenerate_clothes()
 
@@ -211,33 +236,6 @@
 		var/atom/movable/screen/inventory/hand/H = over_object
 		if(M.putItemFromInventoryInHandIfPossible(src, H.held_index))
 			add_fingerprint(usr)
-
-/obj/item/reagent_containers/food/snacks/clothing
-	name = "temporary moth clothing snack item"
-	desc = ""
-	list_reagents = list(/datum/reagent/consumable/nutriment = 1)
-	tastes = list("dust" = 1, "lint" = 1)
-	foodtype = CLOTH
-
-/obj/item/clothing/attack(mob/M, mob/user, def_zone)
-	if(user.used_intent.type != INTENT_HARM)
-		var/obj/item/reagent_containers/food/snacks/clothing/clothing_as_food = new
-		clothing_as_food.name = name
-		if(clothing_as_food.attack(M, user, def_zone))
-			take_damage(15, sound_effect=FALSE)
-		qdel(clothing_as_food)
-	else
-		return ..()
-
-
-/*	if(damaged_clothes && istype(W, /obj/item/stack/sheet/cloth))
-		var/obj/item/stack/sheet/cloth/C = W
-		C.use(1)
-		update_clothes_damaged_state(FALSE)
-		obj_integrity = max_integrity
-		to_chat(user, "<span class='notice'>I fix the damage on [src] with [C].</span>")
-		return 1*/
-	return ..()
 
 /obj/item/clothing/Destroy()
 	user_vars_remembered = null //Oh god somebody put REFERENCES in here? not to worry, we'll clean it up
@@ -284,7 +282,7 @@
 		else
 			how_cool_are_your_threads += "[src]'s storage opens when dragged to myself.\n"
 		if (pockets.can_hold?.len) // If pocket type can hold anything, vs only specific items
-			how_cool_are_your_threads += "[src] can store [pockets.max_items] <a href='?src=[REF(src)];show_valid_pocket_items=1'>item\s</a>.\n"
+			how_cool_are_your_threads += "[src] can store [pockets.max_items] <a href='byond://?src=[REF(src)];show_valid_pocket_items=1'>item\s</a>.\n"
 		else
 			how_cool_are_your_threads += "[src] can store [pockets.max_items] item\s that are [weightclass2text(pockets.max_w_class)] or smaller.\n"
 		if(pockets.quickdraw)
@@ -401,11 +399,6 @@ BLIND     // can't see anything
 			if(3)
 				to_chat(usr, "<span class='notice'>My suit will now report my exact vital lifesigns as well as my coordinate position.</span>")
 
-	if(ishuman(loc))
-		var/mob/living/carbon/human/H = loc
-		if(H.wear_pants == src)
-			H.update_suit_sensors()
-
 /obj/item/clothing/under/AltClick(mob/user)
 	if(..())
 		return 1
@@ -476,16 +469,6 @@ BLIND     // can't see anything
 	flags_inv ^= visor_flags_inv
 	flags_cover ^= initial(flags_cover)
 	icon_state = "[initial(icon_state)][up ? "up" : ""]"
-	if(visor_vars_to_toggle & VISOR_FLASHPROTECT)
-		flash_protect ^= initial(flash_protect)
-	if(visor_vars_to_toggle & VISOR_TINT)
-		tint ^= initial(tint)
-
-/obj/item/clothing/head/helmet/space/plasmaman/visor_toggling() //handles all the actual toggling of flags
-	up = !up
-	clothing_flags ^= visor_flags
-	flags_inv ^= visor_flags_inv
-	icon_state = "[initial(icon_state)]"
 	if(visor_vars_to_toggle & VISOR_FLASHPROTECT)
 		flash_protect ^= initial(flash_protect)
 	if(visor_vars_to_toggle & VISOR_TINT)

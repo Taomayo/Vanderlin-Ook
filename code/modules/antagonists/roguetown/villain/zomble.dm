@@ -24,7 +24,7 @@
 	var/has_turned = FALSE
 	/// Traits applied to the owner mob when we turn into a zombie
 	var/static/list/traits_zombie = list(
-		TRAIT_NOROGSTAM,
+		TRAIT_NOSTAMINA,
 		TRAIT_NOMOOD,
 		TRAIT_NOLIMBDISABLE,
 		TRAIT_NOHUNGER,
@@ -36,9 +36,8 @@
 		TRAIT_CHUNKYFINGERS,
 		TRAIT_NOSLEEP,
 		TRAIT_SHOCKIMMUNE,
-		TRAIT_SPELLCOCKBLOCK,
+		TRAIT_SPELLBLOCK,
 		TRAIT_BLOODLOSS_IMMUNE,
-		TRAIT_LIMPDICK,
 		TRAIT_ZOMBIE_SPEECH,
 		TRAIT_ZOMBIE_IMMUNE,
 		TRAIT_ROTMAN,
@@ -51,10 +50,10 @@
 		TRAIT_NOPAINSTUN,
 		TRAIT_NOBREATH,
 		TRAIT_TOXIMMUNE,
-		TRAIT_LIMPDICK,
 		TRAIT_ZOMBIE_IMMUNE,
 		TRAIT_ROTMAN,
 	)
+	var/mutable_appearance/rotflies
 
 /datum/antagonist/zombie/examine_friendorfoe(datum/antagonist/examined_datum,mob/examiner,mob/examined)
 	if(istype(examined_datum, /datum/antagonist/vampirelord))
@@ -80,18 +79,15 @@
 	if(zombie.dna?.species)
 		soundpack_m = zombie.dna.species.soundpack_m
 		soundpack_f = zombie.dna.species.soundpack_f
-		var/mutable_appearance/rotflies = mutable_appearance('icons/roguetown/mob/rotten.dmi', "deadite")
+		rotflies = mutable_appearance('icons/roguetown/mob/rotten.dmi', "deadite")
 		zombie.add_overlay(rotflies)
 	base_intents = zombie.base_intents
-//	STASTR = zombie.STASTR-1
-//	STASPD = zombie.STASPD-5
-//	STAINT = zombie.STAINT-5
-//	zombie.STACON = 5
-	zombie.STASPD = 2
-	zombie.STAINT = 1
+	zombie.TOTALSTR = 6
+	zombie.TOTALCON = 5
+	zombie.TOTALSPD = 2
+	zombie.TOTALINT = 1
 	cmode_music = zombie.cmode_music
-	zombie.silent = TRUE		// makes them unable to audible emote or speak, no more sexy moan zombies
-//	cmode_music ='sound/music/combat_weird.ogg'
+	cmode_music ='sound/music/cmode/combat_weird.ogg'
 	zombie.vitae_pool = 0 // Deadites have no vitae to drain from
 	zombie.remove_all_languages()
 //	zombie.remove_language(/datum/language/common)
@@ -103,7 +99,10 @@
 
 /datum/antagonist/zombie/on_removal()
 	var/mob/living/carbon/human/zombie = owner?.current
+	if(!zombie)
+		return
 	if(zombie)
+		zombie.cut_overlay(rotflies)
 		zombie.verbs -= /mob/living/carbon/human/proc/zombie_seek
 		zombie.mind?.special_role = special_role
 		zombie.ambushable = ambushable
@@ -117,17 +116,17 @@
 		if(zombie.charflaw)
 			zombie.charflaw.ephemeral = FALSE
 		zombie.update_body()
-		zombie.STASTR = STASTR
-		zombie.STASPD = STASPD
-		zombie.STAINT = STAINT
+		zombie.TOTALSTR = STASTR
+		zombie.TOTALSPD = STASPD
+		zombie.TOTALINT = STAINT
 		zombie.cmode_music = cmode_music
 		for(var/trait in traits_zombie)
 			REMOVE_TRAIT(zombie, trait, "[type]")
 		zombie.remove_client_colour(/datum/client_colour/monochrome)
 		if(has_turned && become_rotman)
-			zombie.STACON = max(zombie.STACON - 5, 1) //ur rotting bro
-			zombie.STASPD = max(zombie.STASPD - 5, 1)
-			zombie.STAINT = max(zombie.STAINT - 3, 1)
+			zombie.TOTALCON = max(zombie.STACON - 5, 1) //ur rotting bro
+			zombie.TOTALSPD = max(zombie.STASPD - 5, 1)
+			zombie.TOTALINT = max(zombie.STAINT - 3, 1)
 			for(var/trait in traits_rotman)
 				ADD_TRAIT(zombie, trait, "[type]")
 			to_chat(zombie, "<span class='green'>I no longer crave for flesh... <i>But I still feel ill.</i></span>")
@@ -195,10 +194,10 @@
 			zombie_part.rotted = TRUE
 		zombie_part.update_disabled()
 	zombie.update_body()
-	zombie.cmode_music = 'sound/music/combat_weird.ogg'
+	zombie.cmode_music = 'sound/music/cmode/combat_weird.ogg'
 
-	zombie.STASPD = 2
-	zombie.STAINT = 1
+	zombie.TOTALSPD = 2
+	zombie.TOTALINT = 1
 
 	zombie.vitae_pool = 0 // Again, just in case.
 

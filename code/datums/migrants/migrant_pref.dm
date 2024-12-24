@@ -5,6 +5,9 @@
 	var/active = FALSE
 	/// Role preferences of the user, the things he clicks on to be preferred to be
 	var/list/role_preferences = list()
+	///are we viewing the page?
+	var/viewer = FALSE
+
 /datum/migrant_pref/New(datum/preferences/passed_prefs)
 	. = ..()
 	prefs = passed_prefs
@@ -29,7 +32,7 @@
 		if(SSmigrants.can_be_role(prefs.parent, role_type))
 			role_preferences += role_type
 			var/datum/migrant_role/role = MIGRANT_ROLE(role_type)
-			to_chat(prefs.parent, span_nicegreen("You have prioritizd the [role.name]. This does not guarantee getting the role"))
+			to_chat(prefs.parent, span_nicegreen("You have prioritized the [role.name]. This does not guarantee getting the role"))
 		else
 			to_chat(prefs.parent, span_warning("You can't be this role. (Wrong species, gender or age)"))
 
@@ -44,7 +47,7 @@
 	var/list/dat = list()
 	var/current_migrants = SSmigrants.get_active_migrant_amount()
 	dat += "WAVE: \Roman[SSmigrants.wave_number]"
-	dat += "<center><b>BE A MIGRANT: <a href='?src=[REF(src)];task=toggle_active'>[active ? "YES" : "NO"]</a></b></center>"
+	dat += "<center><b>BE A MIGRANT: <a href='byond://?src=[REF(src)];task=toggle_active'>[active ? "YES" : "NO"]</a></b></center>"
 	dat += "<br><center>Wandering fools: [current_migrants ? "\Roman[current_migrants]" : "None"]</center>"
 	if(!SSmigrants.current_wave)
 		dat += "<br><center>The mist will clear out of the way in [(SSmigrants.time_until_next_wave / (1 SECONDS))] seconds...</center>"
@@ -61,12 +64,13 @@
 			var/stars_string = ""
 			if(stars_amount)
 				stars_string = "(*\Roman[stars_amount])"
-			dat += "<center><a href='?src=[REF(src)];task=toggle_role_preference;role=[role_type]'>[role_name]</a> - \Roman[role_amount] [stars_string]</center>"
+			dat += "<center><a href='byond://?src=[REF(src)];task=toggle_role_preference;role=[role_type]'>[role_name]</a> - \Roman[role_amount] [stars_string]</center>"
 		dat += "<br><center>They will arrive in [(SSmigrants.wave_timer / (1 SECONDS))] seconds...</center>"
 	var/datum/browser/popup = new(client.mob, "migration", "<center>Find a purpose</center>", 330, 410)
-	popup.set_window_options("can_close=0")
+	//popup.set_window_options("can_close=0")
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
+	client.prefs.migrant.viewer = TRUE
 
 /datum/migrant_pref/Topic(href, href_list)
 	var/client/client = prefs.parent
@@ -85,6 +89,7 @@
 	if(!client)
 		return
 	client.mob << browse(null, "window=migration")
+	client.prefs.migrant.viewer = FALSE
 
 
 /mob/living/carbon/human/proc/adv_hugboxing_start()

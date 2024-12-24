@@ -103,51 +103,6 @@
 			return
 		SSticker.mode.admin_panel()
 
-	else if(href_list["call_shuttle"])
-		if(!check_rights(R_ADMIN))
-			return
-
-
-		switch(href_list["call_shuttle"])
-			if("1")
-				if(EMERGENCY_AT_LEAST_DOCKED)
-					return
-				SSshuttle.emergency.request()
-				log_admin("[key_name(usr)] called the Emergency Shuttle.")
-				message_admins("<span class='adminnotice'>[key_name_admin(usr)] called the Emergency Shuttle to the station.</span>")
-
-			if("2")
-				if(EMERGENCY_AT_LEAST_DOCKED)
-					return
-				switch(SSshuttle.emergency.mode)
-					if(SHUTTLE_CALL)
-						SSshuttle.emergency.cancel()
-						log_admin("[key_name(usr)] sent the Emergency Shuttle back.")
-						message_admins("<span class='adminnotice'>[key_name_admin(usr)] sent the Emergency Shuttle back.</span>")
-					else
-						SSshuttle.emergency.cancel()
-						log_admin("[key_name(usr)] called the Emergency Shuttle.")
-						message_admins("<span class='adminnotice'>[key_name_admin(usr)] called the Emergency Shuttle to the station.</span>")
-
-
-
-	else if(href_list["edit_shuttle_time"])
-		if(!check_rights(R_SERVER))
-			return
-
-		var/timer = input("Enter new shuttle duration (seconds):","Edit Shuttle Timeleft", SSshuttle.emergency.timeLeft() ) as num|null
-		if(!timer)
-			return
-		SSshuttle.emergency.setTimer(timer*10)
-		log_admin("[key_name(usr)] edited the Emergency Shuttle's timeleft to [timer] seconds.")
-		minor_announce("The emergency shuttle will reach its destination in [round(SSshuttle.emergency.timeLeft(600))] minutes.")
-		message_admins("<span class='adminnotice'>[key_name_admin(usr)] edited the Emergency Shuttle's timeleft to [timer] seconds.</span>")
-	else if(href_list["trigger_centcom_recall"])
-		if(!check_rights(R_ADMIN))
-			return
-
-		usr.client.trigger_centcom_recall()
-
 	else if(href_list["toggle_continuous"])
 		if(!check_rights(R_ADMIN))
 			return
@@ -892,95 +847,6 @@
 		else
 			qdel(M)
 
-	else if(href_list["tdome1"])
-		if(!check_rights(R_FUN))
-			return
-
-		if(alert(usr, "Confirm?", "Message", "Yes", "No") != "Yes")
-			return
-
-		var/mob/M = locate(href_list["tdome1"])
-		if(!isliving(M))
-			to_chat(usr, "This can only be used on instances of type /mob/living.")
-			return
-		var/mob/living/L = M
-
-		for(var/obj/item/I in L)
-			L.dropItemToGround(I, TRUE)
-
-		L.Unconscious(100)
-		sleep(5)
-		L.forceMove(pick(GLOB.tdome1))
-		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), L, "<span class='adminnotice'>I have been sent to the Thunderdome.</span>"), 5 SECONDS)
-		log_admin("[key_name(usr)] has sent [key_name(L)] to the thunderdome. (Team 1)")
-		message_admins("[key_name_admin(usr)] has sent [key_name_admin(L)] to the thunderdome. (Team 1)")
-
-	else if(href_list["tdome2"])
-		if(!check_rights(R_FUN))
-			return
-
-		if(alert(usr, "Confirm?", "Message", "Yes", "No") != "Yes")
-			return
-
-		var/mob/M = locate(href_list["tdome2"])
-		if(!isliving(M))
-			to_chat(usr, "This can only be used on instances of type /mob/living.")
-			return
-		var/mob/living/L = M
-
-		for(var/obj/item/I in L)
-			L.dropItemToGround(I, TRUE)
-
-		L.Unconscious(100)
-		sleep(5)
-		L.forceMove(pick(GLOB.tdome2))
-		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), L, "<span class='adminnotice'>I have been sent to the Thunderdome.</span>"), 5 SECONDS)
-		log_admin("[key_name(usr)] has sent [key_name(L)] to the thunderdome. (Team 2)")
-		message_admins("[key_name_admin(usr)] has sent [key_name_admin(L)] to the thunderdome. (Team 2)")
-
-	else if(href_list["tdomeadmin"])
-		if(!check_rights(R_FUN))
-			return
-
-		if(alert(usr, "Confirm?", "Message", "Yes", "No") != "Yes")
-			return
-
-		var/mob/M = locate(href_list["tdomeadmin"])
-		if(!isliving(M))
-			to_chat(usr, "This can only be used on instances of type /mob/living.")
-			return
-		var/mob/living/L = M
-
-		L.Unconscious(100)
-		sleep(5)
-		L.forceMove(pick(GLOB.tdomeadmin))
-		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), L, "<span class='adminnotice'>I have been sent to the Thunderdome.</span>"), 5 SECONDS)
-		log_admin("[key_name(usr)] has sent [key_name(L)] to the thunderdome. (Admin.)")
-		message_admins("[key_name_admin(usr)] has sent [key_name_admin(L)] to the thunderdome. (Admin.)")
-
-	else if(href_list["tdomeobserve"])
-		if(!check_rights(R_FUN))
-			return
-
-		if(alert(usr, "Confirm?", "Message", "Yes", "No") != "Yes")
-			return
-
-		var/mob/M = locate(href_list["tdomeobserve"])
-		if(!isliving(M))
-			to_chat(usr, "This can only be used on instances of type /mob/living.")
-			return
-		var/mob/living/L = M
-
-		for(var/obj/item/I in L)
-			L.dropItemToGround(I, TRUE)
-
-		L.Unconscious(100)
-		sleep(5)
-		L.forceMove(pick(GLOB.tdomeobserve))
-		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), L, "<span class='adminnotice'>I have been sent to the Thunderdome.</span>"), 5 SECONDS)
-		log_admin("[key_name(usr)] has sent [key_name(L)] to the thunderdome. (Observer.)")
-		message_admins("[key_name_admin(usr)] has sent [key_name_admin(L)] to the thunderdome. (Observer.)")
-
 	else if(href_list["revive"])
 		if(!check_rights(R_ADMIN))
 			return
@@ -1087,7 +953,7 @@
 				if(DEAD)
 					status = "<font color='red'><b>Dead</b></font>"
 			health_description = "Status = [status]"
-			health_description += "<BR>Oxy: [L.getOxyLoss()] - Tox: [L.getToxLoss()] - Fire: [L.getFireLoss()] - Brute: [L.getBruteLoss()] - Clone: [L.getCloneLoss()] - Brain: [L.getOrganLoss(ORGAN_SLOT_BRAIN)] - Stamina: [L.getStaminaLoss()]"
+			health_description += "<BR>Oxy: [L.getOxyLoss()] - Tox: [L.getToxLoss()] - Fire: [L.getFireLoss()] - Brute: [L.getBruteLoss()] - Clone: [L.getCloneLoss()] - Brain: [L.getOrganLoss(ORGAN_SLOT_BRAIN)]"
 		else
 			health_description = "This mob type has no health to speak of."
 
@@ -1526,6 +1392,29 @@
 		usr.client.cmd_admin_mod_antag_rep(C, href_list["modantagrep"])
 		show_player_panel(M)
 
+	else if(href_list["editpq"])
+		if(!check_rights(R_ADMIN))
+			return
+		var/mob/M = locate(href_list["mob"]) in GLOB.mob_list
+		var/client/mob_client = M.client
+		var/amt2change = input("How much to modify the PQ by? (20 to -20, or 0 to just add a note)") as null|num
+		if(!check_rights(R_ADMIN,0))
+			amt2change = CLAMP(amt2change, -20, 20)
+		var/raisin = stripped_input("State a short reason for this change", "Game Master", "", null)
+		if(!amt2change && !raisin)
+			return
+		adjust_playerquality(amt2change, mob_client.ckey, usr.ckey, raisin)
+		for(var/client/C in GLOB.clients) // I hate this, but I'm not refactoring the cancer above this point.
+			if(lowertext(C.key) == lowertext(mob_client.ckey))
+				to_chat(C, "<span class=\"admin\"><span class=\"prefix\">ADMIN LOG:</span> <span class=\"message linkify\">Your PQ has been adjusted by [amt2change] by [usr.key] for reason: [raisin]</span></span>")
+				return
+	else if(href_list["showpq"])
+		if(!check_rights(R_ADMIN))
+			return
+		var/mob/M = locate(href_list["mob"]) in GLOB.mob_list
+		var/client/mob_client = M.client
+		check_pq_menu(mob_client.key)
+
 	else if(href_list["slowquery"])
 		if(!check_rights(R_ADMIN))
 			return
@@ -1745,9 +1634,9 @@
 
 	var/dat = {"<B>What mode do you wish to play?</B><HR>"}
 	for(var/mode in config.modes)
-		dat += {"<A href='?src=[REF(src)];[HrefToken()];c_mode2=[mode]'>[config.mode_names[mode]]</A><br>"}
-	dat += {"<A href='?src=[REF(src)];[HrefToken()];c_mode2=secret'>Secret</A><br>"}
-	dat += {"<A href='?src=[REF(src)];[HrefToken()];c_mode2=random'>Random</A><br>"}
+		dat += {"<A href='byond://?src=[REF(src)];[HrefToken()];c_mode2=[mode]'>[config.mode_names[mode]]</A><br>"}
+	dat += {"<A href='byond://?src=[REF(src)];[HrefToken()];c_mode2=secret'>Secret</A><br>"}
+	dat += {"<A href='byond://?src=[REF(src)];[HrefToken()];c_mode2=random'>Random</A><br>"}
 	dat += {"Now: [GLOB.master_mode]"}
 	usr << browse(dat, "window=c_mode")
 
@@ -1761,7 +1650,7 @@
 		return alert(usr, "The game mode has to be secret!", null, null, null, null)
 	var/dat = {"<B>What game mode do you want to force secret to be? Use this if you want to change the game mode, but want the players to believe it's secret. This will only work if the current game mode is secret.</B><HR>"}
 	for(var/mode in config.modes)
-		dat += {"<A href='?src=[REF(src)];[HrefToken()];f_secret2=[mode]'>[config.mode_names[mode]]</A><br>"}
-	dat += {"<A href='?src=[REF(src)];[HrefToken()];f_secret2=secret'>Random (default)</A><br>"}
+		dat += {"<A href='byond://?src=[REF(src)];[HrefToken()];f_secret2=[mode]'>[config.mode_names[mode]]</A><br>"}
+	dat += {"<A href='byond://?src=[REF(src)];[HrefToken()];f_secret2=secret'>Random (default)</A><br>"}
 	dat += {"Now: [GLOB.secret_force_mode]"}
 	usr << browse(dat, "window=f_secret")

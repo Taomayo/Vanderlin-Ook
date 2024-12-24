@@ -20,7 +20,7 @@
 	//Obnoxiously 3D -- INCREASE Z level to make them further away
 	transform			   = list( 1, 0, 0,  0  ,
 								   0, 1, 0,  0  ,
-								   0, 0, 1, 1/2, //Get twice as Small every 2 Z
+								   0, 0, 1, 1/4, //Get twice as Small every 4 Z
 								   0, 0, 0,  1  )
 
 //Animate particle effect to a severity
@@ -128,6 +128,9 @@
 
 	var/last_message = ""
 
+	var/blend_type
+	var/filter_type
+
 /datum/particle_weather/proc/severityMod()
 	return max(0.3, severity / maxSeverity)
 /*
@@ -159,7 +162,7 @@
 	addtimer(CALLBACK(src, PROC_REF(wind_down)), weather_duration)
 
 	if(particleEffectType)
-		SSParticleWeather.SetparticleEffect(new particleEffectType);
+		SSParticleWeather.SetparticleEffect(new particleEffectType, blend_type, filter_type);
 
 	//Always step severity to start
 	ChangeSeverity()
@@ -290,7 +293,7 @@
 		return
 	var/tempSound = scale_range_pick(minSeverity, maxSeverity, severity, weather_sounds)
 	if(tempSound)
-		currentSound = new tempSound(list(L), FALSE, TRUE, CHANNEL_WEATHER)
+		currentSound = new tempSound(L, FALSE, TRUE, CHANNEL_WEATHER)
 		currentSounds[L] = currentSound
 		//SET VOLUME
 		if(scale_vol_with_severity)
@@ -313,6 +316,9 @@
 	var/turf/obj_turf = get_turf(obj_to_check)
 
 	if(!obj_turf)
+		return
+
+	if(!obj_turf.outdoor_effect)
 		return
 
 	if(obj_turf.outdoor_effect?.weatherproof)

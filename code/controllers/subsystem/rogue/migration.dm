@@ -209,7 +209,6 @@ SUBSYSTEM_DEF(migrants)
 	/// Fade effect
 	var/atom/movable/screen/splash/Spl = new(character.client, TRUE)
 	Spl.Fade(TRUE)
-	character.update_parallax_teleport()
 
 	var/mob/living/carbon/human/humanc
 	if(ishuman(character))
@@ -275,6 +274,14 @@ SUBSYSTEM_DEF(migrants)
 	if(!player.prefs)
 		return FALSE
 	var/datum/preferences/prefs = player.prefs
+	if(role.banned_leprosy && is_misc_banned(player.ckey, BAN_MISC_LEPROSY))
+		return FALSE
+	if(role.banned_lunatic && is_misc_banned(player.ckey, BAN_MISC_LUNATIC))
+		return FALSE
+	if(!player.prefs.allowed_respawn())
+		return FALSE
+	if(is_migrant_banned(player.ckey, role.name))
+		return FALSE
 	if(role.allowed_races && !(prefs.pref_species.name in role.allowed_races))
 		return FALSE
 	if(role.allowed_sexes && !(prefs.gender in role.allowed_sexes))
@@ -379,6 +386,8 @@ SUBSYSTEM_DEF(migrants)
 			continue
 		if(!player.client.prefs)
 			continue
+		if(!player.client.prefs.migrant?.viewer)
+			continue
 		migrants += player.client
 	return migrants
 
@@ -414,7 +423,7 @@ SUBSYSTEM_DEF(migrants)
 	character.become_blind("advsetup")
 
 	if(GLOB.adventurer_hugbox_duration)
-		///FOR SOME RETARDED FUCKING REASON THIS REFUSED TO WORK WITHOUT A FUCKING TIMER IT JUST FUCKED SHIT UP
+		///FOR SOME FUCKING REASON THIS REFUSED TO WORK WITHOUT A FUCKING TIMER IT JUST FUCKED SHIT UP
 		addtimer(CALLBACK(character, TYPE_PROC_REF(/mob/living/carbon/human, adv_hugboxing_start)), 1)
 
 /proc/grant_lit_torch(mob/living/carbon/human/character)

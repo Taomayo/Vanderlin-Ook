@@ -120,6 +120,10 @@
 	var/last_craft
 
 /atom/movable/screen/craft/Click(location, control, params)
+	var/list/modifiers = params2list(params)
+	if(modifiers["middle"])
+		usr?.client?.show_crafting_book()
+		return
 	if(world.time < lastclick + 3 SECONDS)
 		return
 	lastclick = world.time
@@ -1520,36 +1524,33 @@
 	icon = 'icons/mob/roguehud.dmi'
 	icon_state = "stressback"
 
+
 /atom/movable/screen/stress/update_icon()
 	cut_overlays()
 	var/state2use = "stress1"
-	if(ishuman(hud.mymob))
-		var/mob/living/carbon/H = hud.mymob
-		if(H.stress)
-			state2use = "stress1"
-			if(H.stress == STRESS_VGOOD)
-				state2use = "stress1"
-			if(H.stress >= STRESS_GOOD)
-				state2use = "stress1"
-			if(H.stress >= STRESS_BAD)
+	if(ishuman(usr))
+		var/mob/living/carbon/human/H = usr
+		if(!HAS_TRAIT(H, TRAIT_NOMOOD))
+			var/stress_amt = H.get_stress_amount()
+			if(stress_amt > STRESS_BAD)
 				state2use = "stress2"
-			if(H.stress >= STRESS_VBAD)
+			if(stress_amt >= STRESS_VBAD)
 				state2use = "stress3"
-			if(H.stress == STRESS_INSANE)
+			if(stress_amt == STRESS_INSANE)
 				state2use = "stress4"
-			if(H.stress > STRESS_INSANE)
+			if(stress_amt >= STRESS_INSANE)
 				state2use = "stress5"
-			if(H.has_status_effect(/datum/status_effect/buff/drunk))
-				state2use = "mood_drunk"
-			if(H.has_status_effect(/datum/status_effect/buff/druqks))
-				state2use = "mood_high"
-			if(H.InFullCritical())
+		if(H.has_status_effect(/datum/status_effect/buff/drunk))
+			state2use = "mood_drunk"
+		if(H.has_status_effect(/datum/status_effect/buff/druqks))
+			state2use = "mood_drunk"
+		if(H.InFullCritical())
+			state2use = "mood_fear"
+		if(H.mind)
+			if(H.mind.has_antag_datum(/datum/antagonist/zombie))
 				state2use = "mood_fear"
-			if(H.mind)
-				if(H.mind.has_antag_datum(/datum/antagonist/zombie))
-					state2use = "mood_fear"
-			if(H.stat == DEAD)
-				state2use = "mood_dead"
+		if(H.stat == DEAD)
+			state2use = "mood_dead"
 	add_overlay(state2use)
 
 /atom/movable/screen/stress/Click(location,control,params)
@@ -1563,11 +1564,12 @@
 				to_chat(M, "<span class='info'>[M.charflaw.desc]</span>")
 			to_chat(M, "*--------*")
 			var/list/already_printed = list()
-			for(var/datum/stressevent/S in M.positive_stressors)
+			var/list/pos_stressors = M.positive_stressors
+			for(var/datum/stressevent/S in pos_stressors)
 				if(S in already_printed)
 					continue
 				var/cnt = 1
-				for(var/datum/stressevent/CS in M.positive_stressors)
+				for(var/datum/stressevent/CS in pos_stressors)
 					if(CS == S)
 						continue
 					if(CS.type == S.type)
@@ -1580,11 +1582,12 @@
 					to_chat(M, "• [ddesc] (x[cnt])")
 				else
 					to_chat(M, "• [ddesc]")
-			for(var/datum/stressevent/S in M.negative_stressors)
+			var/list/neg_stressors = M.negative_stressors
+			for(var/datum/stressevent/S in neg_stressors)
 				if(S in already_printed)
 					continue
 				var/cnt = 1
-				for(var/datum/stressevent/CS in M.negative_stressors)
+				for(var/datum/stressevent/CS in neg_stressors)
 					if(CS == S)
 						continue
 					if(CS.type == S.type)
@@ -1761,24 +1764,24 @@
 		if(R.stage == 2)
 			add_overlay("rainlay")
 
-/atom/movable/screen/rogfat
+/atom/movable/screen/stamina
 	name = "stamina"
 	icon_state = "fat100"
 	icon = 'icons/mob/rogueheat.dmi'
-	screen_loc = rogueui_fat
+	screen_loc = stamina_loc
 
-/atom/movable/screen/rogstam
-	name = "fatigue"
+/atom/movable/screen/energy
+	name = "energy"
 	icon_state = "stam100"
 	icon = 'icons/mob/rogueheat.dmi'
-	screen_loc = rogueui_fat
+	screen_loc = stamina_loc
 
 /atom/movable/screen/heatstamover
 	name = ""
 	mouse_opacity = 0
 	icon_state = "heatstamover"
 	icon = 'icons/mob/rogueheat.dmi'
-	screen_loc = rogueui_fat
+	screen_loc = stamina_loc
 	layer = HUD_LAYER+0.1
 
 /atom/movable/screen/scannies
@@ -1795,10 +1798,6 @@
 /atom/movable/screen/char_preview
 	name = "Me."
 	icon_state = ""
-//	var/list/prevcolors = list("background-color=#000000","background-color=#242f28","background-color=#302323","background-color=#999a63","background-color=#7e7e7e")
-
-//atom/movable/screen/char_preview/Click()
-//	winset(usr.client, "preferencess_window.character_preview_map", pick(prevcolors))
 
 #define READ_RIGHT 1
 #define READ_LEFT 2

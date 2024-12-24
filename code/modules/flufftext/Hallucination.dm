@@ -89,12 +89,6 @@ GLOBAL_LIST_INIT(hallucination_list, list(
 	var/image_layer = MOB_LAYER
 	var/active = TRUE //qdelery
 
-/obj/effect/hallucination/singularity_pull()
-	return
-
-/obj/effect/hallucination/singularity_act()
-	return
-
 /obj/effect/hallucination/simple/Initialize(mapload, mob/living/carbon/T)
 	. = ..()
 	target = T
@@ -138,18 +132,6 @@ GLOBAL_LIST_INIT(hallucination_list, list(
 	active = FALSE
 	return ..()
 
-/obj/effect/hallucination/simple/clown
-	image_icon = 'icons/mob/animal.dmi'
-	image_state = "clown"
-
-/obj/effect/hallucination/simple/clown/Initialize(mapload, mob/living/carbon/T, duration)
-	. = ..(loc, T)
-	name = pick(GLOB.clown_names)
-	QDEL_IN(src,duration)
-
-/obj/effect/hallucination/simple/clown/scary
-	image_state = "scary_clown"
-
 /datum/hallucination/battle
 
 /datum/hallucination/battle/New(mob/living/carbon/C, forced = TRUE, battle_type)
@@ -157,7 +139,7 @@ GLOBAL_LIST_INIT(hallucination_list, list(
 	..()
 	var/turf/source = random_far_turf()
 	if(!battle_type)
-		battle_type = pick("laser","disabler","esword","gun","stunprod","harmbaton","bomb")
+		battle_type = pick("laser","disabler","esword","gun","stunprod","harmbaton","blunt")
 	feedback_details += "Type: [battle_type]"
 	switch(battle_type)
 		if("laser")
@@ -440,7 +422,6 @@ GLOBAL_LIST_INIT(hallucination_list, list(
 		"Help!",\
 		"[pick_list_replacements(HAL_LINES_FILE, "threat")] in [pick_list_replacements(HAL_LINES_FILE, "location")][prob(50)?"!":"!!"]",\
 		"[pick("Where's [target.first_name()]?", "Set [target.first_name()] to arrest!")]",\
-		"[pick("C","Ai, c","Someone c","Rec")]all the shuttle!",\
 		"AI [pick("rogue", "is dead")]!!")
 
 	var/mob/living/carbon/person = null
@@ -848,7 +829,6 @@ GLOBAL_LIST_INIT(hallucination_list, list(
 
 /obj/effect/hallucination/danger/lava/Crossed(atom/movable/AM)
 	if(AM == target)
-		target.adjustStaminaLoss(20)
 		new /datum/hallucination/fire(target)
 
 /obj/effect/hallucination/danger/chasm
@@ -946,7 +926,6 @@ GLOBAL_LIST_INIT(hallucination_list, list(
 		if(target.fire_stacks <= 0)
 			clear_fire()
 			return
-		target.adjustStaminaLoss(15)
 		sleep(20)
 	clear_fire()
 
@@ -990,7 +969,6 @@ GLOBAL_LIST_INIT(hallucination_list, list(
 		target.client.images |= electrocution_skeleton_anim
 	addtimer(CALLBACK(src, PROC_REF(reset_shock_animation)), 40)
 	target.playsound_local(get_turf(src), "sparks", 100, 1)
-	target.staminaloss += 50
 	target.Stun(40)
 	target.jitteriness += 1000
 	target.do_jitter_animation(target.jitteriness)

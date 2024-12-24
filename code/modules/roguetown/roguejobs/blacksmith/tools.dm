@@ -13,6 +13,7 @@
 	w_class = WEIGHT_CLASS_NORMAL
 	associated_skill = /datum/skill/combat/axesmaces
 	smeltresult = /obj/item/ingot/iron
+	var/can_smith = TRUE
 
 /obj/proc/unbreak()
 	return
@@ -57,7 +58,7 @@
 				else
 					user.visible_message("<span class='warning'>[user] damages [I]!</span>")
 					playsound(src,'sound/items/bsmithfail.ogg', 100, FALSE)
-					I.take_damage(5, BRUTE, "melee")
+					I.take_damage(5, BRUTE, "blunt")
 				return
 			else // Stop iiit, he's already... fixed?
 				to_chat(user, "\The [I] is already fully repaired!")
@@ -78,7 +79,7 @@
 			playsound(src,'sound/items/bsmithfail.ogg', 100, FALSE)
 			user.visible_message("<span class='info'>[user] repairs [I]!</span>")
 			return
-	..()
+	. = ..()
 
 /obj/item/rogueweapon/hammer/claw
 	icon_state = "clawh"
@@ -135,7 +136,7 @@
 
 /obj/item/rogueweapon/tongs/get_temperature()
 	if(hott)
-		return FIRE_MINIMUM_TEMPERATURE_TO_SPREAD
+		return 150+T0C
 	return ..()
 
 /obj/item/rogueweapon/tongs/fire_act(added, maxstacks)
@@ -182,6 +183,14 @@
 				return list("shrink" = 0.6,"sx" = -9,"sy" = 1,"nx" = 12,"ny" = 1,"wx" = -8,"wy" = 1,"ex" = 6,"ey" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 8,"wflip" = 8,"eflip" = 0)
 			if("onbelt")
 				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
+
+/obj/item/rogueweapon/hammer/wood
+	name = "wooden mallet"
+	desc = "A wooden mallet is an artificers second best friend! But it may also come in handy to a smith..."
+	icon_state = "whammer"
+	force = 4
+	smeltresult = null
+	can_smith = FALSE
 
 /obj/item/rogueweapon/hammer/copper
 	force = 8

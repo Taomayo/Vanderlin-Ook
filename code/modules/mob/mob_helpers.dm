@@ -58,6 +58,144 @@
 		zone = pickweight(list(BODY_ZONE_HEAD = 1, BODY_ZONE_CHEST = 1, BODY_ZONE_L_ARM = 4, BODY_ZONE_R_ARM = 4, BODY_ZONE_L_LEG = 4, BODY_ZONE_R_LEG = 4))
 	return zone
 
+
+/proc/zone_ace_mod(zone)
+	var/zone_ace_mod = 1
+	switch(zone)
+		if(BODY_ZONE_PRECISE_R_EYE)
+			zone_ace_mod = 0.25
+		if(BODY_ZONE_PRECISE_L_EYE)
+			zone_ace_mod = 0.25
+		if(BODY_ZONE_PRECISE_NOSE)
+			zone_ace_mod = 0.3
+		if(BODY_ZONE_PRECISE_MOUTH)
+			zone_ace_mod = 0.7
+		if(BODY_ZONE_PRECISE_SKULL)
+			zone_ace_mod = 0.85
+		if(BODY_ZONE_PRECISE_EARS)
+			zone_ace_mod = 0.15
+		if(BODY_ZONE_PRECISE_NECK)
+			zone_ace_mod = 0.65
+		if(BODY_ZONE_PRECISE_L_HAND)
+			zone_ace_mod = 0.6
+		if(BODY_ZONE_PRECISE_R_HAND)
+			zone_ace_mod = 0.6
+		if(BODY_ZONE_PRECISE_L_FOOT)
+			zone_ace_mod = 0.45
+		if(BODY_ZONE_PRECISE_R_FOOT)
+			zone_ace_mod = 0.45
+		if(BODY_ZONE_PRECISE_GROIN)
+			zone_ace_mod = 0.65
+		if(BODY_ZONE_PRECISE_STOMACH)
+			zone_ace_mod = 0.9
+		if(BODY_ZONE_PRECISE_R_INHAND)
+			zone_ace_mod = 0.7
+		if(BODY_ZONE_PRECISE_L_INHAND)
+			zone_ace_mod = 0.7
+		if(BODY_ZONE_HEAD, BODY_ZONE_CHEST, BODY_ZONE_L_ARM, BODY_ZONE_R_ARM, BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
+			zone_ace_mod = 1
+	return zone_ace_mod
+
+/proc/zone_simpmob_target(zone)
+	zone = pickweight(list(
+		BODY_ZONE_HEAD = 3,
+		BODY_ZONE_CHEST = 5,
+		BODY_ZONE_L_ARM = 2,
+		BODY_ZONE_R_ARM = 2,
+		BODY_ZONE_L_LEG = 4,
+		BODY_ZONE_R_LEG = 4,
+		BODY_ZONE_PRECISE_MOUTH = 1,
+		BODY_ZONE_PRECISE_NECK = 2,
+		BODY_ZONE_PRECISE_STOMACH = 3,
+		BODY_ZONE_PRECISE_GROIN = 3,
+		BODY_ZONE_PRECISE_L_HAND = 1,
+		BODY_ZONE_PRECISE_R_HAND = 1,
+		BODY_ZONE_PRECISE_L_FOOT = 3,
+		BODY_ZONE_PRECISE_R_FOOT = 3,
+		))
+	return zone
+
+/proc/relative_angular_facing(mob/living/user, mob/living/target)
+	var/target_facing = dir2angle(target.dir)
+	var/abs_angle = Get_Angle(target, user)
+	target_facing = 360 + (abs_angle - target_facing)
+	if(target_facing > 360)
+		target_facing -= 360
+	return angle2dir(target_facing)
+
+/proc/facing_zone(zone)
+	if(!zone)
+		return BODY_ZONE_CHEST
+	var/facing_zone
+	switch(zone)
+		if(BODY_ZONE_PRECISE_R_EYE)
+			facing_zone = BODY_ZONE_FACING_FRONT
+		if(BODY_ZONE_PRECISE_L_EYE)
+			facing_zone = BODY_ZONE_FACING_FRONT
+		if(BODY_ZONE_PRECISE_NOSE)
+			facing_zone = BODY_ZONE_FACING_FRONT
+		if(BODY_ZONE_PRECISE_MOUTH)
+			facing_zone = BODY_ZONE_FACING_FRONT
+		if(BODY_ZONE_L_ARM)
+			facing_zone = BODY_ZONE_FACING_L_ARM
+		if(BODY_ZONE_PRECISE_L_HAND)
+			facing_zone = BODY_ZONE_FACING_L_ARM
+		if(BODY_ZONE_R_ARM)
+			facing_zone = BODY_ZONE_FACING_R_ARM
+		if(BODY_ZONE_PRECISE_R_HAND)
+			facing_zone = BODY_ZONE_FACING_R_ARM
+		if(BODY_ZONE_L_LEG)
+			facing_zone = BODY_ZONE_FACING_L_LEG
+		if(BODY_ZONE_PRECISE_L_FOOT)
+			facing_zone = BODY_ZONE_FACING_L_LEG
+		if(BODY_ZONE_R_LEG)
+			facing_zone = BODY_ZONE_FACING_R_LEG
+		if(BODY_ZONE_PRECISE_R_FOOT)
+			facing_zone = BODY_ZONE_FACING_R_LEG
+		if(BODY_ZONE_PRECISE_GROIN)
+			facing_zone = BODY_ZONE_FACING_FRONT
+		if(BODY_ZONE_PRECISE_STOMACH)
+			facing_zone = BODY_ZONE_FACING_FRONT
+		if(BODY_ZONE_PRECISE_R_INHAND)
+			facing_zone = BODY_ZONE_FACING_R_ARM
+		if(BODY_ZONE_PRECISE_L_INHAND)
+			facing_zone = BODY_ZONE_FACING_L_ARM
+	return facing_zone
+
+///Convert a PRECISE ZONE into the BODY_ZONE
+/proc/check_subzone(zone)
+	if(!zone)
+		return FALSE
+	switch(zone)
+		if(BODY_ZONE_PRECISE_R_EYE)
+			return TRUE
+		if(BODY_ZONE_PRECISE_L_EYE)
+			return TRUE
+		if(BODY_ZONE_PRECISE_NOSE)
+			return TRUE
+		if(BODY_ZONE_PRECISE_MOUTH)
+			return TRUE
+		if(BODY_ZONE_PRECISE_SKULL)
+			return TRUE
+		if(BODY_ZONE_PRECISE_EARS)
+			return TRUE
+		if(BODY_ZONE_PRECISE_NECK)
+			return TRUE
+		if(BODY_ZONE_PRECISE_L_HAND)
+			return TRUE
+		if(BODY_ZONE_PRECISE_R_HAND)
+			return TRUE
+		if(BODY_ZONE_PRECISE_L_FOOT)
+			return TRUE
+		if(BODY_ZONE_PRECISE_R_FOOT)
+			return TRUE
+		if(BODY_ZONE_PRECISE_GROIN)
+			return TRUE
+		if(BODY_ZONE_PRECISE_STOMACH)
+			return TRUE
+		else
+			return FALSE
+
 ///Would this zone be above the neck
 /proc/above_neck(zone)
 	var/list/zones = list(BODY_ZONE_HEAD, BODY_ZONE_PRECISE_MOUTH, BODY_ZONE_PRECISE_R_EYE, BODY_ZONE_PRECISE_L_EYE)
@@ -234,40 +372,6 @@
 			for(var/j in 1 to rand(0, 2))
 				letter += pick("#","@","*","&","%","$","/", "<", ">", ";","*","*","*","*","*","*","*")
 		. += letter
-
-
-/**
- * Convert a message into leet non gaijin speak
- *
- * The difference with stutter is that this proc can stutter more than 1 letter
- *
- * The issue here is that anything that does not have a space is treated as one word (in many instances). For instance, "LOOKING," is a word, including the comma.
- *
- * It's fairly easy to fix if dealing with single letters but not so much with compounds of letters./N
- */
-/proc/ninjaspeak(n) //NINJACODE
-	var/te = html_decode(n)
-	var/t = ""
-	n = length(n)
-	var/p = 1
-	while(p <= n)
-		var/n_letter
-		var/n_mod = rand(1,4)
-		if(p+n_mod>n+1)
-			n_letter = copytext(te, p, n+1)
-		else
-			n_letter = copytext(te, p, p+n_mod)
-		if (prob(50))
-			if (prob(30))
-				n_letter = text("[n_letter]-[n_letter]-[n_letter]")
-			else
-				n_letter = text("[n_letter]-[n_letter]")
-		else
-			n_letter = text("[n_letter]")
-		t = text("[t][n_letter]")
-		p=p+n_mod
-	return copytext(sanitize(t),1,MAX_MESSAGE_LEN)
-
 ///Shake the camera of the person viewing the mob SO REAL!
 /proc/shake_camera(mob/M, duration, strength=1)
 	if(!M || !M.client || duration < 1)
@@ -573,6 +677,8 @@
 		playsound_local(src, 'sound/misc/comboff.ogg', 100)
 		SSdroning.play_area_sound(get_area(src), client)
 		cmode = FALSE
+		if(client && HAS_TRAIT(src, TRAIT_SCHIZO_AMBIENCE) && !HAS_TRAIT(src, TRAIT_SCREENSHAKE))
+			animate(client, pixel_y) // stops screenshake if you're not on 4th wonder yet.
 	else
 		cmode = TRUE
 		playsound_local(src, 'sound/misc/combon.ogg', 100)
@@ -585,7 +691,7 @@
 /mob
 	var/last_aimhchange = 0
 	var/aimheight = 11
-	var/cmode_music = 'sound/music/combat.ogg'
+	var/cmode_music = 'sound/music/cmode/combat.ogg'
 
 /mob/proc/aimheight_change(input)
 	var/old_zone = zone_selected
@@ -752,7 +858,7 @@
 			continue
 		var/orbit_link
 		if (source && action == NOTIFY_ORBIT)
-			orbit_link = " <a href='?src=[REF(O)];follow=[REF(source)]'>(Orbit)</a>"
+			orbit_link = " <a href='byond://?src=[REF(O)];follow=[REF(source)]'>(Orbit)</a>"
 		to_chat(O, "<span class='ghostalert'>[message][(enter_link) ? " [enter_link]" : ""][orbit_link]</span>")
 		if(ghost_sound)
 			SEND_SOUND(O, sound(ghost_sound, volume = notify_volume))
@@ -827,7 +933,7 @@
 		var/datum/antagonist/A = M.mind.has_antag_datum(/datum/antagonist/)
 		if(A)
 			poll_message = "[poll_message] Status:[A.name]."
-	var/list/mob/dead/observer/candidates = pollCandidatesForMob(poll_message, ROLE_PAI, null, FALSE, 100, M)
+	var/list/mob/dead/observer/candidates = pollCandidatesForMob(poll_message, ROLE_ASPIRANT, null, FALSE, 100, M)
 
 	if(LAZYLEN(candidates))
 		var/mob/dead/observer/C = pick(candidates)
@@ -881,7 +987,7 @@
 		else
 			colored_message = "<font color='[color]'>[message]</font>"
 
-	var/list/timestamped_message = list("[LAZYLEN(logging[smessage_type]) + 1]\[[time_stamp()]\] [key_name(src)] [loc_name(src)]" = colored_message)
+	var/list/timestamped_message = list("\[[time_stamp(format = "YYYY-MM-DD hh:mm:ss")]\] [key_name(src)] [loc_name(src)] (Event #[LAZYLEN(logging[smessage_type])])" = colored_message)
 
 	logging[smessage_type] += timestamped_message
 
@@ -929,16 +1035,26 @@
 /mob/proc/can_see_reagents()
 	return stat == DEAD || has_unlimited_silicon_privilege //Dead guys and silicons can always see reagents
 
-/mob/proc/get_role_title()
+/mob/living/carbon/human/proc/get_role_title()
 	var/used_title
 	if(migrant_type)
 		var/datum/migrant_role/migrant = MIGRANT_ROLE(migrant_type)
 		used_title = migrant.name
+	else if(advjob)
+		used_title = advjob
 	else if(job)
 		var/datum/job/J = SSjob.GetJob(job)
 		if(!J)
-			return "unknown"
+			return "Unknown"
 		used_title = J.title
-		if(J.f_title)
+		if((gender == FEMALE) && J.f_title)
 			used_title = J.f_title
+
+		if(J.title == "Monarch")
+			if(gender == FEMALE)
+				used_title = "Queen"
+			else
+				used_title = "King"
+	if(mind?.apprentice)
+		used_title = mind.our_apprentice_name
 	return used_title

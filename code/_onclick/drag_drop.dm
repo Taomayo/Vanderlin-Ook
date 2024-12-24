@@ -19,6 +19,18 @@
 		if(over == src)
 			return usr.client.Click(src, src_location, src_control, params)
 		over.MouseDrop_T(src,usr)
+	if(isitem(src) && ((isturf(over) && loc == over) || ((istype(over, /obj/structure/table) || istype(over, /obj/structure/rack)) && loc == over.loc)) && (isliving(usr) || prob(10)))
+		var/modifier = 1
+		var/obj/item/I = src
+		if(isdead(usr))
+			modifier = 16
+		if(!(I.item_flags & ABSTRACT))
+			var/list/click_params = params2list(params)
+			if(!click_params || !click_params["icon-x"] || !click_params["icon-y"])
+				return
+			I.pixel_x = round(CLAMP(text2num(click_params["icon-x"]) - 16, -(world.icon_size/2), world.icon_size/2)/modifier, 1)
+			I.pixel_y = round(CLAMP(text2num(click_params["icon-y"]) - 16, -(world.icon_size/2), world.icon_size/2)/modifier, 1)
+			return
 	return
 
 // receive a mousedrop
@@ -287,10 +299,10 @@
 				chargedprog = 100
 				mouse_pointer_icon = 'icons/effects/mousemice/swang/acharged.dmi'
 				if(istype(L.used_intent, /datum/intent/shield/block))
-					L.visible_message("<span class='danger'>[L] raises their shield to block!</span>")
+					L.visible_message("<span class='danger'>[L] prepares to do a shield bash!</span>")
 					playsound(L, 'sound/combat/shieldraise.ogg', 100, TRUE)
 			else
-				if(!L.rogfat_add(L.used_intent.chargedrain))
+				if(!L.adjust_stamina(L.used_intent.chargedrain))
 					L.stop_attack()
 		return TRUE
 	else

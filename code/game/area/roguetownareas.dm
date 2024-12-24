@@ -87,6 +87,12 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	name = "deception"
 	icon_state = "deception"
 	first_time_text = "THE CANYON OF DECEPTION"
+	ambush_types = list(
+				/turf/open/floor/rogue/dirt)
+	ambush_mobs = list(
+				/mob/living/simple_animal/hostile/retaliate/rogue/troll = 30,
+				/mob/living/carbon/human/species/skeleton/npc/ambush = 30,
+				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 60)
 
 /area/rogue/outdoors/mountains/decap
 	name = "mt decapitation"
@@ -96,11 +102,11 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	ambush_mobs = list(
 				/mob/living/simple_animal/hostile/retaliate/rogue/troll = 30,
 				/mob/living/carbon/human/species/skeleton/npc/ambush = 90,
-				/mob/living/carbon/human/species/goblin/npc/ambush/hell = 20)
+				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 20)
 	droning_sound = 'sound/music/area/decap.ogg'
 	droning_sound_dusk = null
 	droning_sound_night = null
-	first_time_text = "MOUNT DECAPITATION"
+	first_time_text = "MALUMS ANVIL"
 	ambush_times = list("night","dawn","dusk","day")
 	converted_type = /area/rogue/indoors/shelter/mountains/decap
 /area/rogue/indoors/shelter/mountains/decap
@@ -121,11 +127,14 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 				/mob/living/carbon/human/species/goblin/npc/ambush/hell = 50,
 				/mob/living/carbon/human/species/goblin/npc/ambush/sea = 50,
 				/mob/living/carbon/human/species/goblin/npc/ambush = 50)
-	first_time_text = "ROCKHILL BASIN"
+	first_time_text = "VANDERLIN BASIN"
 	droning_sound = 'sound/music/area/field.ogg'
 	droning_sound_dusk = 'sound/music/area/septimus.ogg'
 	droning_sound_night = 'sound/music/area/sleeping.ogg'
 	converted_type = /area/rogue/indoors/shelter/rtfield
+
+/area/rogue/outdoors/rtfield/safe
+	ambush_mobs = null
 
 /area/rogue/indoors/shelter/rtfield
 	icon_state = "rtfield"
@@ -325,7 +334,7 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 /area/rogue/under/cavelava
 	name = "cavelava"
 	icon_state = "cavelava"
-	first_time_text = "MOUNT DECAPITATION"
+	first_time_text = "MALUM'S ARTERY"
 	ambientsounds = AMB_CAVELAVA
 	ambientnight = AMB_CAVELAVA
 	spookysounds = SPOOKY_CAVE
@@ -363,17 +372,17 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 
 /area/rogue/indoors/town
 	name = "indoors"
-	icon_state = "blueold"
+	icon_state = "indoor_town"
 	droning_sound = 'sound/music/area/indoor.ogg'
 	droning_sound_dusk = 'sound/music/area/septimus.ogg'
-	droning_sound_night = 'sound/music/area/sleeping.ogg'
+	droning_sound_night = 'sound/music/area/deliverer.ogg'
 	converted_type = /area/rogue/outdoors/exposed/town
 
 /area/rogue/outdoors/exposed/town
 	icon_state = "town"
 	droning_sound = 'sound/music/area/towngen.ogg'
 	droning_sound_dusk = null
-//	droning_sound_night = 'sound/music/area/night.ogg'
+	droning_sound_night = 'sound/music/area/deliverer.ogg'
 
 /area/rogue/indoors/town/manor
 	name = "Manor"
@@ -382,7 +391,14 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	droning_sound_dusk = null
 	droning_sound_night = null
 	converted_type = /area/rogue/outdoors/exposed/manorgarri
-	first_time_text = "THE KEEP OF ROCKHILL"
+	first_time_text = "THE KEEP OF VANDERLIN"
+
+/area/rogue/indoors/town/manorgate
+	name = "Manor Gate"
+	icon_state = "manorgate"
+	droning_sound = 'sound/music/area/manorgarri.ogg'
+	droning_sound_dusk = null
+	droning_sound_night = 'sound/music/area/deliverer.ogg'
 
 /area/rogue/outdoors/exposed/manorgarri
 	icon_state = "manorgarri"
@@ -453,6 +469,7 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 /area/rogue/indoors/town/tavern
 	name = "tavern"
 	icon_state = "tavern"
+	first_time_text = "Skullcrack Inn"
 	ambientsounds = AMB_INGEN
 	ambientnight = AMB_INGEN
 	droning_sound = 'sound/music/jukeboxes/tavern1.ogg'
@@ -484,6 +501,10 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	icon_state = "chapel"
 	first_time_text = "THE HOUSE OF THE TEN"
 
+/area/rogue/indoors/town/church/inquisition
+	name = "inquisition"
+	first_time_text = "INQUISITIONS LAIR"
+
 /area/rogue/indoors/town/fire_chamber
 	name = "incinerator"
 	icon_state = "fire_chamber"
@@ -509,6 +530,40 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	first_time_text = "Roguetown"
 	icon_state = "entrance"
 
+/area/rogue/indoors/town/clocktower
+	first_time_text = "Clocktower"
+	icon_state = "clocktower"
+	droning_sound = "sound/music/area/clocktower_ambience.ogg"
+
+/area/rogue/indoors/town/orphanage
+	first_time_text = "The Orphanage"
+	icon_state = "orphanage"
+
+/area/rogue/indoors/town/clinic_large
+	first_time_text = "Physickers Clinic"
+	icon_state = "clinic_large"
+
+/area/rogue/indoors/town/thieves_guild
+	first_time_text = "Thieves Guild"
+	icon_state = "thieves_guild"
+
+/area/rogue/indoors/town/merc_guild
+	first_time_text = "Mercenary Guild"
+	icon_state = "merc_guild"
+
+/area/rogue/indoors/town/steward
+	first_time_text = "Stewards Office"
+	icon_state = "steward"
+
+/area/rogue/indoors/town/smithy
+	name = "Smithy"
+	icon_state = "smithy"
+	droning_sound = 'sound/music/area/dwarf.ogg'
+	droning_sound_dusk = null
+	droning_sound_night = null
+	first_time_text = "The Smithy"
+	converted_type = /area/rogue/outdoors/exposed/dwarf
+
 /area/rogue/indoors/town/dwarfin
 	name = "makers quarter"
 	icon_state = "dwarfin"
@@ -527,6 +582,12 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 // so you can teleport to the farm
 /area/rogue/indoors/soilsons
 	name = "soilsons"
+
+/area/rogue/indoors/butchershop
+	name = "butcher shop"
+
+/area/rogue/indoors/villagegarrison
+	name = "village garrison"
 
 /area/rogue/indoors/ship
 	name = "the ship"
@@ -551,15 +612,15 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	icon_state = "town"
 	droning_sound = 'sound/music/area/townstreets.ogg'
 	droning_sound_dusk = 'sound/music/area/septimus.ogg'
-//	droning_sound_night = 'sound/music/area/night.ogg'	Too much guitar honestly
+	droning_sound_night = 'sound/music/area/deliverer.ogg'
 	converted_type = /area/rogue/indoors/shelter/town
-	first_time_text = "THE TOWN OF ROCKHILL"
+	first_time_text = "THE CITY OF VANDERLIN"
 
 /area/rogue/indoors/shelter/town
 	icon_state = "town"
 	droning_sound = 'sound/music/area/townstreets.ogg'
 	droning_sound_dusk = 'sound/music/area/septimus.ogg'
-	droning_sound_night = 'sound/music/area/sleeping.ogg'
+	droning_sound_night = 'sound/music/area/deliverer.ogg'
 
 /area/rogue/outdoors/town/sargoth
 	name = "outdoors"
@@ -588,7 +649,7 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	icon_state = "roofs"
 	droning_sound = 'sound/music/area/field.ogg'
 	droning_sound_dusk = 'sound/music/area/septimus.ogg'
-	droning_sound_night = 'sound/music/area/sleeping.ogg'
+	droning_sound_night = 'sound/music/area/deliverer.ogg'
 
 /area/rogue/outdoors/town/dwarf
 	name = "makers quarter"

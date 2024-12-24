@@ -112,7 +112,7 @@
 /obj/item/book/rogue/update_icon()
 	icon_state = "[base_icon_state]_[open]"
 
-/obj/item/book/rogue/ledger
+/obj/item/book/rogue/secret/ledger
 	name = "catatoma"
 	icon_state = "ledger_0"
 	base_icon_state = "ledger"
@@ -125,7 +125,7 @@
 			to_chat(user, "<span class='info'>Open me first.</span>")
 			return FALSE
 		var/obj/item/paper/scroll/cargo/C = I
-		if(C.orders.len > 4)
+		if(C.orders.len > 6)
 			to_chat(user, "<span class='warning'>Too much order.</span>")
 			return
 		var/picked_cat = input(user, "Categories", "Shipping Ledger") as null|anything in sortList(SSmerchant.supply_cats)
@@ -137,17 +137,11 @@
 			var/datum/supply_pack/PA = SSmerchant.supply_packs[pack]
 			if(PA.group == picked_cat)
 				pax += PA
-		var/picked_pack = input(user, "Shipments", "Shipping Ledger") as null|anything in sortList(pax)
+		var/datum/supply_pack/picked_pack = input(user, "Shipments", "Shipping Ledger") as null|anything in sortList(pax)
 		if(!picked_pack)
 			return
-		var/namer = user.name
-		var/rankr = "None"
-		if(ishuman(user))
-			var/mob/living/carbon/human/H = user
-			namer = H.get_authentification_name()
-			rankr = H.get_assignment(hand_first = TRUE)
-		var/datum/supply_order/SO = new (picked_pack, namer, rankr, user.ckey, "None", SSeconomy.get_dep_account(ACCOUNT_CAR))
-		C.orders += SO
+
+		C.orders += picked_pack
 		C.rebuild_info()
 		return
 	if(istype(I, /obj/item/paper/scroll))
@@ -166,18 +160,12 @@
 			var/datum/supply_pack/PA = SSmerchant.supply_packs[pack]
 			if(PA.group == picked_cat)
 				pax += PA
-		var/picked_pack = input(user, "Shipments", "Shipping Ledger") as null|anything in sortList(pax)
+		var/datum/supply_pack/picked_pack = input(user, "Shipments", "Shipping Ledger") as null|anything in sortList(pax)
 		if(!picked_pack)
 			return
 		var/obj/item/paper/scroll/cargo/C = new(user.loc)
-		var/namer = user.name
-		var/rankr = "None"
-		if(ishuman(user))
-			var/mob/living/carbon/human/H = user
-			namer = H.get_authentification_name()
-			rankr = H.get_assignment(hand_first = TRUE)
-		var/datum/supply_order/SO = new (picked_pack, namer, rankr, user.ckey, "None", SSeconomy.get_dep_account(ACCOUNT_CAR))
-		C.orders += SO
+
+		C.orders += picked_pack
 		C.rebuild_info()
 		user.dropItemToGround(P)
 		qdel(P)
@@ -487,7 +475,7 @@
 
 /obj/item/manuscript/examine(mob/user)
 	. = ..()
-	. += "<a href='?src=[REF(src)];read=1'>Read</a>"
+	. += "<a href='byond://?src=[REF(src)];read=1'>Read</a>"
 
 /obj/item/manuscript/Topic(href, href_list)
 	..()
@@ -528,7 +516,7 @@
 		for(var/I in page_texts)
 			dat += "<p>[I]</p>"
 		dat += "<br>"
-		dat += "<a href='?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
 		dat += "</body></html>"
 		user << browse(dat, "window=reading;size=1000x700;can_close=1;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 		onclose(user, "reading", src)

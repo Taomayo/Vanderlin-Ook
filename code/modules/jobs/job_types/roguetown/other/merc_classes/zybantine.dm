@@ -9,13 +9,14 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	outfit = /datum/outfit/job/roguetown/mercenary/zybantine
 	category_tags = list(CTAG_MERCENARY)
 	maximum_possible_slots = 5
 
-	cmode_music = 'sound/music/combat_desertrider.ogg' //GREATEST COMBAT TRACK IN THE GAME SO FAR BESIDES MAYBE MANIAC2.OGG
+	cmode_music = 'sound/music/cmode/adventurer/CombatOutlander.ogg' //Forgive me, Combat_DesertRider, I'm sorry, I'll miss you.
 
 /datum/outfit/job/roguetown/mercenary/zybantine/pre_equip(mob/living/carbon/human/H)
 	..()

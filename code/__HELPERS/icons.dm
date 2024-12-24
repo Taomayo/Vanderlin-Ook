@@ -985,9 +985,6 @@ GLOBAL_LIST_EMPTY(friendly_animal_types)
 
 	var/image/final_image = image(icon, icon_state=icon_state, loc = A)
 
-	if(ispath(SA, /mob/living/simple_animal/butterfly))
-		final_image.color = rgb(rand(0,255), rand(0,255), rand(0,255))
-
 	// For debugging
 	final_image.text = initial(SA.name)
 	return final_image
@@ -1036,7 +1033,6 @@ GLOBAL_LIST_EMPTY(friendly_animal_types)
 		var/icon/out_icon = icon('icons/effects/effects.dmi', "nothing")
 		for(var/D in showDirs)
 			body.setDir(D)
-			COMPILE_OVERLAYS(body)
 			var/icon/partial = getFlatIcon(body)
 			out_icon.Insert(partial,dir=D)
 
@@ -1072,6 +1068,11 @@ GLOBAL_LIST_INIT(freon_color_matrix, list("#2E5E69", "#60A2A8", "#A1AFB1", rgb(0
 		alpha += 25
 		obj_flags &= ~FROZEN
 
+/// Generate a filename for this asset
+/// The same asset will always lead to the same asset name
+/// (Generated names do not include file extention.)
+/proc/generate_asset_name(file)
+	return "asset.[md5(fcopy_rsc(file))]"
 
 //Converts an icon to base64. Operates by putting the icon in the iconCache savefile,
 // exporting it as text, and then parsing the base64 from that.
@@ -1105,9 +1106,11 @@ GLOBAL_LIST_INIT(freon_color_matrix, list("#2E5E69", "#60A2A8", "#A1AFB1", rgb(0
 	if (!isicon(I))
 		if (isfile(thing)) //special snowflake
 			var/name = sanitize_filename("[generate_asset_name(thing)].png")
-			register_asset(name, thing)
-			for (var/thing2 in targets)
-				send_asset_async(thing2, key)
+			SSassets.transport.register_asset(name, thing)
+			for (var/mob/thing2 in targets)
+				if(!istype(thing2) || !thing2.client)
+					continue
+				SSassets.transport.send_assets(thing2?.client, key)
 			return "<img class='icon icon-misc' src=\"[url_encode(name)]\">"
 		var/atom/A = thing
 		if (isnull(dir))
@@ -1129,11 +1132,13 @@ GLOBAL_LIST_INIT(freon_color_matrix, list("#2E5E69", "#60A2A8", "#A1AFB1", rgb(0
 	I = icon(I, icon_state, dir, frame, moving)
 
 	key = "[generate_asset_name(I)].png"
-	register_asset(key, I)
-	for (var/thing2 in targets)
-		send_asset_async(thing2, key)
+	SSassets.transport.register_asset(key, I)
+	for (var/mob/thing2 in targets)
+		if(!istype(thing2) || !thing2.client)
+			continue
+		SSassets.transport.send_assets(thing2?.client, key)
 
-	return "<img class='icon icon-[icon_state]' src=\"[url_encode(key)]\">"
+	return "<img class='icon icon-[icon_state]' src='[SSassets.transport.get_asset_url(key)]'>"
 
 /proc/icon2base64html(thing)
 	if (!thing)

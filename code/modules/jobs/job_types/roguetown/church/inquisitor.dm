@@ -7,17 +7,22 @@
 	spawn_positions = 1
 
 	allowed_races = list(
-		"Humen"
+		"Humen",
+		"Elf",
+		"Half-Elf",
+		"Dwarf",
+		"Aasimar"
 	)
-	allowed_sexes = list(MALE)
+	allowed_sexes = list(MALE, FEMALE)
 
-	tutorial = "A recent arrival from Grenzelhoft, the Inquisitor is a member of the secretive lodges that have held to the service of the Forgotten God since the Apotheosis War. They have formed an alliance with the local Priest against the increasing number of heretics and monsters infiltrating the town."
+	tutorial = "A recent arrival from Grenzelhoft, the Inquisitor is a member of the secretive lodges that have held to the service of Psydon since the Apotheosis War. They have formed an alliance with the local Priest against the increasing number of heretics and monsters infiltrating the town."
 	whitelist_req = FALSE
 
 	outfit = /datum/outfit/job/roguetown/inquisitor
 	display_order = JDO_PURITAN
 	min_pq = 4
 	bypass_lastclass = TRUE
+	cmode_music = 'sound/music/cmode/church/CombatInquisitor.ogg'
 
 /datum/job/roguetown/inquisitor/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
 	..()
@@ -48,7 +53,7 @@
 	beltl = /obj/item/flashlight/flare/torch/lantern
 	neck = /obj/item/clothing/neck/roguetown/bevor
 	armor = /obj/item/clothing/suit/roguetown/armor/leather/splint
-	backpack_contents = list(/obj/item/keyring/inquisitor = 1)
+	backpack_contents = list(/obj/item/storage/keyring/inquisitor = 1)
 	var/prev_real_name = H.real_name
 	var/prev_name = H.name
 	var/honorary = "Ritter"
@@ -86,7 +91,7 @@
 			return
 		var/datum/antagonist/new_antag = new /datum/antagonist/purishep()
 		H.mind.add_antag_datum(new_antag)
-		H.patron = GLOB.patronlist[/datum/patron/forgotten]
+		H.set_patron(/datum/patron/psydon)
 	ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_STEELHEARTED, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)

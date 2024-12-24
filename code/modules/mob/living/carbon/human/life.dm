@@ -19,7 +19,6 @@
 #define THERMAL_PROTECTION_HAND_RIGHT	0.025
 
 /mob/living/carbon/human
-	var/leprosy = 2
 	var/allmig_reward = 0
 
 /mob/living/carbon/human/Life()
@@ -39,67 +38,55 @@
 		Stun(50)
 
 	if(mind)
+		mind.sleep_adv.add_stress_cycle(get_stress_amount())
 		for(var/datum/antagonist/A in mind.antag_datums)
 			A.on_life(src)
 
-	if(!IS_IN_STASIS(src))
-		if(stat < 3) //not dead
-			for(var/datum/mutation/human/HM in dna.mutations) // Handle active genes
-				HM.on_life()
-
-		if(mode == AI_OFF)
-			if(stat)
-				if(health > 0)
-					if(has_status_effect(/datum/status_effect/debuff/sleepytime))
-						tiredness = 0
-						remove_status_effect(/datum/status_effect/debuff/sleepytime)
-						var/datum/game_mode/chaosmode/C = SSticker.mode
-						if(istype(C))
-							if(mind)
+		handle_vamp_dreams()
+		if(IsSleeping())
+			if(health > 0)
+				if(has_status_effect(/datum/status_effect/debuff/sleepytime))
+					remove_status_effect(/datum/status_effect/debuff/sleepytime)
+					remove_stress(/datum/stressevent/sleepytime)
+					if(mind)
+						mind.sleep_adv.advance_cycle()
+					var/datum/game_mode/chaosmode/C = SSticker.mode
+					if(istype(C))
+						if(mind)
+							if(!mind.antag_datums || !mind.antag_datums.len)
 								allmig_reward++
-								to_chat(src, "<span class='danger'>Nights Survived: \Roman[allmig_reward]</span>")
+								to_chat(src, span_danger("Nights Survived: \Roman[allmig_reward]"))
 								if(C.allmig)
 									if(allmig_reward > 3)
 										adjust_triumphs(1)
-					if(has_status_effect(/datum/status_effect/debuff/trainsleep))
-						remove_status_effect(/datum/status_effect/debuff/trainsleep)
-			if(leprosy == 1)
-				adjustToxLoss(2)
-			else if(leprosy == 2)
-				if(client)
-					if(check_blacklist(client.ckey))
-						ADD_TRAIT(src, TRAIT_NOPAIN, TRAIT_GENERIC)
-						leprosy = 1
-						var/obj/item/bodypart/B = get_bodypart(BODY_ZONE_HEAD)
-						if(B)
-							B.sellprice = rand(16, 33)
-					else
-						leprosy = 3
-			//heart attack stuff
-			handle_heart()
-			handle_liver()
-			update_rogfat()
-			update_rogstam()
-			if(charflaw && !charflaw.ephemeral)
-				charflaw.flaw_on_life(src)
-			if(health <= 0)
-				adjustOxyLoss(0.5)
+		if(HAS_TRAIT(src, TRAIT_LEPROSY))
+			if(!mob_timers["leper_bleed"] || mob_timers["leper_bleed"] + 6 MINUTES < world.time)
+				if(prob(10))
+					to_chat(src, span_warning("My skin opens up and bleeds..."))
+					mob_timers["leper_bleed"] = world.time
+					var/obj/item/bodypart/part = pick(bodyparts)
+					if(part)
+						part.add_wound(/datum/wound/slash)
+			adjustToxLoss(0.3)
+		//heart attack stuff
+		handle_curses()
+		handle_heart()
+		handle_liver()
+		update_stamina()
+		update_energy()
+		if(charflaw && !charflaw.ephemeral)
+			charflaw.flaw_on_life(src)
+		if(health <= 0)
+			adjustOxyLoss(0.3)
+		if(mode == AI_OFF && !client && !HAS_TRAIT(src, TRAIT_NOSLEEP))
+			if(mob_timers["slo"])
+				if(world.time > mob_timers["slo"] + 90 SECONDS)
+					Sleeping(100)
 			else
-				if(stat < 3) //not dead
-					if(!(NOBLOOD in dna?.species?.species_traits))
-						if(blood_volume <= BLOOD_VOLUME_SURVIVE)
-							adjustOxyLoss(0.5)
-							if(blood_volume <= 40)
-								adjustOxyLoss(3)
-			if(!client && !HAS_TRAIT(src, TRAIT_NOSLEEP))
-				if(mob_timers["slo"])
-					if(world.time > mob_timers["slo"] + 90 SECONDS)
-						Sleeping(100)
-				else
-					mob_timers["slo"] = world.time
-			else
-				if(mob_timers["slo"])
-					mob_timers["slo"] = null
+				mob_timers["slo"] = world.time
+		else
+			if(mob_timers["slo"])
+				mob_timers["slo"] = null
 
 		if(dna?.species)
 			dna.species.spec_life(src) // for mutantraces
@@ -134,14 +121,6 @@
 						has_stubble = TRUE
 						update_hair()
 
-/mob/living/carbon/human/calculate_affecting_pressure(pressure)
-	if (wear_armor && head && istype(wear_armor, /obj/item/clothing) && istype(head, /obj/item/clothing))
-		var/obj/item/clothing/CS = wear_armor
-		var/obj/item/clothing/CH = head
-		if (CS.clothing_flags & CH.clothing_flags & STOPSPRESSUREDAMAGE)
-			return ONE_ATMOSPHERE
-	return pressure
-
 
 /mob/living/carbon/human/handle_traits()
 	if (getOrganLoss(ORGAN_SLOT_BRAIN) >= 60)
@@ -150,12 +129,11 @@
 		SEND_SIGNAL(src, COMSIG_CLEAR_MOOD_EVENT, "brain_damage")
 	return ..()
 
-/mob/living/carbon/human/handle_mutations_and_radiation()
-	if(!dna || !dna.species.handle_mutations_and_radiation(src))
-		..()
+/mob/living/proc/handle_environment()
+	return
 
-/mob/living/carbon/human/handle_environment(datum/gas_mixture/environment)
-	dna.species.handle_environment(environment, src)
+/mob/living/carbon/human/handle_environment()
+	dna.species.handle_environment(src)
 
 ///FIRE CODE
 /mob/living/carbon/human/handle_fire()
@@ -176,10 +154,10 @@
 /mob/living/carbon/human/proc/get_thermal_protection()
 	var/thermal_protection = 0 //Simple check to estimate how protected we are against multiple temperatures
 	if(wear_armor)
-		if(wear_armor.max_heat_protection_temperature >= FIRE_SUIT_MAX_TEMP_PROTECT)
+		if(wear_armor.max_heat_protection_temperature >= 30000)
 			thermal_protection += (wear_armor.max_heat_protection_temperature*0.7)
 	if(head)
-		if(head.max_heat_protection_temperature >= FIRE_HELM_MAX_TEMP_PROTECT)
+		if(head.max_heat_protection_temperature >= 30000)
 			thermal_protection += (head.max_heat_protection_temperature*THERMAL_PROTECTION_HEAD)
 	thermal_protection = round(thermal_protection)
 	return thermal_protection
@@ -373,6 +351,25 @@
 		Unconscious(80)
 	// Tissues die without blood circulation
 	adjustBruteLoss(2)
+
+/mob/living/carbon/human/proc/handle_vamp_dreams()
+	if(!HAS_TRAIT(src, TRAIT_VAMP_DREAMS))
+		return
+	if(!mind)
+		return
+	if(!has_status_effect(/datum/status_effect/debuff/vamp_dreams))
+		return
+	if(!eyesclosed)
+		return
+	if(mobility_flags & MOBILITY_STAND)
+		return
+	if(!istype(loc, /obj/structure/closet/crate/coffin))
+		return
+	var/obj/structure/closet/crate/coffin/coffin = loc
+	if(coffin.opened)
+		return
+	remove_status_effect(/datum/status_effect/debuff/vamp_dreams)
+	mind.sleep_adv.advance_cycle()
 
 #undef THERMAL_PROTECTION_HEAD
 #undef THERMAL_PROTECTION_CHEST

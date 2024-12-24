@@ -215,7 +215,7 @@
 	obj_flags = CAN_BE_HIT
 	gripped_intents = list(INTENT_POUR)
 	resistance_flags = NONE
-	armor = list("melee" = 10, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 75, "acid" = 50) //Weak melee protection, because you can wear it on your head
+	armor = list("blunt" = 10, "slash" = 10, "stab" = 10,  "piercing" = 0, "fire" = 75, "acid" = 50) //Weak melee protection, because you can wear it on your head
 	slot_equipment_priority = list( \
 		SLOT_BACK, SLOT_RING,\
 		SLOT_PANTS, SLOT_ARMOR,\
@@ -256,10 +256,9 @@
 	icon = 'icons/roguetown/items/misc.dmi'
 
 	possible_item_intents = list(/datum/intent/fill, INTENT_POUR, INTENT_SPLASH, INTENT_GENERIC)
-	custom_materials = null
 	force = 5
 	throwforce = 10
-	armor = list("melee" = 10, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 50)
+	armor = list("blunt" = 10, "slash" = 10, "stab" = 10,  "piercing" = 0, "fire" = 0, "acid" = 50)
 	resistance_flags = FLAMMABLE
 	dropshrink = 0.8
 	slot_flags = null
@@ -319,16 +318,13 @@
 		grinded = null
 		to_chat(user, "<span class='notice'>I eject the item inside.</span>")
 
+//VANDERLIN TODO: add a stamina check for the system we actually use.
 /obj/item/reagent_containers/glass/mortar/attackby(obj/item/I, mob/living/carbon/human/user)
 	..()
 	if(istype(I,/obj/item/pestle))
 		if(grinded)
-			if(user.getStaminaLoss() > 50)
-				to_chat(user, "<span class='warning'>I are too tired to work!</span>")
-				return
 			to_chat(user, "<span class='notice'>I start grinding...</span>")
 			if((do_after(user, 25, target = src)) && grinded)
-				user.adjustStaminaLoss(40)
 				if(grinded.juice_results) //prioritize juicing
 					grinded.on_juice()
 					reagents.add_reagent_list(grinded.juice_results)

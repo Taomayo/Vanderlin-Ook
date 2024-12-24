@@ -6,14 +6,17 @@
 	total_positions = 1
 	spawn_positions = 1
 
-	f_title = "Housekeeper"
+	f_title = "Maid"
 	allowed_races = list(
 		"Humen",
 		"Elf",
 		"Half-Elf",
-		"Dwarf"
+		"Dwarf",
+		"Tiefling",
+		"Dark Elf",
+		"Aasimar"
 	)
-	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD)
+	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
 	tutorial = "Your blade is a charcuterie of artisanal cheeses and meat, your armor wit and classical training. You are part of the royal family now, and hold a distinguished position as the head of the royal household staff. You wear their colors and have a semblance of dignity, for without you and the servants under your command the court would have all starved to death."
 	outfit = /datum/outfit/job/roguetown/butler
 	display_order = JDO_BUTLER
@@ -48,7 +51,7 @@
 		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/guard
 		shoes = /obj/item/clothing/shoes/roguetown/nobleboot
 		belt = /obj/item/storage/belt/rogue/leather/plaquesilver
-		beltr = /obj/item/keyring/butler
+		beltr = /obj/item/storage/keyring/butler
 		beltl = /obj/item/storage/belt/rogue/pouch/coins/mid
 		armor = /obj/item/clothing/suit/roguetown/armor/leather/vest/butler
 		backr = /obj/item/storage/backpack/rogue/satchel
@@ -59,6 +62,6 @@
 		shoes = /obj/item/clothing/shoes/roguetown/ridingboots
 		cloak = /obj/item/clothing/cloak/apron
 		belt = /obj/item/storage/belt/rogue/leather/cloth/lady
-		beltr = /obj/item/keyring/butler
+		beltr = /obj/item/storage/keyring/butler
 		beltl = /obj/item/storage/belt/rogue/pouch/coins/mid
 		backr = /obj/item/storage/backpack/rogue/satchel

@@ -1,6 +1,6 @@
 /datum/advclass/combat/sorceress
 	name = "Sorceress"
-	tutorial = "In some places in Grimoria, women are banned from the study of magic. Those that do even then are afforded the title Sorceress in honor of their resolve."
+	tutorial = "In some places in Psydonia, women are banned from the study of magic. Those that do even then are afforded the title Sorceress in honor of their resolve."
 	allowed_sexes = list(FEMALE)
 	allowed_races = list(
 		"Humen",
@@ -9,12 +9,14 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	outfit = /datum/outfit/job/roguetown/adventurer/sorceress
 	maximum_possible_slots = 2
 	min_pq = 0
 	category_tags = list(CTAG_ADVENTURER)
+	cmode_music = 'sound/music/cmode/adventurer/CombatSorcerer.ogg'
 
 /datum/outfit/job/roguetown/adventurer/sorceress/pre_equip(mob/living/carbon/human/H)
 	..()

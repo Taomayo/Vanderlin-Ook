@@ -107,24 +107,17 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 						new_value = JP_LOW
 			if(new_value)
 				job_preferences[initial(J.title)] = new_value
-	if(current_version < 23)
-		if(all_quirks)
-			all_quirks -= "Physically Obstructive"
-			all_quirks -= "Neat"
-			all_quirks -= "NEET"
 	if(current_version < 24)
 		if (!(underwear in GLOB.underwear_list))
 			underwear = "Nude"
 	if(current_version < 25)
-		randomise = list(RANDOM_UNDERWEAR = TRUE, RANDOM_UNDERWEAR_COLOR = TRUE, RANDOM_UNDERSHIRT = TRUE, RANDOM_SOCKS = TRUE, RANDOM_BACKPACK = TRUE, RANDOM_JUMPSUIT_STYLE = FALSE, RANDOM_HAIRSTYLE = TRUE, RANDOM_HAIR_COLOR = TRUE, RANDOM_FACIAL_HAIRSTYLE = TRUE, RANDOM_FACIAL_HAIR_COLOR = TRUE, RANDOM_SKIN_TONE = TRUE, RANDOM_EYE_COLOR = TRUE)
+		randomise = list(RANDOM_UNDERWEAR = TRUE, RANDOM_UNDERWEAR_COLOR = TRUE, RANDOM_UNDERSHIRT = TRUE, RANDOM_SOCKS = TRUE, RANDOM_SKIN_TONE = TRUE, RANDOM_EYE_COLOR = TRUE)
 		if(S["name_is_always_random"] == 1)
 			randomise[RANDOM_NAME] = TRUE
 		if(S["body_is_always_random"] == 1)
 			randomise[RANDOM_BODY] = TRUE
 		if(S["species_is_always_random"] == 1)
 			randomise[RANDOM_SPECIES] = TRUE
-		if(S["backbag"])
-			S["backbag"]	>> backpack
 		if(S["hair_style_name"])
 			S["hair_style_name"]	>> hairstyle
 		if(S["facial_style_name"])
@@ -236,6 +229,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	pda_color		= sanitize_hexcolor(pda_color, 6, 1, initial(pda_color))
 	key_bindings 	= sanitize_islist(key_bindings, list())
 
+	check_new_keybindings()
+
 	//ROGUETOWN
 	parallax = PARALLAX_INSANE
 
@@ -336,9 +331,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["accessory"]			>> accessory
 	S["detail"]			>> detail
 	S["socks"]				>> socks
-	S["backpack"]			>> backpack
-	S["jumpsuit_style"]		>> jumpsuit_style
-	S["uplink_loc"]			>> uplink_spawn_loc
 	S["randomise"]	>>  randomise
 	S["family"]			>> family
 	S["setspouse"]			>> setspouse
@@ -405,16 +397,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		var/savefile_slot_name = custom_name_id + "_name" //TODO remove this
 		S[savefile_slot_name] >> custom_names[custom_name_id]
 
-	S["preferred_ai_core_display"] >> preferred_ai_core_display
-	S["prefered_security_department"] >> prefered_security_department
-
 	//Jobs
 	S["joblessrole"]		>> joblessrole
 	//Load prefs
 	S["job_preferences"] >> job_preferences
-
-	//Quirks
-	S["all_quirks"]			>> all_quirks
 
 	//try to fix any outdated data if necessary
 	if(needs_update >= 0)
@@ -450,7 +436,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		detail		= sanitize_inlist(detail, GLOB.detail_m)
 	else if(gender == FEMALE)
 		hairstyle			= sanitize_inlist(hairstyle, GLOB.hairstyles_female_list)
-		facial_hairstyle			= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_female_list)
+		if(istype(pref_species, /datum/species/dwarf))
+			facial_hairstyle			= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_female_list)
+		else
+			facial_hairstyle			= sanitize_inlist(facial_hairstyle, list("None"))
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_f)
 		undershirt		= sanitize_inlist(undershirt, GLOB.undershirt_f)
 		accessory		= sanitize_inlist(accessory, GLOB.accessories_f)
@@ -469,12 +458,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	eye_color		= sanitize_hexcolor(eye_color, 3, 0)
 	voice_color		= voice_color
 	skin_tone		= skin_tone
-	backpack			= sanitize_inlist(backpack, GLOB.backpacklist, initial(backpack))
-	jumpsuit_style	= sanitize_inlist(jumpsuit_style, GLOB.jumpsuitlist, initial(jumpsuit_style))
 	family = family
 	setspouse = setspouse
-	uplink_spawn_loc = sanitize_inlist(uplink_spawn_loc, GLOB.uplink_spawn_loc_list, initial(uplink_spawn_loc))
-	features["mcolor"]	= sanitize_hexcolor(features["mcolor"], 3, 0)
 	features["mcolor2"]	= sanitize_hexcolor(features["mcolor2"], 6, 0)
 	features["mcolor3"]	= sanitize_hexcolor(features["mcolor3"], 6, 0)
 	features["ethcolor"]	= copytext(features["ethcolor"],1,7)
@@ -502,8 +487,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	for(var/j in job_preferences)
 		if(job_preferences[j] != JP_LOW && job_preferences[j] != JP_MEDIUM && job_preferences[j] != JP_HIGH)
 			job_preferences -= j
-
-	all_quirks = SANITIZE_LIST(all_quirks)
 
 	return TRUE
 
@@ -536,9 +519,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["accessory"]			, accessory)
 	WRITE_FILE(S["detail"]				, detail)
 	WRITE_FILE(S["socks"]				, socks)
-	WRITE_FILE(S["backpack"]			, backpack)
-	WRITE_FILE(S["jumpsuit_style"]		, jumpsuit_style)
-	WRITE_FILE(S["uplink_loc"]			, uplink_spawn_loc)
 	WRITE_FILE(S["randomise"]		, randomise)
 	WRITE_FILE(S["species"]			, pref_species.name)
 	WRITE_FILE(S["charflaw"]			, charflaw.type)
@@ -564,16 +544,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		var/savefile_slot_name = custom_name_id + "_name" //TODO remove this
 		WRITE_FILE(S[savefile_slot_name],custom_names[custom_name_id])
 
-	WRITE_FILE(S["preferred_ai_core_display"] ,  preferred_ai_core_display)
-	WRITE_FILE(S["prefered_security_department"] , prefered_security_department)
-
 	//Jobs
 	WRITE_FILE(S["joblessrole"]		, joblessrole)
 	//Write prefs
 	WRITE_FILE(S["job_preferences"] , job_preferences)
-
-	//Quirks
-	WRITE_FILE(S["all_quirks"]			, all_quirks)
 
 	//Patron
 	WRITE_FILE(S["selected_patron"]		, selected_patron.type)
@@ -607,3 +581,24 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S.ImportText("/",file("[path].txt"))
 
 #endif
+
+/datum/preferences/proc/check_new_keybindings()
+	var/list/keybind_names = list()
+	var/list/used_keys = list()
+	for(var/key in key_bindings)
+		keybind_names |= key_bindings[key]
+		used_keys |= key
+
+	if(!length(GLOB.hotkey_keybinding_list_by_key))
+		init_keybindings()
+	for(var/key in GLOB.hotkey_keybinding_list_by_key)
+		var/list/key_name = GLOB.hotkey_keybinding_list_by_key[key]
+		if(!length(key_name))
+			continue
+		if(!(key_name[1] in keybind_names))
+			if(key in used_keys)
+				preference_message_list |= span_bold("[key_name[1]] is unbound and the default key is in use, please set the keybind yourself!")
+				continue
+			key_bindings |= key
+			key_bindings[key] = GLOB.hotkey_keybinding_list_by_key[key]
+			preference_message_list |= span_bold("[key_name[1]] was unbound and the default key was not in use it has been set to [key]!")

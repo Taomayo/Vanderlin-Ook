@@ -4,8 +4,7 @@
 	see_invisible = SEE_INVISIBLE_LIVING
 	sight = 0
 	see_in_dark = 8
-	hud_possible = list(HEALTH_HUD,STATUS_HUD,ANTAG_HUD,NANITE_HUD,DIAG_NANITE_FULL_HUD)
-	pressure_resistance = 10
+	hud_possible = list(ANTAG_HUD)
 
 	var/resize = 1 //Badminnery resize
 	var/lastattacker = null
@@ -21,7 +20,6 @@
 	var/toxloss = 0		//Toxic damage caused by being poisoned or radiated
 	var/fireloss = 0	//Burn damage caused by being way too hot, too cold or burnt.
 	var/cloneloss = 0	//Damage caused by being cloned or ejected from the cloner early. slimes also deal cloneloss damage to victims
-	var/staminaloss = 0		//Stamina damage, or exhaustion. You recover it slowly naturally, and are knocked down if it gets too high. Holodeck and hallucinations deal this.
 	var/crit_threshold = HEALTH_THRESHOLD_CRIT // when the mob goes from "normal" to crit
 
 	var/mobility_flags = MOBILITY_FLAGS_DEFAULT
@@ -42,8 +40,6 @@
 	//Allows mobs to move through dense areas without restriction. For instance, in space or out of holder objects.
 	var/incorporeal_move = FALSE //FALSE is off, INCORPOREAL_MOVE_BASIC is normal, INCORPOREAL_MOVE_SHADOW is for ninjas
 								//and INCORPOREAL_MOVE_JAUNT is blocked by holy water/salt
-
-	var/list/roundstart_quirks
 
 	var/list/surgeries //a list of surgery steps. generally empty, they're added when the player is performing them.
 
@@ -111,23 +107,18 @@
 
 	var/can_be_held = FALSE	//whether this can be picked up and held.
 
-	var/radiation = 0 //If the mob is irradiated.
-	var/ventcrawl_layer = PIPING_LAYER_DEFAULT
+	var/ventcrawl_layer = 2
 	var/losebreath = 0
-
-	//List of active diseases
-	var/list/diseases = list() // list of all diseases in a mob
-	var/list/disease_resistances = list()
 
 	var/slowed_by_drag = TRUE //Whether the mob is slowed down when dragging another prone mob
 
 	var/list/ownedSoullinks //soullinks we are the owner of
 	var/list/sharedSoullinks //soullinks we are a/the sharer of
 
-	var/maxrogstam = 1000
-	var/maxrogfat = 100
-	var/rogstam = 1000
-	var/rogfat = 0
+	var/max_energy = 1000
+	var/maximum_stamina = 100
+	var/energy = 1000
+	var/stamina = 0
 
 	var/last_fatigued = 0
 	var/last_ps = 0
@@ -135,6 +126,11 @@
 	var/ambushable = 0
 
 	var/surrendering = 0
+
+
+	/// Combat bonuses for Simple Mobs
+	var/simpmob_attack = 0
+	var/simpmob_defend = 0
 
 	var/defprob = 50 //base chance to defend against this mob's attacks, for simple mob combat
 	var/defdrain = 5
@@ -164,9 +160,16 @@
 
 	var/list/mob_descriptors
 	var/list/custom_descriptors
-	
+
 	var/rogue_sneaking = FALSE
-	
+
 	var/rogue_sneaking_light_threshhold = 0.15
 
 	var/voice_pitch = 1
+
+	var/domhand = 0
+
+	///our blood drain for meathook, the less bloody the more we get
+	var/blood_drained = 0
+	///are we skinned?
+	var/skinned = FALSE

@@ -9,7 +9,8 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	outfit = /datum/outfit/job/roguetown/adventurer/zybantine
 	category_tags = list(CTAG_PILGRIM)
@@ -17,7 +18,7 @@
 	pickprob = 30
 	min_pq = 0
 
-	cmode_music = 'sound/music/combat_desertrider.ogg'
+	cmode_music = 'sound/music/cmode/towner/combat_desertrider.ogg'
 
 /datum/outfit/job/roguetown/adventurer/zybantine/pre_equip(mob/living/carbon/human/H)
 	..()

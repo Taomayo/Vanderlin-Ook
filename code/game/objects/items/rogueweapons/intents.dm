@@ -19,6 +19,8 @@
 	var/list/hitsound = list('sound/combat/hits/blunt/bluntsmall (1).ogg', 'sound/combat/hits/blunt/bluntsmall (2).ogg')
 	var/canparry = TRUE
 	var/candodge = TRUE
+	var/iparrybonus = 0
+	var/idodgebonus = 0
 	var/chargetime = 0 //if above 0, this attack must be charged to reach full damage
 	var/chargedrain = 0 //how mcuh fatigue is removed every second when at max charge
 	var/releasedrain = 1 //drain when we go off, regardless
@@ -46,11 +48,15 @@
 	var/miss_text //THESE ARE FOR UNARMED MISSING ATTACKS
 	var/miss_sound //THESE ARE FOR UNARMED MISSING ATTACKS
 
+	var/item_damage_type = "blunt"
+
 /datum/intent/Destroy()
 	if(chargedloop)
 		chargedloop.stop()
 	if(mastermob.curplaying == src)
 		mastermob.curplaying = null
+	mastermob = null
+	masteritem = null
 	return ..()
 
 /datum/intent/proc/examine(mob/user)
@@ -117,9 +123,13 @@
 
 /datum/intent/proc/afterchange()
 	if(masteritem)
+		masteritem.damage_type = item_damage_type
 		var/list/benis = hitsound
 		if(benis)
 			masteritem.hitsound = benis
+	if(istype(mastermob, /mob/living/simple_animal))
+		var/mob/living/simple_animal/master = mastermob
+		master.damage_type = item_damage_type
 	return
 
 /datum/intent/proc/height2limb(height as num)
@@ -147,7 +157,7 @@
 	if(mastermob)
 		if(chargedloop)
 			if(!istype(chargedloop))
-				chargedloop = new chargedloop(list(mastermob))
+				chargedloop = new chargedloop(mastermob)
 
 /datum/intent/proc/on_charge_start() //what the fuck is going on here lol
 	if(mastermob.curplaying)
@@ -155,10 +165,10 @@
 		mastermob.curplaying = null
 	if(chargedloop)
 		if(!istype(chargedloop, /datum/looping_sound))
-			chargedloop = new chargedloop(list(mastermob))
+			chargedloop = new chargedloop(mastermob)
 		else
 			chargedloop.stop()
-		chargedloop.start(chargedloop.output_atoms)
+		chargedloop.start(chargedloop.parent)
 		mastermob.curplaying = src
 
 /datum/intent/proc/on_mouse_up()
@@ -179,6 +189,7 @@
 	no_attack = TRUE
 	releasedrain = 0
 	blade_class = BCLASS_PUNCH
+	item_damage_type = "blunt"
 
 /datum/intent/kick
 	name = "kick"
@@ -190,8 +201,9 @@
 	swingdelay = 5
 	misscost = 20
 	unarmed = TRUE
-	animname = "cut"
+	animname = "kick"
 	pointer = 'icons/effects/mousemice/human_kick.dmi'
+	item_damage_type = "blunt"
 
 /datum/intent/bite
 	name = "bite"
@@ -203,6 +215,7 @@
 	unarmed = TRUE
 	noaa = FALSE
 	attack_verb = list("bites")
+	item_damage_type = "stab"
 
 /datum/intent/jump
 	name = "jump"
@@ -272,6 +285,7 @@
 	name = "hit"
 	icon_state = "instrike"
 	attack_verb = list("hit", "strike")
+	item_damage_type = "blunt"
 	chargetime = 0
 	swingdelay = 0
 
@@ -282,6 +296,7 @@
 	hitsound = list('sound/combat/hits/bladed/genstab (1).ogg', 'sound/combat/hits/bladed/genstab (2).ogg', 'sound/combat/hits/bladed/genstab (3).ogg')
 	animname = "stab"
 	blade_class = BCLASS_STAB
+	item_damage_type = "stab"
 	chargetime = 0
 	swingdelay = 0
 
@@ -290,6 +305,7 @@
 	icon_state = "inpick"
 	attack_verb = list("picks","impales")
 	hitsound = list('sound/combat/hits/pick/genpick (1).ogg', 'sound/combat/hits/pick/genpick (2).ogg')
+	item_damage_type = "stab"
 	animname = "strike"
 	blade_class = BCLASS_PICK
 	chargetime = 0
@@ -302,6 +318,7 @@
 	warnie = "aimwarn"
 	chargetime = 0.1
 	no_early_release = FALSE
+	item_damage_type = "stab"
 	noaa = TRUE
 	charging_slowdown = 2
 	warnoffset = 20
@@ -315,6 +332,7 @@
 	icon_state = "inarc"
 	tranged = 1
 	warnie = "aimwarn"
+	item_damage_type = "blunt"
 	chargetime = 0
 	no_early_release = FALSE
 	noaa = TRUE
@@ -339,7 +357,7 @@
 	icon_state = "inpunch"
 	attack_verb = list("punches", "jabs", "clocks", "strikes")
 	chargetime = 0
-	animname = "blank22"
+	animname = "punch"
 	hitsound = list('sound/combat/hits/punch/punch (1).ogg', 'sound/combat/hits/punch/punch (2).ogg', 'sound/combat/hits/punch/punch (3).ogg')
 	misscost = 5
 	releasedrain = 5
@@ -350,6 +368,7 @@
 	blade_class = BCLASS_PUNCH
 	miss_text = "swings a fist at the air!"
 	miss_sound = "punchwoosh"
+	item_damage_type = "blunt"
 
 /datum/intent/unarmed/punch/rmb_ranged(atom/target, mob/user)
 	if(ismob(target))
@@ -374,6 +393,7 @@
 	rmb_ranged = TRUE
 	misscost = 5
 	releasedrain = 10
+	item_damage_type = "blunt"
 
 /datum/intent/unarmed/shove/rmb_ranged(atom/target, mob/user)
 	if(ismob(target))
@@ -398,6 +418,7 @@
 	misscost = 5
 	candodge = TRUE
 	canparry = FALSE
+	item_damage_type = "blunt"
 
 /datum/intent/unarmed/grab/rmb_ranged(atom/target, mob/user)
 	if(ismob(target))
@@ -435,7 +456,7 @@
 	name = "headbutt"
 	icon_state = "instrike"
 	attack_verb = list("headbutts", "rams")
-	animname = "blank22"
+	animname = "smash"
 	blade_class = BCLASS_BLUNT
 	hitsound = "punch_hard"
 	chargetime = 0
@@ -443,12 +464,15 @@
 	swingdelay = 0
 	candodge = TRUE
 	canparry = TRUE
+	item_damage_type = "blunt"
+	miss_text = "thrusts their head at nothing!"
+	miss_sound = PUNCHWOOSH
 
 /datum/intent/simple/claw
 	name = "claw"
 	icon_state = "inclaw"
 	attack_verb = list("slashes", "claws")
-	animname = "blank22"
+	animname = "claw"
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
 	chargetime = 0
@@ -457,6 +481,7 @@
 	candodge = TRUE
 	canparry = TRUE
 	miss_text = "slashes the air!"
+	item_damage_type = "slash"
 
 /datum/intent/simple/peck
 	name = "peck"
@@ -471,12 +496,13 @@
 	candodge = TRUE
 	canparry = TRUE
 	miss_text = "pecks the air!"
+	item_damage_type = "stab"
 
 /datum/intent/simple/bite
 	name = "bite"
 	icon_state = "instrike"
 	attack_verb = list("bites")
-	animname = "blank22"
+	animname = "bite"
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
 	chargetime = 0
@@ -484,6 +510,8 @@
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
+	item_damage_type = "stab"
+	miss_text = "bites the air!"
 
 //Applies no wounds.
 /datum/intent/simple/touch
@@ -503,7 +531,7 @@
 	name = "claw"
 	icon_state = "inclaw"
 	attack_verb = list("claws", "scratches", "rends", "tears")
-	animname = "cut"
+	animname = "claw"
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
 	penfactor = 20
@@ -516,25 +544,13 @@
 	releasedrain = 5
 	swingdelay = 0
 	rmb_ranged = TRUE
-
-/datum/intent/unarmed/wwolf
-	name = "claw"
-	icon_state = "inclaw"
-	attack_verb = list("claws", "mauls", "eviscerates")
-	animname = "cut"
-	blade_class = BCLASS_CHOP
-	hitsound = "genslash"
-	penfactor = 40
-	candodge = TRUE
-	canparry = TRUE
-	miss_text = "slashes the air!"
-	miss_sound = "bluntwooshlarge"
+	item_damage_type = "slash"
 
 /datum/intent/unarmed/ascendedclaw
 	name = "claw"
 	icon_state = "inclaw"
 	attack_verb = list("claws", "mauls", "eviscerates")
-	animname = "cut"
+	animname = "claw"
 	blade_class = BCLASS_CHOP
 	hitsound = "genslash"
 	penfactor = 131
@@ -543,6 +559,7 @@
 	canparry = TRUE
 	miss_text = "slashes the air!"
 	miss_sound = "bluntwooshlarge"
+	item_damage_type = "slash"
 
 /datum/intent/simple/sting
 	name = "sting"
@@ -557,12 +574,13 @@
 	candodge = FALSE
 	canparry = FALSE
 	miss_text = "stings the air!"
+	item_damage_type = "stab"
 
 /datum/intent/simple/bigbite
 	name = "big bite"
 	icon_state = "instrike"
 	attack_verb = list("gnashes", "viciously bites")
-	animname = "blank22"
+	animname = "bite"
 	blade_class = BCLASS_CHOP
 	hitsound = "smallslash"
 	chargetime = 0
@@ -570,12 +588,15 @@
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
+	item_damage_type = "stab"
+	miss_text = "bites the air!"
+	miss_sound = PUNCHWOOSH
 
 /datum/intent/simple/stab
 	name = "stab"
 	icon_state = "instrike"
 	attack_verb = list("impales", "stabs")
-	animname = "blank22"
+	animname = "stab"
 	blade_class = BCLASS_STAB
 	hitsound = "smallslash"
 	chargetime = 0
@@ -584,12 +605,13 @@
 	candodge = TRUE
 	canparry = TRUE
 	miss_text = "stabs the air!"
+	item_damage_type = "stab"
 
 /datum/intent/simple/axe
 	name = "hack"
 	icon_state = "instrike"
 	attack_verb = list("hacks at", "chops at", "bashes")
-	animname = "blank22"
+	animname = "chop"
 	blade_class = BCLASS_CUT
 	hitsound = list("genchop", "genslash")
 	chargetime = 0
@@ -597,12 +619,13 @@
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE
+	item_damage_type = "slash"
 
 /datum/intent/simple/spear
 	name = "spear"
 	icon_state = "instrike"
 	attack_verb = list("stabs", "skewers", "bashes")
-	animname = "blank22"
+	animname = "stab"
 	blade_class = BCLASS_CUT
 	hitsound = list("genthrust", "genstab")
 	chargetime = 0
@@ -610,3 +633,36 @@
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE
+	item_damage_type = "stab"
+
+/datum/intent/simple/wereclaw
+	name = "claw"
+	icon_state = "instrike"
+	attack_verb = list("claws", "pecks")
+	animname = "claw"
+	blade_class = BCLASS_CHOP
+	hitsound = "genslash"
+	chargetime = 0
+	penfactor = 10
+	swingdelay = 3
+	candodge = TRUE
+	canparry = TRUE
+	miss_text = "slashes the air!"
+	miss_sound = BLADEWOOSH_LARGE
+	item_damage_type = "slash"
+
+/datum/intent/simple/werebite
+	name = "bite"
+	icon_state = "instrike"
+	attack_verb = list("bites")
+	animname = "bite"
+	blade_class = BCLASS_BITE
+	hitsound = "smallslash"
+	chargetime = 0
+	penfactor = 30
+	swingdelay = 3
+	candodge = TRUE
+	canparry = TRUE
+	miss_text = "bites the air!"
+	miss_sound = PUNCHWOOSH
+	item_damage_type = "stab"

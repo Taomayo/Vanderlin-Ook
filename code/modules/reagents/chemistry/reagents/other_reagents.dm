@@ -400,7 +400,7 @@
 			else
 				M.visible_message("<b>[M]</b> flexes [M.p_their()] arms.")
 	if(prob(10))
-		M.say(pick("Shit was SO cash.", "You are everything bad in the world.", "What sports do you play, other than 'jack off to naked drawn Japanese people?'", "Don???t be a stranger. Just hit me with my best shot.", "My name is John and I hate every single one of you."), forced = /datum/reagent/spraytan)
+		M.say(pick("Shit was SO cash.", "You are everything bad in the world.", "What sports do you play, other than 'Ramming your head into a brick wall?'", "Don???t be a stranger. Just hit me with my best shot.", "My name is John and I hate every single one of you."), forced = /datum/reagent/spraytan)
 	..()
 	return
 
@@ -451,56 +451,6 @@
 		to_chat(H, "<span class='warning'>You've become \a [lowertext(initial(species_type.name))]!</span>")
 	..()
 
-/datum/reagent/mutationtoxin/felinid
-	name = "Felinid Mutation Toxin"
-	color = "#5EFF3B" //RGB: 94, 255, 59
-	race = /datum/species/human/felinid
-	taste_description = "something nyat good"
-
-/datum/reagent/mutationtoxin/lizard
-	name = "Lizard Mutation Toxin"
-	description = "A lizarding toxin."
-	color = "#5EFF3B" //RGB: 94, 255, 59
-	race = /datum/species/lizard
-	taste_description = "dragon's breath but not as cool"
-
-/datum/reagent/mutationtoxin/abductor
-	name = "Abductor Mutation Toxin"
-	description = "An alien toxin."
-	color = "#5EFF3B" //RGB: 94, 255, 59
-	race = /datum/species/abductor
-	taste_description = "something out of this world... no, universe!"
-
-/datum/reagent/mutationtoxin/android
-	name = "Android Mutation Toxin"
-	description = "A robotic toxin."
-	color = "#5EFF3B" //RGB: 94, 255, 59
-	race = /datum/species/android
-	taste_description = "circuitry and steel"
-
-//BLACKLISTED RACES
-/datum/reagent/mutationtoxin/skeleton
-	name = "Skeleton Mutation Toxin"
-	description = "A scary toxin."
-	color = "#5EFF3B" //RGB: 94, 255, 59
-	race = /datum/species/skeleton
-	taste_description = "milk... and lots of it"
-
-/datum/reagent/mutationtoxin/zombie
-	name = "Zombie Mutation Toxin"
-	description = "An undead toxin."
-	color = "#5EFF3B" //RGB: 94, 255, 59
-	race = /datum/species/zombie //Not the infectious kind. The days of xenobio zombie outbreaks are long past.
-	taste_description = "brai...nothing in particular"
-
-//DANGEROUS RACES
-/datum/reagent/mutationtoxin/shadow
-	name = "Shadow Mutation Toxin"
-	description = "A dark toxin."
-	color = "#5EFF3B" //RGB: 94, 255, 59
-	race = /datum/species/shadow
-	taste_description = "the night"
-
 #undef MUT_MSG_IMMEDIATE
 #undef MUT_MSG_EXTENDED
 #undef MUT_MSG_ABOUT2TURN
@@ -540,18 +490,6 @@
 	color = "#808080" // rgb: 128, 128, 128
 	taste_mult = 0 // oderless and tasteless
 
-/datum/reagent/oxygen/reaction_obj(obj/O, reac_volume)
-	if((!O) || (!reac_volume))
-		return 0
-	var/temp = holder ? holder.chem_temp : T20C
-	O.atmos_spawn_air("o2=[reac_volume/2];TEMP=[temp]")
-
-/datum/reagent/oxygen/reaction_turf(turf/open/T, reac_volume)
-	if(istype(T))
-		var/temp = holder ? holder.chem_temp : T20C
-		T.atmos_spawn_air("o2=[reac_volume/2];TEMP=[temp]")
-	return
-
 /datum/reagent/copper
 	name = "Copper"
 	description = "A highly ductile metal. Things made out of copper aren't very durable, but it makes a decent material for electrical wiring."
@@ -566,17 +504,6 @@
 	color = "#808080" // rgb: 128, 128, 128
 	taste_mult = 0
 
-/datum/reagent/nitrogen/reaction_obj(obj/O, reac_volume)
-	if((!O) || (!reac_volume))
-		return 0
-	var/temp = holder ? holder.chem_temp : T20C
-	O.atmos_spawn_air("n2=[reac_volume/2];TEMP=[temp]")
-
-/datum/reagent/nitrogen/reaction_turf(turf/open/T, reac_volume)
-	if(istype(T))
-		var/temp = holder ? holder.chem_temp : T20C
-		T.atmos_spawn_air("n2=[reac_volume/2];TEMP=[temp]")
-	return
 
 /datum/reagent/hydrogen
 	name = "Hydrogen"
@@ -633,7 +560,7 @@
 	taste_description = "chlorine"
 
 /datum/reagent/chlorine/on_mob_life(mob/living/carbon/M)
-	M.take_bodypart_damage(1*REM, 0, 0, 0)
+	M.take_bodypart_damage(1*REM, 0, 0)
 	. = 1
 	..()
 
@@ -721,12 +648,7 @@
 	description = "A jade-green metallic chemical element in the actinide series, weakly radioactive."
 	reagent_state = SOLID
 	color = "#5E9964" //this used to be silver, but liquid uranium can still be green and it's more easily noticeable as uranium like this so why bother?
-	taste_description = "the inside of a reactor"
-	var/irradiation_level = 1
-
-/datum/reagent/uranium/on_mob_life(mob/living/carbon/M)
-	M.apply_effect(irradiation_level/M.metabolism_efficiency,EFFECT_IRRADIATE,0)
-	..()
+	taste_description = "like metal."
 
 /datum/reagent/uranium/reaction_turf(turf/T, reac_volume)
 	if(reac_volume >= 3)
@@ -741,7 +663,6 @@
 	reagent_state = SOLID
 	color = "#00CC00" // ditto
 	taste_description = "the colour blue and regret"
-	irradiation_level = 2*REM
 
 /datum/reagent/bluespace
 	name = "Bluespace Dust"
@@ -941,18 +862,6 @@
 	color = "#B0B0B0" // rgb : 192, 192, 192
 	taste_description = "something unknowable"
 
-/datum/reagent/carbondioxide/reaction_obj(obj/O, reac_volume)
-	if((!O) || (!reac_volume))
-		return 0
-	var/temp = holder ? holder.chem_temp : T20C
-	O.atmos_spawn_air("co2=[reac_volume/5];TEMP=[temp]")
-
-/datum/reagent/carbondioxide/reaction_turf(turf/open/T, reac_volume)
-	if(istype(T))
-		var/temp = holder ? holder.chem_temp : T20C
-		T.atmos_spawn_air("co2=[reac_volume/5];TEMP=[temp]")
-	return
-
 /datum/reagent/nitrous_oxide
 	name = "Nitrous Oxide"
 	description = "A potent oxidizer used as fuel in rockets and as an anaesthetic during surgery."
@@ -960,17 +869,6 @@
 	metabolization_rate = 1.5 * REAGENTS_METABOLISM
 	color = "#808080"
 	taste_description = "sweetness"
-
-/datum/reagent/nitrous_oxide/reaction_obj(obj/O, reac_volume)
-	if((!O) || (!reac_volume))
-		return 0
-	var/temp = holder ? holder.chem_temp : T20C
-	O.atmos_spawn_air("n2o=[reac_volume/5];TEMP=[temp]")
-
-/datum/reagent/nitrous_oxide/reaction_turf(turf/open/T, reac_volume)
-	if(istype(T))
-		var/temp = holder ? holder.chem_temp : T20C
-		T.atmos_spawn_air("n2o=[reac_volume/5];TEMP=[temp]")
 
 /datum/reagent/nitrous_oxide/reaction_mob(mob/living/M, method=TOUCH, reac_volume)
 	if(method == VAPOR)
@@ -1005,7 +903,6 @@
 	..()
 
 /datum/reagent/stimulum/on_mob_life(mob/living/carbon/M)
-	M.adjustStaminaLoss(-2*REM, 0)
 	M.adjustToxLoss(current_cycle*0.1*REM, 0) // 1 toxin damage per cycle at cycle 10
 	..()
 
@@ -1355,6 +1252,13 @@
 	color = "#60A584" // rgb: 96, 165, 132
 	taste_description = "cool salt"
 
+/datum/reagent/charcoal
+	name = "Charcoal"
+	description = "Burnt wood."
+	reagent_state = SOLID
+	color = "#020202" // rgb: 96, 165, 132
+	taste_description = "ash"
+
 /datum/reagent/lye
 	name = "Lye"
 	description = "Also known as sodium hydroxide. As a profession making this is somewhat underwhelming."
@@ -1387,37 +1291,6 @@
 	..()
 
 //Misc reagents
-
-/datum/reagent/romerol
-	name = "Romerol"
-	// the REAL zombie powder
-	description = "Romerol is a highly experimental bioterror agent \
-		which causes dormant nodules to be etched into the grey matter of \
-		the subject. These nodules only become active upon death of the \
-		host, upon which, the secondary structures activate and take control \
-		of the host body."
-	color = "#123524" // RGB (18, 53, 36)
-	metabolization_rate = INFINITY
-	can_synth = FALSE
-	taste_description = "brains"
-
-/datum/reagent/romerol/reaction_mob(mob/living/carbon/human/H, method=TOUCH, reac_volume)
-	// Silently add the zombie infection organ to be activated upon death
-	if(!H.getorganslot(ORGAN_SLOT_ZOMBIE))
-		var/obj/item/organ/zombie_infection/nodamage/ZI = new()
-		ZI.Insert(H)
-	..()
-
-/datum/reagent/magillitis
-	name = "Magillitis"
-	description = "An experimental serum which causes rapid muscular growth in Hominidae. Side-affects may include hypertrichosis, violent outbursts, and an unending affinity for bananas."
-	reagent_state = LIQUID
-	color = "#00f041"
-
-/datum/reagent/magillitis/on_mob_life(mob/living/carbon/M)
-	..()
-	if((ismonkey(M) || ishuman(M)) && current_cycle >= 10)
-		M.gorillize()
 
 /datum/reagent/growthserum
 	name = "Growth Serum"
@@ -1523,21 +1396,6 @@
 		M.dizziness = CLAMP(M.dizziness + 3, 0, 5)
 	if(prob(20))
 		to_chat(M, "You feel confused and disorientated.")
-	..()
-
-/datum/reagent/peaceborg/tire
-	name = "Tiring Solution"
-	description = "An extremely weak stamina-toxin that tires out the target. Completely harmless."
-	metabolization_rate = 1.5 * REAGENTS_METABOLISM
-	taste_description = "tiredness"
-	can_synth = TRUE
-
-/datum/reagent/peaceborg/tire/on_mob_life(mob/living/carbon/M)
-	var/healthcomp = (100 - M.health)	//DOES NOT ACCOUNT FOR ADMINBUS THINGS THAT MAKE YOU HAVE MORE THAN 200/210 HEALTH, OR SOMETHING OTHER THAN A HUMAN PROCESSING THIS.
-	if(M.getStaminaLoss() < (45 - healthcomp))	//At 50 health you would have 200 - 150 health meaning 50 compensation. 60 - 50 = 10, so would only do 10-19 stamina.)
-		M.adjustStaminaLoss(10)
-	if(prob(30))
-		to_chat(M, "You should sit down and take a rest...")
 	..()
 
 /datum/reagent/spider_extract

@@ -126,6 +126,7 @@
 /mob/living/carbon/human/species/orc/proc/configure_mind()
 	if(!mind)
 		mind = new /datum/mind(src)
+	mind.current = src
 
 	mind.adjust_skillrank(/datum/skill/combat/polearms, 3, TRUE)
 	mind.adjust_skillrank(/datum/skill/combat/swords, 3, TRUE)
@@ -233,7 +234,7 @@
 			if(B.rotted)
 				var/turf/open/T = C.loc
 				if(istype(T))
-					T.add_pollutants(/datum/pollutant/rot, 1)
+					T.pollute_turf(/datum/pollutant/rot, 10)
 	if(should_update)
 		if(amount > 20 MINUTES)
 			C.update_body()
@@ -251,10 +252,10 @@
 
 /datum/outfit/job/roguetown/npc/orc/ambush/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.STASTR = 13
-	H.STASPD = 12
-	H.STACON = 13
-	H.STAEND = 13
+	H.TOTALSTR = 13
+	H.TOTALSPD = 12
+	H.TOTALCON = 13
+	H.TOTALEND = 13
 	var/loadout = rand(1,5)
 	switch(loadout)
 		if(1) //Stolen Tool armed raider
@@ -346,10 +347,10 @@
 
 /datum/outfit/job/roguetown/npc/orc/tribal/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.STASTR = 13
-	H.STASPD = 13
-	H.STACON = 13
-	H.STAEND = 13
+	H.TOTALSTR = 13
+	H.TOTALSPD = 13
+	H.TOTALCON = 13
+	H.TOTALEND = 13
 	var/loadout = rand(1,5)
 	switch(loadout)
 		if(1) //Dual Axe Warrior
@@ -397,10 +398,10 @@
 
 /datum/outfit/job/roguetown/npc/orc/warrior/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.STASTR = 13
-	H.STASPD = 13
-	H.STACON = 14
-	H.STAEND = 14
+	H.TOTALSTR = 13
+	H.TOTALSPD = 13
+	H.TOTALCON = 14
+	H.TOTALEND = 14
 	var/loadout = rand(1,5)
 	switch(loadout)
 		if(1) //Marauder with Sword and Shield
@@ -469,10 +470,10 @@
 
 /datum/outfit/job/roguetown/npc/orc/marauder/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.STASTR = 12
-	H.STASPD = 12
-	H.STACON = 13
-	H.STAEND = 13
+	H.TOTALSTR = 12
+	H.TOTALSPD = 12
+	H.TOTALCON = 13
+	H.TOTALEND = 13
 	var/loadout = rand(1,5)
 	switch(loadout)
 		if(1) //Marauder with Sword and Shield
@@ -524,10 +525,10 @@
 
 /datum/outfit/job/roguetown/npc/orc/warlord/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.STASTR = 14
-	H.STASPD = 14
-	H.STACON = 14
-	H.STAEND = 14
+	H.TOTALSTR = 14
+	H.TOTALSPD = 14
+	H.TOTALCON = 14
+	H.TOTALEND = 14
 	var/loadout = rand(1,5)
 	switch(loadout)
 		if(1) //Halberd Warlord

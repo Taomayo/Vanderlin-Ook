@@ -14,27 +14,24 @@
 	name = "Elf"
 	id = "elf"
 	desc = "<b>Elf</b><br>\
-	Elves, the first race of Grimoria is characterized by lengthened age, \
+	Elves, the first species of Psydonia, are characterized by lengthened age, \
 	low fertility, and magical aptitude originating from a vast array of tribal cultures and sub-races. \
-	Previously immortal, now mortal as punishment by the Forgotten God for their crimes \
-	against the other races in their pre-historic days: enslavement, \
-	hunting as a game, and other horrendous acts. \
-	Elves have since been in rapid decline due to their divine judgment, \
-	enclaves are few and scattered around the various realms of their ancestral homeland of Grimoria. \
-	Now, the Elves have integrated into the multiple races realms in the known world, \
-	some forming relationships and strong bonds."
+	With the ascension of Zizo, the entire culture of snow-elves was all but destroyed, \
+	leading the remaining tribes to live in fear and paranoia of suffering the same fate. \
+	Many elves sought safety through mixing culture, positioning themselves under the watchful guard of their stronger humen counterparts. \
+	A longstanding fued remains between elves and dwarves. Elven kind has never forgiven the dwarves for their destruction of homeland and \
+	pillaging of natural resources within the former snow-elf territory. To elves, it was the greatest signifier of disrespect for those lost. "
 
 	skin_tone_wording = "Tribal Identity"
 
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS,OLDGREY)
 	inherent_traits = list(TRAIT_NOMOBSWAP)
-	default_features = list("mcolor" = "FFF", "ears" = "Elf", "wings" = "None")
+	default_features = list("mcolor" = "FFF", "ears" = "ElfW", "wings" = "None")
 	use_skintones = 1
-	skinned_type = /obj/item/stack/sheet/animalhide/human
 	disliked_food = NONE
 	liked_food = NONE
-	possible_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD)
+	possible_ages = list(AGE_CHILD, AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD)
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_MAGIC | MIRROR_PRIDE | RACE_SWAP | SLIME_EXTRACT
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/met.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/ft.dmi'
@@ -57,7 +54,7 @@
 	OFFSET_NECK_F = list(0,0), OFFSET_MOUTH_F = list(0,0), OFFSET_PANTS_F = list(0,1), \
 	OFFSET_SHIRT_F = list(0,1), OFFSET_ARMOR_F = list(0,1), OFFSET_UNDIES_F = list(0,1))
 	specstats = list("strength" = -1, "perception" = 1, "intelligence" = 1, "constitution" = -1, "endurance" = 0, "speed" = 2, "fortune" = 0)
-	specstats_f = list("strength" = -1, "perception" = 1, "intelligence" = 2, "constitution" = -1, "endurance" = -1, "speed" = 2, "fortune" = 0)
+	specstats_f = list("strength" = -1, "perception" = 1, "intelligence" = 1, "constitution" = -1, "endurance" = 0, "speed" = 2, "fortune" = 0)
 	enflamed_icon = "widefire"
 	patreon_req = 0
 
@@ -85,13 +82,15 @@
 
 /datum/species/elf/snow/get_skin_list()
 	return sortList(list(
-		"Snow Elf" = SKIN_COLOR_SNOW_ELF,
-		"Plain Elf" = SKIN_COLOR_PLAIN_ELF,
-		"Mountain Elf" = SKIN_COLOR_MOUNTAIN_ELF,
-		"Coastal Elf" = SKIN_COLOR_COASTAL_ELF,
-		"Wood Elf" = SKIN_COLOR_WOOD_ELF,
-		"Sea Elf" = SKIN_COLOR_SEA_ELF,
-		"Sand Elf" = SKIN_COLOR_SAND_ELF,
+		"Plain Elf" = SKIN_COLOR_PLAIN_ELF, // - (White 2)
+		"Mountain Elf" = SKIN_COLOR_MOUNTAIN_ELF, // - (White 3)
+		"Coastal Elf" = SKIN_COLOR_COASTAL_ELF, // - (White 4)
+		"Wood Elf" = SKIN_COLOR_WOOD_ELF, // - (Mediterranean 1)
+		"Sea Elf" = SKIN_COLOR_SEA_ELF, // - (Mediterranean 2)
+		"Jungle Elf" = SKIN_COLOR_JUNGLE_ELF, // - (Latin)
+		"Savannah Elf" = SKIN_COLOR_SAVANNAH_ELF, // - (Middle-Eastern)
+		"Sand Elf" = SKIN_COLOR_SAND_ELF, // - (Black 1)
+		"Crimson Elf" = SKIN_COLOR_CRIMSON_ELF, // - (Black2)
 	))
 
 /datum/species/elf/snow/get_hairc_list()
@@ -113,6 +112,7 @@
 	"brown - oats" = "584a3b",
 	"brown - grain" = "58433b",
 	"brown - soil" = "48322a",
+	"brown - bark" = "2d1300",
 
 	"red - berry" = "b23434",
 	"red - wine" = "82534c",

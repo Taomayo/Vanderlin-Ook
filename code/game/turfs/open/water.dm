@@ -19,7 +19,6 @@
 	icon = 'icons/turf/newwater.dmi'
 	icon_state = "together"
 	baseturfs = /turf/open/water
-	initial_gas_mix = OPENTURF_DEFAULT_ATMOS
 	slowdown = 20
 	var/obj/effect/overlay/water/water_overlay
 	var/obj/effect/overlay/water/top/water_top_overlay
@@ -104,11 +103,11 @@
 //				drained += (user.checkwornweight()*2)
 				if(!user.check_armor_skill())
 					drained += 40
-				if(!user.rogfat_add(drained))
+				if(!user.adjust_stamina(drained))
 					user.Immobilize(30)
 					addtimer(CALLBACK(user, TYPE_PROC_REF(/mob/living, Knockdown), 30), 10)
 
-/turf/open/water/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum)
+/turf/open/water/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum, damage_type = "blunt")
 	..()
 	playsound(src, pick('sound/foley/water_land1.ogg','sound/foley/water_land2.ogg','sound/foley/water_land3.ogg'), 100, FALSE)
 
@@ -247,7 +246,7 @@
 	if(water_top_overlay)
 		QDEL_NULL(water_top_overlay)
 
-/turf/open/water/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum)
+/turf/open/water/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum, damage_type = "blunt")
 	if(isobj(AM))
 		var/obj/O = AM
 		O.extinguish()
@@ -288,6 +287,28 @@
 	footstep = FOOTSTEP_MUD
 	barefootstep = FOOTSTEP_MUD
 	heavyfootstep = FOOTSTEP_MUD
+
+/turf/open/water/sewer/Entered(atom/movable/AM, atom/oldLoc)
+	. = ..()
+	if(isliving(AM) && !AM.throwing)
+		if(!prob(3))
+			return
+		if(iscarbon(AM))
+			var/mob/living/carbon/C = AM
+			if(HAS_TRAIT(AM, TRAIT_LEECHIMMUNE))
+				return
+			if(C.blood_volume <= 0)
+				return
+			var/zonee = list(BODY_ZONE_R_LEG,BODY_ZONE_L_LEG)
+			for(var/X in zonee)
+				var/obj/item/bodypart/BP = C.get_bodypart(X)
+				if(!BP)
+					continue
+				if(BP.skeletonized)
+					continue
+				var/obj/item/natural/worms/leech/I = new(C)
+				BP.add_embedded_object(I, silent = TRUE)
+				return .
 
 /datum/reagent/water/gross/sewer
 	color = "#705a43"
@@ -382,7 +403,7 @@
 /turf/open/water/river
 	name = "water"
 	desc = "Crystal clear water! Flowing swiflty along the river."
-	icon_state = "rivermove"
+	icon_state = "rivermove-dir"
 	icon = 'icons/turf/newwater.dmi'
 	water_level = 3
 	slowdown = 20
@@ -414,6 +435,9 @@
 /turf/open/water/river/proc/process_river()
 	river_processing = null
 	for(var/atom/movable/A in contents)
+		for(var/obj/structure/S in src)
+			if(S.obj_flags & BLOCK_Z_OUT_DOWN)
+				return
 		if((A.loc == src) && A.has_gravity())
 			A.ConveyorMove(dir)
 

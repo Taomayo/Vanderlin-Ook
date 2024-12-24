@@ -63,7 +63,7 @@
 /datum/status_effect/buff/druqks
 	id = "druqks"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/druqks
-	effectedstats = list("endurance" = 3,"speed" = 3,"fortune" = -5)
+	effectedstats = list("intelligence" = 5,"speed" = 3,"fortune" = -5)
 	duration = 2 MINUTES
 
 /datum/status_effect/buff/druqks/on_apply()
@@ -95,13 +95,13 @@
 
 /atom/movable/screen/alert/status_effect/buff/druqks
 	name = "High"
-	desc = span_nicegreen("I am tripping balls.")
+	desc = span_nicegreen("Holy shit, I am tripping balls!")
 	icon_state = "acid"
 
 /datum/status_effect/buff/ozium
 	id = "ozium"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/druqks
-	effectedstats = list("speed" = -99)
+	effectedstats = list("speed" = -5, "perception" = 2)
 	duration = 2 MINUTES
 
 /datum/status_effect/buff/ozium/on_apply()
@@ -122,7 +122,7 @@
 	id = "moondust"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/druqks
 	effectedstats = list("speed" = 3, "endurance" = 3)
-	duration = 2 MINUTES
+	duration = 1 MINUTES
 
 /datum/status_effect/buff/moondust/nextmove_modifier()
 	return 0.5
@@ -142,8 +142,8 @@
 /datum/status_effect/buff/moondust_purest
 	id = "purest moondust"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/druqks
-	effectedstats = list("speed" = 6, "endurance" = 6)
-	duration = 3 MINUTES
+	effectedstats = list("speed" = 5, "endurance" = 5)
+	duration = 2 MINUTES
 
 /datum/status_effect/buff/moondust_purest/nextmove_modifier()
 	return 0.5
@@ -218,25 +218,30 @@
 	to_chat(owner, span_warning("The feeling of lightness fades."))
 	REMOVE_TRAIT(owner, TRAIT_NOFALLDAMAGE1, MAGIC_TRAIT)
 
-/atom/movable/screen/alert/status_effect/buff/darkvision
-	name = "Darkvision"
-	desc = "I can see in the dark somewhat."
-	icon_state = "buff"
-
 /datum/status_effect/buff/darkvision
 	id = "darkvision"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/darkvision
 	duration = 10 MINUTES
 
+/atom/movable/screen/alert/status_effect/buff/darkvision
+	name = "Darkvision"
+	desc = span_nicegreen("I can see in the dark.")
+	icon_state = "buff"
+
 /datum/status_effect/buff/darkvision/on_apply()
 	. = ..()
-	to_chat(owner, span_warning("The darkness fades somewhat."))
+	var/mob/living/carbon/human/H = owner
+	var/obj/item/organ/eyes/eyes = H.getorgan(/obj/item/organ/eyes)
+	if (!eyes || eyes.lighting_alpha)
+		return
 	ADD_TRAIT(owner, TRAIT_DARKVISION, MAGIC_TRAIT)
+	owner.update_sight()
 
 /datum/status_effect/buff/darkvision/on_remove()
 	. = ..()
-	to_chat(owner, span_warning("The darkness returns to normal."))
+	to_chat(owner, span_warning("Darkness shrouds your senses once more."))
 	REMOVE_TRAIT(owner, TRAIT_DARKVISION, MAGIC_TRAIT)
+	owner.update_sight()
 
 /atom/movable/screen/alert/status_effect/buff/haste
 	name = "Haste"
@@ -346,24 +351,16 @@
 	. = ..()
 	var/mob/living/carbon/human/H = owner
 	var/obj/item/organ/eyes/eyes = H.getorgan(/obj/item/organ/eyes)
-	if(!eyes || eyes.lighting_alpha)
+	if (!eyes || eyes.lighting_alpha)
 		return
-	eyes.see_in_dark = 4
-	eyes.lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
+	ADD_TRAIT(owner, TRAIT_BESTIALSENSE, REF(src))
 	owner.update_sight()
 
 /datum/status_effect/buff/beastsense/on_remove()
 	. = ..()
-	var/mob/living/carbon/human/H = owner
-	var/obj/item/organ/eyes/eyes = H.getorgan(/obj/item/organ/eyes)
-	if(!eyes)
-		return
-	if((iself(owner)))
-		return
-	eyes.see_in_dark = 0
-	eyes.lighting_alpha = null
+	to_chat(owner, span_warning("Darkness shrouds your senses once more."))
+	REMOVE_TRAIT(owner, TRAIT_BESTIALSENSE, REF(src))
 	owner.update_sight()
-
 
 /datum/status_effect/buff/beastsense_elf
 	id = "beastsenself"
@@ -406,12 +403,65 @@
 		to_chat(C, span_warning("Dendors transformation fades, flesh shrinking back. My body aches..."))
 		C.adjustBruteLoss(10)
 		C.apply_status_effect(/datum/status_effect/debuff/barbfalter)
-		C.resize = 0.85
+		C.resize = (1/1.2)
 		C.update_transform()
 		C.AddComponent(/datum/component/footstep, FOOTSTEP_MOB_HUMAN, 1, 2)
 
 
+/*-----------------\
+|   Eora Miracles  |
+\-----------------*/
 
+/datum/status_effect/buff/divine_beauty
+	id = "divine_beauty"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/divine_beauty
+	duration = 5 MINUTES
+
+/datum/status_effect/buff/divine_beauty/on_apply()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.add_stress(/datum/stressevent/divine_beauty)
+
+/datum/status_effect/buff/divine_beauty/on_remove()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.remove_stress(/datum/stressevent/divine_beauty)
+
+/atom/movable/screen/alert/status_effect/buff/divine_beauty
+	name = "Divine Beauty"
+	desc = span_nicegreen("Everything about me feels fresh and perfect!")
+	icon_state = "beauty"
+/*-----------------\
+|   Ravox Miracles |
+\-----------------*/
+
+/datum/status_effect/buff/call_to_arms
+	id = "call_to_arms"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/call_to_arms
+	duration = 2.5 MINUTES
+	effectedstats = list(STATKEY_STR = 1, STATKEY_END = 2, STATKEY_CON = 1)
+
+/atom/movable/screen/alert/status_effect/buff/call_to_arms
+	name = "Call to Arms"
+	desc = span_bloody("THE FIGHT WILL BE BLOODY!")
+	icon_state = "call_to_arms"
+
+/*-----------------\
+|   Malum Miracles |
+\-----------------*/
+
+/datum/status_effect/buff/craft_buff
+	id = "crafting_buff_malum"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/craft_buff
+	duration = 2.5 MINUTES
+	effectedstats = list(STATKEY_INT = 3)
+
+/atom/movable/screen/alert/status_effect/buff/craft_buff
+	name = "Exquisite Craftsdwarfship"
+	desc = span_notice("I am inspired to create!")
+	icon_state = "malum_buff"
 
 // BARDIC BUFFS BELOW
 

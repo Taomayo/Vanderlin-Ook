@@ -159,57 +159,6 @@
 	..()
 	. = 1
 
-/datum/reagent/drug/krokodil
-	name = "Krokodil"
-	description = "Cools and calms you down. If overdosed it will deal significant Brain and Toxin damage. If addicted it will begin to deal fatal amounts of Brute damage as the subject's skin falls off."
-	reagent_state = LIQUID
-	color = "#0064B4"
-	overdose_threshold = 20
-	addiction_threshold = 15
-
-
-/datum/reagent/drug/krokodil/on_mob_life(mob/living/carbon/M)
-	var/high_message = pick("You feel calm.", "You feel collected.", "You feel like you need to relax.")
-	if(prob(5))
-		to_chat(M, "<span class='notice'>[high_message]</span>")
-	SEND_SIGNAL(M, COMSIG_ADD_MOOD_EVENT, "smacked out", /datum/mood_event/narcotic_heavy, name)
-	..()
-
-/datum/reagent/drug/krokodil/overdose_process(mob/living/M)
-	M.adjustOrganLoss(ORGAN_SLOT_BRAIN, 0.25*REM)
-	M.adjustToxLoss(0.25*REM, 0)
-	..()
-	. = 1
-
-/datum/reagent/drug/krokodil/addiction_act_stage1(mob/living/M)
-	M.adjustOrganLoss(ORGAN_SLOT_BRAIN, 2*REM)
-	M.adjustToxLoss(2*REM, 0)
-	..()
-	. = 1
-
-/datum/reagent/drug/krokodil/addiction_act_stage2(mob/living/M)
-	if(prob(25))
-		to_chat(M, "<span class='danger'>My skin feels loose...</span>")
-	..()
-
-/datum/reagent/drug/krokodil/addiction_act_stage3(mob/living/M)
-	if(prob(25))
-		to_chat(M, "<span class='danger'>My skin starts to peel away...</span>")
-	M.adjustBruteLoss(3*REM, 0)
-	..()
-	. = 1
-
-/datum/reagent/drug/krokodil/addiction_act_stage4(mob/living/carbon/human/M)
-	CHECK_DNA_AND_SPECIES(M)
-	if(!istype(M.dna.species, /datum/species/krokodil_addict))
-		to_chat(M, "<span class='danger'>My skin falls off easily!</span>")
-		M.adjustBruteLoss(50*REM, 0) // holy shit my skin just FELL THE FUCK OFF
-		M.set_species(/datum/species/krokodil_addict)
-	else
-		M.adjustBruteLoss(5*REM, 0)
-	..()
-	. = 1
-
 /datum/reagent/drug/methamphetamine
 	name = "Methamphetamine"
 	description = "Reduces stun times by about 300%, speeds the user up, and allows the user to quickly recover stamina while dealing a small amount of Brain damage. If overdosed the subject will move randomly, laugh randomly, drop items and suffer from Toxin and Brain damage. If addicted the subject will constantly jitter and drool, before becoming dizzy and losing motor control and eventually suffer heavy toxin damage."
@@ -237,7 +186,6 @@
 	M.AdjustUnconscious(-40, FALSE)
 	M.AdjustParalyzed(-40, FALSE)
 	M.AdjustImmobilized(-40, FALSE)
-	M.adjustStaminaLoss(-2, 0)
 	M.Jitter(2)
 	M.adjustOrganLoss(ORGAN_SLOT_BRAIN, rand(1,4))
 	if(prob(5))
@@ -304,7 +252,6 @@
 	var/high_message = pick("You feel amped up.", "You feel ready.", "You feel like you can push it to the limit.")
 	if(prob(5))
 		to_chat(M, "<span class='notice'>[high_message]</span>")
-	M.adjustStaminaLoss(-18, 0)
 	M.adjustToxLoss(0.5, 0)
 	if(prob(50))
 		M.losebreath++
@@ -426,7 +373,6 @@
 		M.emote(pick("twitch","drool"))
 	if(prob(20))
 		M.losebreath++
-		M.adjustStaminaLoss(4, 0)
 	if(prob(15))
 		M.adjustToxLoss(2, 0)
 	..()

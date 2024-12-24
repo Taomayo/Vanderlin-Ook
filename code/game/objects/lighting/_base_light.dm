@@ -22,10 +22,6 @@
 	desc = ""
 	layer = WALL_OBJ_LAYER
 	max_integrity = 100
-	use_power = ACTIVE_POWER_USE
-	idle_power_usage = 2
-	active_power_usage = 20
-	power_channel = LIGHT //Lights are calc'd via area so they dont need to be in the machine list
 	var/on = FALSE					// 1 if on, 0 if off
 	var/on_gs = FALSE
 	var/static_power_used = 0
@@ -184,10 +180,8 @@
 				if(status == LIGHT_OK && trigger)
 					explode()
 			else
-				use_power = ACTIVE_POWER_USE
 				set_light(BR, light_inner_range, PO, l_color = CO)
 	else
-		use_power = IDLE_POWER_USE
 		emergency_mode = TRUE
 		START_PROCESSING(SSmachines, src)
 	update_icon()
@@ -308,16 +302,9 @@
 	on = TRUE
 	update()
 
-/obj/machinery/light/tesla_act(power, tesla_flags)
-	if(tesla_flags & TESLA_MACHINE_EXPLOSIVE)
-		explosion(src,0,0,0,flame_range = 5, adminlog = 0)
-		qdel(src)
-	else
-		return ..()
-
 // called when on fire
 
-/obj/machinery/light/temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
+/obj/machinery/light/temperature_expose(exposed_temperature, exposed_volume)
 	if(prob(max(0, exposed_temperature - 673)))   //0% at <400C, 100% at >500C
 		break_light_tube()
 

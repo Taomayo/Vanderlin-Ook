@@ -23,6 +23,8 @@
 	var/next_passive_detect = 0
 	var/flee_in_pain = FALSE
 	var/stand_attempts = 0
+	var/ai_currently_active = FALSE
+	var/attack_speed = 0
 
 	var/returning_home = FALSE
 
@@ -143,7 +145,7 @@
 				for(var/i = 0; i < maxStepsTick; ++i)
 					if(!IsDeadOrIncap())
 						if(myPath.len >= 1)
-							walk_to(src,myPath[1],0,update_movespeed())
+							walk_to(src,turf_of_target,0,update_movespeed())
 							myPath -= myPath[1]
 				return 1
 	else
@@ -188,19 +190,6 @@
 	if(istype(I, /obj/item))
 		if(put_in_hands(I))
 			return TRUE
-
-//	// CLOTHING
-//	else if(istype(I, /obj/item/clothing))
-//		var/obj/item/clothing/C = I
-//		monkeyDrop(C)
-//		addtimer(CALLBACK(src, PROC_REF(pickup_and_wear), C), 5)
-//		return TRUE
-
-	// EVERYTHING ELSE
-//	else
-//		if(!get_item_for_held_index(1) || !get_item_for_held_index(2))
-//			put_in_hands(I)
-//			return TRUE
 
 	blacklistItems[I] ++
 	return FALSE
@@ -289,13 +278,6 @@
 					if(I.force > 7)
 						equip_item(I)
 
-//			// switch targets
-//			if(prob(15))
-//				for(var/mob/living/L in around)
-//					if((L != target) && should_target(L) && (L.stat == CONSCIOUS))
-//						retaliate(L)
-//						return TRUE
-
 			// if can't reach target for long enough, go idle
 			if(frustration >= 15)
 				back_to_idle()
@@ -317,24 +299,6 @@
 		if(AI_FLEE)
 			back_to_idle()
 			return TRUE
-/*		if(AI_FLEE)
-			var/list/around = view(src, 7)
-			// flee from anyone who attacked us and we didn't beat down
-			for(var/mob/living/L in around)
-				if( enemies[L] && (L.stat != DEAD) )
-					target = L
-					break
-
-			if(target != null)
-				frustration++
-				if(Adjacent(target))
-					retalitate(target)
-					return TRUE
-				walk_away(src, target, 5, update_movespeed())
-			else
-				back_to_idle()
-
-			return TRUE*/
 
 	return IsStandingStill()
 
@@ -384,7 +348,7 @@
 		used_intent = a_intent
 		UnarmedAttack(L,1)
 
-	var/adf = used_intent.clickcd
+	var/adf = ((used_intent.clickcd + 8) - round((src.STASPD - 10) / 2) - attack_speed)
 	if(istype(rmb_intent, /datum/rmb_intent/aimed))
 		adf = round(adf * 1.4)
 	if(istype(rmb_intent, /datum/rmb_intent/swift))
@@ -394,18 +358,6 @@
 	// no de-aggro
 	if(aggressive)
 		return
-
-//	// if we arn't enemies, we were likely recruited to attack this target, jobs done if we calm down so go back to idle
-//	if(!enemies[L])
-//		if( target == L )
-//			back_to_idle()
-//		return // already de-aggroed
-//
-	// if we are not angry at our target, go back to idle
-//	if(L in enemies)
-//		enemies.Remove(L)
-//		if( target == L )
-//			back_to_idle()
 
 // get angry at a mob
 /mob/living/carbon/human/proc/retaliate(mob/living/L)
@@ -454,9 +406,9 @@
 		probby += 85 //armor is loud as fuck
 		if (sneak_bonus)
 			probby += sneak_bonus // you don't get sneak bonus in heavy armor at all, on top of that
-	if (target.badluck(5))
+	if (target.stat_roll(STATKEY_LCK,5,10,TRUE))
 		probby += (10 - target.STALUC) * 5 // drop 5% chance for every bit of fortune we're missing
-	if (target.goodluck(5))
+	if (target.stat_roll(STATKEY_LCK,5,10))
 		probby -= (10 - target.STALUC) * 5 // make it 5% harder for every bit of fortune over 10 that we do have
 
 	if (prob(probby))

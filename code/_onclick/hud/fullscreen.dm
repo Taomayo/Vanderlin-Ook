@@ -134,26 +134,22 @@
 	layer = 20.511
 	plane = FULLSCREEN_PLANE
 
-/atom/movable/screen/fullscreen/crit/zeth
-	icon = 'icons/mob/z.dmi'
-	icon_state = "zeth"
-	name = "NECRA"
+/atom/movable/screen/fullscreen/crit/dying
+	icon = 'icons/roguetown/underworld/charon_servant.dmi'
+	icon_state = "servant"
+	name = "REAPER"
 //	layer = 20.09
 	layer = 20.512
-	plane = FULLSCREEN_PLANE
+	plane = ABOVE_HUD_PLANE
 	mouse_opacity = 1
 	nomouseover = FALSE
 
-/atom/movable/screen/fullscreen/crit/zeth/Click()
+/atom/movable/screen/fullscreen/crit/dying/Click()
 	if(isliving(usr))
 		var/mob/living/L = usr
 		if(L.stat != DEAD)
 			if(alert("Are you done living?", "", "Yes", "No") == "Yes")
-				if(!L.succumb_timer || (world.time < L.succumb_timer + 111 SECONDS) )
-					var/ttime =  round(((L.succumb_timer + 111 SECONDS) - world.time) / 10)
-					to_chat(L, "<span class='redtext'>I'm not dead enough yet. [ttime]</span>")
-				else
-					L.succumb(reaper = TRUE)
+				L.succumb(reaper = TRUE)
 
 /atom/movable/screen/fullscreen/crit/death
 	icon_state = "DD"

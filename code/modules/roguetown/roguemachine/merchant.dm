@@ -141,8 +141,8 @@
 
 
 /obj/structure/roguemachine/merchantvend/attackby(obj/item/P, mob/user, params)
-	if(istype(P, /obj/item/roguekey))
-		var/obj/item/roguekey/K = P
+	if(istype(P, /obj/item/key))
+		var/obj/item/key/K = P
 		if(K.lockid == lockid)
 			locked = !locked
 			playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
@@ -152,9 +152,9 @@
 			playsound(src, 'sound/misc/machineno.ogg', 100, FALSE, -1)
 			to_chat(user, "<span class='warning'>Wrong key.</span>")
 			return
-	if(istype(P, /obj/item/keyring))
-		var/obj/item/keyring/K = P
-		for(var/obj/item/roguekey/KE in K.keys)
+	if(istype(P, /obj/item/storage/keyring))
+		var/obj/item/storage/keyring/K = P
+		for(var/obj/item/key/KE in K.contents)
 			if(KE.lockid == lockid)
 				locked = !locked
 				playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
@@ -175,17 +175,16 @@
 	if(!usr.canUseTopic(src, BE_CLOSE) || locked)
 		return
 	if(href_list["buy"])
-		var/mob/M = usr
 		var/path = text2path(href_list["buy"])
 		if(!ispath(path, /datum/supply_pack))
 			message_admins("MERCHANT [usr.key] IS TRYING TO BUY A [path] WITH THE GOLDFACE. THIS IS AN EXPLOIT.")
 			return
-		var/datum/supply_pack/PA = new path
-		var/cost = PA.cost
+		var/datum/supply_pack/picked_pack = new path
+		var/cost = picked_pack.cost
 		var/tax_amt=round(SStreasury.tax_value * cost)
 		cost=cost+tax_amt
 		if(upgrade_flags & UPGRADE_NOTAX)
-			cost = PA.cost
+			cost = picked_pack.cost
 		if(budget >= cost)
 			budget -= cost
 			if(!(upgrade_flags & UPGRADE_NOTAX))
@@ -193,10 +192,14 @@
 		else
 			say("Not enough!")
 			return
-		var/pathi = pick(PA.contains)
-		var/obj/item/I = new pathi(get_turf(src))
-		M.put_in_hands(I)
-		qdel(PA)
+		if(ispath(picked_pack.contains))
+			var/obj/item/packitem = picked_pack.contains
+			new packitem(get_turf(usr))
+		else
+			for(var/in_pack in picked_pack.contains)
+				var/obj/item/packitem = in_pack
+				new packitem(get_turf(usr))
+		qdel(picked_pack)
 	if(href_list["change"])
 		if(budget > 0)
 			budget2change(budget, usr)
@@ -209,14 +212,6 @@
 			options += "Enable Paying Taxes"
 		else
 			options += "Stop Paying Taxes"
-		/*
-		if(!(upgrade_flags & UPGRADE_ARMOR))
-			options += "Purchase Armors License (50)"
-		if(!(upgrade_flags & UPGRADE_WEAPONS))
-			options += "Purchase Weapons License (35)"
-		if(!(upgrade_flags & UPGRADE_FOOD))
-			options += "Purchase Pantry License (10)"
-		*/
 		var/select = input(usr, "Please select an option.", "", null) as null|anything in options
 		if(!select)
 			return
@@ -229,38 +224,6 @@
 			if("Stop Paying Taxes")
 				upgrade_flags |= UPGRADE_NOTAX
 				playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
-			/*
-			if("Purchase Armors License (50)")
-				if(upgrade_flags & UPGRADE_ARMOR)
-					return
-				if(budget <50)
-					say("Ask again when you're serious.")
-					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					return
-				budget -= 50
-				upgrade_flags |= UPGRADE_ARMOR
-				playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
-			if("Purchase Weapons License (35)")
-				if(upgrade_flags & UPGRADE_WEAPONS)
-					return
-				if(budget <35)
-					say("Ask again when you're serious.")
-					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					return
-				budget -= 35
-				upgrade_flags |= UPGRADE_WEAPONS
-				playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
-			if("Purchase Pantry License (10)")
-				if(upgrade_flags & UPGRADE_FOOD)
-					return
-				if(budget <10)
-					say("Ask again when you're serious.")
-					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					return
-				budget -= 10
-				upgrade_flags |= UPGRADE_FOOD
-				playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
-			*/
 	return attack_hand(usr)
 
 /obj/structure/roguemachine/merchantvend/attack_hand(mob/living/user)
@@ -277,45 +240,37 @@
 	var/canread = user.can_read(src, TRUE)
 	var/contents
 	contents = "<center>GOLDFACE - In the name of greed.<BR>"
-	contents += "<a href='?src=[REF(src)];change=1'>MAMMON LOADED:</a> [budget]<BR>"
+	contents += "<a href='byond://?src=[REF(src)];change=1'>MAMMON LOADED:</a> [budget]<BR>"
 
 	var/mob/living/carbon/human/H = user
 	if(H.job == "Merchant")
 		if(canread)
-			contents += "<a href='?src=[REF(src)];secrets=1'>Secrets</a>"
+			contents += "<a href='byond://?src=[REF(src)];secrets=1'>Secrets</a>"
 		else
-			contents += "<a href='?src=[REF(src)];secrets=1'>[stars("Secrets")]</a>"
+			contents += "<a href='byond://?src=[REF(src)];secrets=1'>[stars("Secrets")]</a>"
 
 	contents += "</center><BR>"
 
 	var/list/unlocked_cats = list("Apparel","Armor","Consumable","Jewelry","Tools","Seeds","Weapons")
-/*
-	if(upgrade_flags & UPGRADE_ARMOR)
-		unlocked_cats+="Armor"
-	if(upgrade_flags & UPGRADE_WEAPONS)
-		unlocked_cats+="Weapons"
-	if(upgrade_flags & UPGRADE_FOOD)
-		unlocked_cats+="Consumable"
-*/
 
 	if(current_cat == "1")
 		contents += "<center>"
 		for(var/X in unlocked_cats)
-			contents += "<a href='?src=[REF(src)];changecat=[X]'>[X]</a><BR>"
+			contents += "<a href='byond://?src=[REF(src)];changecat=[X]'>[X]</a><BR>"
 		contents += "</center>"
 	else
 		contents += "<center>[current_cat]<BR></center>"
-		contents += "<center><a href='?src=[REF(src)];changecat=1'>\[RETURN\]</a><BR><BR></center>"
+		contents += "<center><a href='byond://?src=[REF(src)];changecat=1'>\[RETURN\]</a><BR><BR></center>"
 		var/list/pax = list()
 		for(var/pack in SSmerchant.supply_packs)
-			var/datum/supply_pack/PA = SSmerchant.supply_packs[pack]
-			if(PA.group == current_cat)
-				pax += PA
-		for(var/datum/supply_pack/PA in sortList(pax))
-			var/costy = PA.cost
+			var/datum/supply_pack/picked_pack = SSmerchant.supply_packs[pack]
+			if(picked_pack.group == current_cat)
+				pax += picked_pack
+		for(var/datum/supply_pack/picked_pack in sortList(pax))
+			var/costy = picked_pack.cost
 			if(!(upgrade_flags & UPGRADE_NOTAX))
 				costy=round(costy+(SStreasury.tax_value * costy))
-			contents += "[PA.name] - ([costy])<a href='?src=[REF(src)];buy=[PA.type]'>BUY</a><BR>"
+			contents += "[picked_pack.name] - ([costy])<a href='byond://?src=[REF(src)];buy=[picked_pack.type]'>BUY</a><BR>"
 
 	if(!canread)
 		contents = stars(contents)

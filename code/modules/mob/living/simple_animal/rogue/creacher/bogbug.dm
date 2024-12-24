@@ -32,10 +32,10 @@
 	melee_damage_lower = 25
 	melee_damage_upper = 35
 
-	STACON = 13
-	STASTR = 10
-	STASPD = 15
-	STAEND = 15
+	TOTALCON = 13
+	TOTALSTR = 10
+	TOTALSPD = 15
+	TOTALEND = 15
 
 	retreat_distance = 2
 	minimum_distance = 1
@@ -52,6 +52,10 @@
 	remains_type = /obj/effect/decal/remains/bogbug
 	body_eater = TRUE
 
+	ai_controller = /datum/ai_controller/bog_bug
+	AIStatus = AI_OFF
+	can_have_ai = FALSE
+
 /obj/effect/decal/remains/bogbug
 	name = "remains"
 	gender = PLURAL
@@ -61,6 +65,7 @@
 /mob/living/simple_animal/hostile/retaliate/rogue/bogbug/Initialize()
 	. = ..()
 	gender = MALE
+	ai_controller.set_blackboard_key(BB_BASIC_FOODS, food_type)
 
 /mob/living/simple_animal/hostile/retaliate/rogue/bogbug/death(gibbed)
 	..()

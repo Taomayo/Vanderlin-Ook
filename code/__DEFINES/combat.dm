@@ -11,6 +11,8 @@
 #define STAMINA 	"stamina"
 #define BRAIN		"brain"
 
+#define MELEE_TYPES list("blunt", "slash", "stab")
+
 //bitflag damage defines used for suicide_act
 #define BRUTELOSS 	            	(1<<0)
 #define FIRELOSS 	            	(1<<1)
@@ -171,6 +173,7 @@
 #define TILL_INTENT			/datum/intent/till
 
 #define ROD_CAST			/datum/intent/cast
+#define ROD_AUTO			/datum/intent/auto
 #define ROD_REEL			/datum/intent/reel
 
 #define INTENT_SPLASH		/datum/intent/splash

@@ -227,17 +227,6 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 	if(radio_return & NOPASS)
 		return 1
 
-	//No screams in space, unless you're next to someone.
-	var/turf/T = get_turf(src)
-	var/datum/gas_mixture/environment = T.return_air()
-	var/pressure = (environment)? environment.return_pressure() : 0
-	if(pressure < SOUND_MINIMUM_PRESSURE)
-		message_range = 1
-
-	if(pressure < ONE_ATMOSPHERE*0.4) //Thin air, let's italicise the message
-		spans |= SPAN_ITALICS
-
-
 	send_speech(message, message_range, src, bubble_type, spans, language, message_mode)
 
 	if(succumbed)
@@ -250,6 +239,18 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 	if(!message_language)
 		return
 	return message_language.spans
+
+// Whether the mob can see runechat from the speaker, assuming he will see his message on the text box
+/mob/proc/can_see_runechat(atom/movable/speaker)
+	if(!client || !client.prefs)
+		return FALSE
+	if(!client.prefs.chat_on_map)
+		return FALSE
+	if(stat >= UNCONSCIOUS)
+		return FALSE
+	if(!ismob(speaker) && !client.prefs.see_chat_non_mob)
+		return FALSE
+	return TRUE
 
 /mob/living/Hear(message, atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, list/spans, message_mode)
 	. = ..()
@@ -266,9 +267,8 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 		deaf_type = 2 // Since you should be able to hear myself without looking
 
 	// Create map text prior to modifying message for goonchat
-	if(client?.prefs)
-		if (client?.prefs.chat_on_map && stat != UNCONSCIOUS && (client.prefs.see_chat_non_mob || ismob(speaker)) && can_hear())
-			create_chat_message(speaker, message_language, raw_message, spans, message_mode)
+	if(can_see_runechat(speaker) && can_hear())
+		create_chat_message(speaker, message_language, raw_message, spans, message_mode)
 	// Recompose message for AI hrefs, language incomprehension.
 	message = compose_message(speaker, message_language, raw_message, radio_freq, spans, message_mode)
 	show_message(message, MSG_AUDIBLE, deaf_message, deaf_type)
@@ -307,7 +307,7 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 					continue
 				if(!(M.client.prefs.chat_toggles & CHAT_GHOSTEARS)) //they're talking normally and we have hearing at any range off
 					continue
-		if(!is_in_zweb(src.z,M.z))
+		if(!is_in_zweb(src.z,M.z) && !(M.client.prefs.chat_toggles & CHAT_GHOSTEARS))
 			continue
 		listening |= M
 		the_dead[M] = TRUE

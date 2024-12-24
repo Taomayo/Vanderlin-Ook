@@ -12,7 +12,7 @@
 	allow_dense = TRUE
 	delivery_icon = null
 	can_weld_shut = FALSE
-	armor = list("melee" = 30, "bullet" = 50, "laser" = 50, "energy" = 100, "bomb" = 100, "bio" = 0, "rad" = 0, "fire" = 100, "acid" = 80)
+	armor = list("blunt" = 30, "slash" = 30, "stab" = 30,  "piercing" = 50, "fire" = 100, "acid" = 80)
 	anchored = TRUE //So it cant slide around after landing
 	anchorable = FALSE
 	flags_1 = PREVENT_CONTENTS_EXPLOSION_1
@@ -70,10 +70,6 @@
 
 /obj/structure/closet/supplypod/proc/specialisedPod()
 	return 1
-
-/obj/structure/closet/supplypod/extractionpod/specialisedPod(atom/movable/holder)
-	holder.forceMove(pick(GLOB.holdingfacility)) // land in ninja jail
-	open(holder, forced = TRUE)
 
 /obj/structure/closet/supplypod/Initialize()
 	. = ..()
@@ -297,10 +293,7 @@
 		podParam = new podParam() //If its just a path, instantiate it
 	pod = podParam
 	if (single_order)
-		if (istype(single_order, /datum/supply_order))
-			var/datum/supply_order/SO = single_order
-			SO.generate(pod)
-		else if (istype(single_order, /atom/movable))
+		if (istype(single_order, /atom/movable))
 			var/atom/movable/O = single_order
 			O.forceMove(pod)
 	for (var/mob/living/M in pod) //If there are any mobs in the supplypod, we want to forceMove them into the target. This is so that they can see where they are about to land, AND so that they don't get sent to the nullspace error room (as the pod is currently in nullspace)
@@ -346,12 +339,3 @@
 		M.forceMove(pod)
 	pod.preOpen() //Begin supplypod open procedures. Here effects like explosions, damage, and other dangerous (and potentially admin-caused, if the centcom_podlauncher datum was used) memes will take place
 	qdel(src) //The target's purpose is complete. It can rest easy now
-
-//------------------------------------UPGRADES-------------------------------------//
-/obj/item/disk/cargo/bluespace_pod //Disk that can be inserted into the Express Console to allow for Advanced Bluespace Pods
-	name = "Bluespace Drop Pod Upgrade"
-	desc = ""
-	icon = 'icons/obj/module.dmi'
-	icon_state = "cargodisk"
-	item_state = "card-id"
-	w_class = WEIGHT_CLASS_SMALL

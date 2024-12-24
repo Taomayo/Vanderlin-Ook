@@ -52,6 +52,7 @@
 	penfactor = AP_POLEARM_THRUST
 	swingdelay = 1
 	misscost = 10
+	item_damage_type = "stab"
 
 /datum/intent/polearm/thrust/spear
 	penfactor = AP_SPEAR_THRUST
@@ -69,6 +70,7 @@
 	damfactor = 0.8
 	swingdelay = 1
 	misscost = 5
+	item_damage_type = "blunt"
 
 /*-------------\
 | Swing intent |
@@ -78,6 +80,7 @@
 	attack_verb = list("bashes", "strikes", "swings")
 	reach = 2
 	chargetime = 1
+	item_damage_type = "slash"
 
 /*-----------\
 | Cut intent |
@@ -87,11 +90,13 @@
 	blade_class = BCLASS_CUT
 	attack_verb = list("cuts", "slashes")
 	icon_state = "incut"
+	animname = "cut"
 	damfactor = 0.8
 	hitsound = list('sound/combat/hits/bladed/genslash (1).ogg', 'sound/combat/hits/bladed/genslash (2).ogg', 'sound/combat/hits/bladed/genslash (3).ogg')
 	reach = 2
 	swingdelay = 1
 	misscost = 10
+	item_damage_type = "slash"
 
 /*------------\
 | Chop intent |
@@ -109,6 +114,7 @@
 	swingdelay = 2
 	misscost = 20
 	warnie = "mobwarning"
+	item_damage_type = "slash"
 
 
 //................ Wooden Staff ............... //
@@ -227,7 +233,7 @@
 	force_wielded = DAMAGE_SPEAR+2
 	throwforce = DAMAGE_SPEAR
 	name = "simple spear"
-	desc = "With this weapon, the tribes of humenity became the chosen people of the Forgotten God."
+	desc = "With this weapon, the tribes of humenity became the chosen people of Psydon."
 	icon_state = "stonespear"
 	minstr = 6
 	max_blade_int = 50
@@ -358,7 +364,7 @@
 /obj/item/rogueweapon/polearm/spear/hoplite
 	force = DAMAGE_SPEARPLUS
 	name = "ancient spear"
-	desc = "A humble spear with a bronze head, a rare survivor from the battles long past that nearly destroyed Grimoria."
+	desc = "A humble spear with a bronze head, a rare survivor from the battles long past that nearly destroyed Psydonia."
 	icon_state = "bronzespear"
 	max_blade_int = 300
 	max_integrity = INTEGRITY_STRONG
@@ -367,12 +373,20 @@
 
 /obj/item/rogueweapon/polearm/spear/hoplite/winged // Winged version has +1 weapon defence and sells for a bit more, but is identical otherwise
 	name = "ancient winged spear"
-	desc = "A spear with a winged bronze head, a rare survivor from the battles long past that nearly destroyed Grimoria."
+	desc = "A spear with a winged bronze head, a rare survivor from the battles long past that nearly destroyed Psydonia."
 	icon_state = "bronzespear_winged"
 	wdefense = ULTMATE_PARRY
 	sellprice = 150 // A noble collector would love to get his/her hands on one of these spears
 
 
+/obj/item/rogueweapon/polearm/spear/bronze
+	name = "Bronze Spear"
+	desc = "A spear forged of bronze. Expensive but more durable than a regular iron one."
+	icon_state = "bronzespear"
+	max_blade_int = 200
+	smeltresult = /obj/item/ingot/bronze
+	force = 20
+	force_wielded = 25
 
 
 //scythe

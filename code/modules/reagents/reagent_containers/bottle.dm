@@ -10,7 +10,7 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	possible_transfer_amounts = list(6)
 	volume = 45
 	fill_icon_thresholds = list(0, 25, 50, 75, 100)
-	dropshrink = 0.5
+	dropshrink = 0.8
 	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_MOUTH
 	obj_flags = CAN_BE_HIT
 	spillable = FALSE
@@ -77,6 +77,7 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 		reagent_flags = TRANSPARENT
 		reagents.flags = reagent_flags
 		spillable = FALSE
+		GLOB.weather_act_upon_list -= src
 		if(!fancy)
 			desc = "A bottle with a cork."
 	else
@@ -84,6 +85,7 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 		reagents.flags = reagent_flags
 		playsound(user.loc,'sound/items/uncork.ogg', 100, TRUE)
 		spillable = TRUE
+		GLOB.weather_act_upon_list |= src
 		if(!fancy)
 			desc = "An open bottle, hopefully a cork is close by."
 	update_icon()
@@ -96,11 +98,6 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 		icon_state = "clear_bottle[rand(1,4)]"
 	update_icon()
 
-/obj/item/reagent_containers/glass/bottle/epinephrine
-	name = "epinephrine bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/epinephrine = 30)
-
 /obj/item/reagent_containers/glass/bottle/toxin
 	name = "toxin bottle"
 	desc = ""
@@ -111,32 +108,6 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	desc = ""
 	list_reagents = list(/datum/reagent/toxin/spewium = 30)
 
-/obj/item/reagent_containers/glass/bottle/morphine
-	name = "morphine bottle"
-	desc = ""
-	icon = 'icons/obj/chemical.dmi'
-	list_reagents = list(/datum/reagent/medicine/morphine = 30)
-
-/obj/item/reagent_containers/glass/bottle/chloralhydrate
-	name = "poppy milk vial"
-	desc = ""
-	icon_state = "bottle20"
-	list_reagents = list(/datum/reagent/toxin/chloralhydrate = 20)
-
-/obj/item/reagent_containers/glass/bottle/mannitol
-	name = "mannitol bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/mannitol = 30)
-
-/obj/item/reagent_containers/glass/bottle/multiver
-	name = "multiver bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/C2/multiver = 30)
-
-/obj/item/reagent_containers/glass/bottle/syriniver
-	name = "syriniver bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/C2/syriniver = 30)
 
 /obj/item/reagent_containers/glass/bottle/mutagen
 	name = "unstable mutagen bottle"
@@ -147,11 +118,6 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	name = "purple aetherium bottle"
 	desc = ""
 	list_reagents = list(/datum/reagent/toxin/plasma = 30)
-
-/obj/item/reagent_containers/glass/bottle/synaptizine
-	name = "synaptizine bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/synaptizine = 30)
 
 /obj/item/reagent_containers/glass/bottle/ammonia
 	name = "ammonia bottle"
@@ -168,12 +134,6 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	desc = ""
 	list_reagents = list(/datum/reagent/toxin/acid/fluacid = 30)
 
-/obj/item/reagent_containers/glass/bottle/adminordrazine
-	name = "Adminordrazine Bottle"
-	desc = ""
-	icon = 'icons/obj/drinks.dmi'
-	icon_state = "holyflask"
-	list_reagents = list(/datum/reagent/medicine/adminordrazine = 30)
 
 /obj/item/reagent_containers/glass/bottle/capsaicin
 	name = "Capsaicin Bottle"
@@ -193,18 +153,8 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 
 /obj/item/reagent_containers/glass/bottle/traitor/Initialize()
 	. = ..()
-	extra_reagent = pick(/datum/reagent/toxin/polonium, /datum/reagent/toxin/histamine, /datum/reagent/toxin/formaldehyde, /datum/reagent/toxin/venom, /datum/reagent/toxin/fentanyl, /datum/reagent/toxin/cyanide)
+	extra_reagent = pick(/datum/reagent/toxin/histamine, /datum/reagent/toxin/formaldehyde, /datum/reagent/toxin/venom, /datum/reagent/toxin/fentanyl, /datum/reagent/toxin/cyanide)
 	reagents.add_reagent(extra_reagent, 3)
-
-/obj/item/reagent_containers/glass/bottle/polonium
-	name = "polonium bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/toxin/polonium = 30)
-
-/obj/item/reagent_containers/glass/bottle/magillitis
-	name = "magillitis bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/magillitis = 5)
 
 /obj/item/reagent_containers/glass/bottle/venom
 	name = "venom bottle"
@@ -231,11 +181,6 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	desc = ""
 	list_reagents = list(/datum/reagent/toxin/pancuronium = 30)
 
-/obj/item/reagent_containers/glass/bottle/sodium_thiopental
-	name = "sodium thiopental bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/toxin/sodium_thiopental = 30)
-
 /obj/item/reagent_containers/glass/bottle/coniine
 	name = "coniine bottle"
 	desc = ""
@@ -256,31 +201,11 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	desc = ""
 	list_reagents = list(/datum/reagent/toxin/histamine = 30)
 
-/obj/item/reagent_containers/glass/bottle/diphenhydramine
-	name = "antihistamine bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/diphenhydramine = 30)
-
-/obj/item/reagent_containers/glass/bottle/potass_iodide
-	name = "anti-radiation bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/potass_iodide = 30)
-
 /obj/item/reagent_containers/glass/bottle/salglu_solution
 	name = "saline-glucose solution bottle"
 	desc = ""
 	icon_state = "bottle1"
 	list_reagents = list(/datum/reagent/medicine/salglu_solution = 30)
-
-/obj/item/reagent_containers/glass/bottle/atropine
-	name = "atropine bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/medicine/atropine = 30)
-
-/obj/item/reagent_containers/glass/bottle/romerol
-	name = "romerol bottle"
-	desc = ""
-	list_reagents = list(/datum/reagent/romerol = 30)
 
 //Oldstation.dmm chemical storage bottles
 
@@ -420,7 +345,7 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 /obj/item/reagent_containers/glass/bottle/vial
 	name = "vial"
 	desc = "A vial with a cork."
-	icon = 'icons/roguetown/misc/alchemy.dmi'
+	icon = 'icons/roguetown/items/cooking.dmi'
 	icon_state = "clear_vial1"
 	amount_per_transfer_from_this = 6
 	possible_transfer_amounts = list(6)

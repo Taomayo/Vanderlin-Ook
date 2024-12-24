@@ -1,7 +1,7 @@
 /obj/effect/landmark/mapGenerator/rogue/roguetownfield
 	mapGeneratorType = /datum/mapGenerator/roguetownfield
-	endTurfX = 255
-	endTurfY = 255
+	endTurfX = 200
+	endTurfY = 200
 	startTurfX = 1
 	startTurfY = 1
 
@@ -16,13 +16,14 @@
 	excluded_turfs = list(/turf/open/floor/rogue/dirt/road)
 	spawnableAtoms = list(/obj/structure/flora/newtree = 5,
 							/obj/structure/flora/roguegrass/bush_meagre = 13,
+							/obj/structure/flora/roguegrass/herb/random = 3,
 							/obj/structure/flora/roguegrass = 50,
 							/obj/structure/flora/roguegrass/maneater = 1,
 							/obj/structure/flora/roguegrass/pyroclasticflowers = 1,
 							/obj/item/natural/stone = 8,
 							/obj/item/natural/rock = 7,
 							/obj/item/grown/log/tree/stick = 3,
-							/obj/structure/closet/dirthole/closed/loot=12,
+							/obj/structure/closet/dirthole/closed/loot=0.75,
 							/obj/item/restraints/legcuffs/beartrap/armed/camouflage=0.5)
 	spawnableTurfs = list(/turf/open/floor/rogue/dirt/road=5)
 	allowed_areas = list(/area/rogue/outdoors/rtfield)

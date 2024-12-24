@@ -1,6 +1,6 @@
 /datum/advclass/combat/hoplite
 	name = "Immortal Bulwark"
-	tutorial = "You have marched and fought in formations since the ancient war that nearly destroyed Grimoria. There are few in the world who can match your expertise in a shield wall, but all you have ever known is battle and obedience..."
+	tutorial = "You have marched and fought in formations since the ancient war that nearly destroyed Psydonia. There are few in the world who can match your expertise in a shield wall, but all you have ever known is battle and obedience..."
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = list("Aasimar")
 	outfit = /datum/outfit/job/roguetown/adventurer/hoplite
@@ -8,6 +8,7 @@
 	pickprob = 15 // Same as the other very rare classes
 	category_tags = list(CTAG_ADVENTURER)
 	min_pq = 2 // Same as Bladesinger
+	cmode_music = 'sound/music/cmode/nobility/CombatKnight.ogg'
 
 
 /datum/outfit/job/roguetown/adventurer/hoplite/pre_equip(mob/living/carbon/human/H)

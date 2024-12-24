@@ -2,6 +2,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 GLOBAL_LIST_EMPTY(chosen_names)
 
+GLOBAL_LIST_INIT(name_adjustments, list())
+
 /datum/preferences
 	var/client/parent
 	//doohickeys for savefiles
@@ -71,8 +73,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/accessory = "Nothing"
 	var/detail = "Nothing"
 	var/socks = "Nude"					//socks type
-	var/backpack = DBACKPACK				//backpack type
-	var/jumpsuit_style = PREF_SUIT		//suit/skirt
 	var/hairstyle = "Bald"				//Hair type
 	var/hair_color = "000"				//Hair color
 	var/facial_hairstyle = "Shaved"	//Face hair type
@@ -85,16 +85,11 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/datum/patron/selected_patron
 	var/static/datum/patron/default_patron = /datum/patron/divine/astrata
 	var/list/features = MANDATORY_FEATURE_LIST
-	var/list/randomise = list(RANDOM_UNDERWEAR = TRUE, RANDOM_UNDERWEAR_COLOR = TRUE, RANDOM_UNDERSHIRT = TRUE, RANDOM_SOCKS = TRUE, RANDOM_BACKPACK = TRUE, RANDOM_JUMPSUIT_STYLE = FALSE, RANDOM_HAIRSTYLE = TRUE, RANDOM_HAIR_COLOR = TRUE, RANDOM_FACIAL_HAIRSTYLE = TRUE, RANDOM_FACIAL_HAIR_COLOR = TRUE, RANDOM_SKIN_TONE = TRUE, RANDOM_EYE_COLOR = TRUE)
+	var/list/randomise = list(RANDOM_UNDERWEAR = TRUE, RANDOM_UNDERWEAR_COLOR = TRUE, RANDOM_UNDERSHIRT = TRUE, RANDOM_SOCKS = TRUE, RANDOM_HAIRSTYLE = TRUE, RANDOM_HAIR_COLOR = TRUE, RANDOM_FACIAL_HAIRSTYLE = TRUE, RANDOM_FACIAL_HAIR_COLOR = TRUE, RANDOM_SKIN_TONE = TRUE, RANDOM_EYE_COLOR = TRUE)
 	var/list/friendlyGenders = list("Male" = "male", "Female" = "female")
 	var/phobia = "spiders"
 
 	var/list/custom_names = list()
-	var/preferred_ai_core_display = "Blue"
-	var/prefered_security_department = SEC_DEPT_RANDOM
-
-	//Quirk list
-	var/list/all_quirks = list()
 
 	//Job preferences 2.0 - indexed by job title , no key or value implies never
 	var/list/job_preferences = list()
@@ -124,8 +119,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 
 	var/lastclass
 
-	var/uplink_spawn_loc = UPLINK_PDA
-
 	var/list/exp = list()
 	var/list/menuoptions
 
@@ -150,6 +143,10 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/list/descriptor_entries = list()
 	var/list/custom_descriptors = list()
 
+	var/list/preference_message_list = list()
+
+	/// Tracker to whether the person has ever spawned into the round, for purposes of applying the respawn ban
+	var/has_spawned = FALSE
 
 /datum/preferences/New(client/C)
 	parent = C
@@ -169,7 +166,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/loaded_preferences_successfully = load_preferences()
 	if(loaded_preferences_successfully)
 		if(load_character())
-			if(check_nameban(C.ckey) || (C.blacklisted() == 1))
+			if(check_nameban(C.ckey))
 				real_name = pref_species.random_name(gender,1)
 			return
 	//we couldn't load character data so just randomize the character appearance + name
@@ -195,9 +192,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 /datum/preferences/proc/ShowChoices(mob/user, tabchoice)
 	if(!user || !user.client)
 		return
-	var/mob/dead/new_player/N = user
-	if(!istype(N))
-		return
 	if(slot_randomized)
 		load_character(default_slot) // Reloads the character slot. Prevents random features from overwriting the slot if saved.
 		slot_randomized = FALSE
@@ -206,11 +200,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 		current_tab = tabchoice
 	if(tabchoice == 4)
 		current_tab = 0
-
-//	dat += "<a href='?_src_=prefs;preference=tab;tab=0' [current_tab == 0 ? "class='linkOn'" : ""]>Character Sheet</a>"
-//	dat += "<a href='?_src_=prefs;preference=tab;tab=1' [current_tab == 1 ? "class='linkOn'" : ""]>Game Preferences</a>"
-//	dat += "<a href='?_src_=prefs;preference=tab;tab=2' [current_tab == 2 ? "class='linkOn'" : ""]>OOC Preferences</a>"
-//	dat += "<a href='?_src_=prefs;preference=tab;tab=3' [current_tab == 3 ? "class='linkOn'" : ""]>Keybinds</a>"
 
 	dat += "</center>"
 
@@ -281,13 +270,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 
 			dat += "</table>"
 
-			if(CONFIG_GET(flag/roundstart_traits))
-				dat += "<center><h2>Quirk Setup</h2>"
-				dat += "<a href='?_src_=prefs;preference=trait;task=menu'>Configure Quirks</a><br></center>"
-				dat += "<center><b>Current Quirks:</b> [all_quirks.len ? all_quirks.Join(", ") : "None"]</center>"
-
-
-
 			// Encapsulating table
 			dat += "<table width = '100%'>"
 			// Only one Row
@@ -298,8 +280,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 // 			-----------START OF IDENT TABLE-----------
 			dat += "<h2>Identity</h2>"
 			dat += "<table width='100%'><tr><td width='75%' valign='top'>"
-			if(is_banned_from(user.ckey, "Appearance"))
-				dat += "<b>Thou are banned from using custom names and appearances. Thou can continue to adjust thy characters, but thee will be randomised once thee joins the game.</b><br>"
 //			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_NAME]'>Always Random Name: [(randomise[RANDOM_NAME]) ? "Yes" : "No"]</a>"
 //			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_NAME_ANTAG]'>When Antagonist: [(randomise[RANDOM_NAME_ANTAG]) ? "Yes" : "No"]</a>"
 			dat += "<b>Name:</b> "
@@ -309,7 +289,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 				dat += "<a href='?_src_=prefs;preference=name;task=input'>[real_name]</a> <a href='?_src_=prefs;preference=name;task=random'>\[R\]</a>"
 
 			dat += "<BR>"
-			dat += "<b>Race:</b> <a href='?_src_=prefs;preference=species;task=input'>[pref_species.name]</a>[spec_check(user) ? "" : " (!)"]<BR>"
+			dat += "<b>Species:</b> <a href='?_src_=prefs;preference=species;task=input'>[pref_species.name]</a>[spec_check(user) ? "" : " (!)"]<BR>"
 //			dat += "<a href='?_src_=prefs;preference=species;task=random'>Random Species</A> "
 //			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_SPECIES]'>Always Random Species: [(randomise[RANDOM_SPECIES]) ? "Yes" : "No"]</A><br>"
 
@@ -345,24 +325,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 			if(family == FAMILY_FULL || family == FAMILY_NEWLYWED)
 				dat += "<b>Preferred Spouse:</b> <a href='?_src_=prefs;preference=setspouse'>[setspouse ? setspouse : "None"]</a><BR>"
 			dat += "<b>Dominance:</b> <a href='?_src_=prefs;preference=domhand'>[domhand == 1 ? "Left-handed" : "Right-handed"]</a><BR>"
-
-/*
-			dat += "<br><br><b>Special Names:</b><BR>"
-			var/old_group
-			for(var/custom_name_id in GLOB.preferences_custom_names)
-				var/namedata = GLOB.preferences_custom_names[custom_name_id]
-				if(!old_group)
-					old_group = namedata["group"]
-				else if(old_group != namedata["group"])
-					old_group = namedata["group"]
-					dat += "<br>"
-				dat += "<a href ='?_src_=prefs;preference=[custom_name_id];task=input'><b>[namedata["pref_name"]]:</b> [custom_names[custom_name_id]]</a> "
-			dat += "<br><br>"
-
-			dat += "<b>Custom Job Preferences:</b><BR>"
-			dat += "<a href='?_src_=prefs;preference=ai_core_icon;task=input'><b>Preferred AI Core Display:</b> [preferred_ai_core_display]</a><br>"
-			dat += "<a href='?_src_=prefs;preference=sec_dept;task=input'><b>Preferred Security Department:</b> [prefered_security_department]</a><BR></td>"
-*/
 			dat += "</tr></table>"
 // 			-----------END OF IDENT TABLE-----------
 
@@ -373,41 +335,9 @@ GLOBAL_LIST_EMPTY(chosen_names)
 			// Rightmost column, 40% width
 			dat += "<td width=40% valign='top'>"
 			dat += "<h2>Body</h2>"
-//			dat += "<a href='?_src_=prefs;preference=all;task=random'>Random Body</A><BR>"
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_BODY]'>Always Random Body: [(randomise[RANDOM_BODY]) ? "Yes" : "No"]</A>"
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_BODY_ANTAG]'>When Antagonist: [(randomise[RANDOM_BODY_ANTAG]) ? "Yes" : "No"]</A><br>"
-
-
-//			dat += "<BR><b>Underwear:</b> <a href ='?_src_=prefs;preference=underwear;task=input'>[underwear]</a><BR>"
-
-
-//			dat += "<table width='100%'><tr><td width='24%' valign='top'>"
-
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_UNDERWEAR]'>[(randomise[RANDOM_UNDERWEAR]) ? "Lock" : "Unlock"]</A>"
 
 //			-----------START OF BODY TABLE-----------
 			dat += "<table width='100%'><tr><td width='1%' valign='top'>"
-
-//			dat += "<br><b>Underwear Color:</b><BR><span style='border: 1px solid #161616; background-color: #[underwear_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=underwear_color;task=input'>Change</a>"
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_UNDERWEAR_COLOR]'>[(randomise[RANDOM_UNDERWEAR_COLOR]) ? "Lock" : "Unlock"]</A>"
-
-//			dat += "<BR><b>Undershirt:</b><BR><a href ='?_src_=prefs;preference=undershirt;task=input'>[undershirt]</a>"
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_UNDERSHIRT]'>[(randomise[RANDOM_UNDERSHIRT]) ? "Lock" : "Unlock"]</A>"
-
-
-//			dat += "<br><b>Socks:</b><BR><a href ='?_src_=prefs;preference=socks;task=input'>[socks]</a>"
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_SOCKS]'>[(randomise[RANDOM_SOCKS]) ? "Lock" : "Unlock"]</A>"
-
-
-//			dat += "<br><b>Backpack:</b><BR><a href ='?_src_=prefs;preference=bag;task=input'>[backpack]</a>"
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_BACKPACK]'>[(randomise[RANDOM_BACKPACK]) ? "Lock" : "Unlock"]</A>"
-
-
-//			dat += "<br><b>Jumpsuit Style:</b><BR><a href ='?_src_=prefs;preference=suit;task=input'>[jumpsuit_style]</a>"
-//			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_JUMPSUIT_STYLE]'>[(randomise[RANDOM_JUMPSUIT_STYLE]) ? "Lock" : "Unlock"]</A>"
-
-
-//			dat += "<br><b>Uplink Spawn Location:</b><BR><a href ='?_src_=prefs;preference=uplink_loc;task=input'>[uplink_spawn_loc]</a><BR></td>"
 
 			var/use_skintones = pref_species.use_skintones
 			if(use_skintones)
@@ -431,15 +361,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 
 				mutant_colors = TRUE
 
-			if(istype(pref_species, /datum/species/ethereal)) //not the best thing to do tbf but I dont know whats better.
-
-//				if(!use_skintones)
-//					dat += APPEARANCE_CATEGORY_COLUMN
-
-				dat += "<h3>Ethereal Color</h3>"
-
-				dat += "<span style='border: 1px solid #161616; background-color: #[features["ethcolor"]];'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=color_ethereal;task=input'>Change</a><BR>"
-
 
 			if((EYECOLOR in pref_species.species_traits) && !(NOEYESPRITES in pref_species.species_traits))
 
@@ -461,7 +382,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 				if(HAIR in pref_species.species_traits)
 					dat += "<b>Hairstyle:</b> <a href='?_src_=prefs;preference=hairstyle;task=input'>[hairstyle]</a>"
 					dat += "<br>"
-					if(gender == MALE)
+					if(gender == MALE || istype(pref_species, /datum/species/dwarf))
 						dat += "<b>Facial Hair:</b> <a href='?_src_=prefs;preference=facial_hairstyle;task=input'>[facial_hairstyle]</a>"
 						dat += "<br>"
 					dat += "<b>Hair Color: </b>  <a href='?_src_=prefs;preference=hair;task=input'>Change</a>"
@@ -652,12 +573,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 					dat += "</td>"
 					mutant_category = 0
 
-			//Adds a thing to select which phobia because I can't be assed to put that in the quirks window
-			if("Phobia" in all_quirks)
-				dat += "<h3>Phobia</h3>"
-
-				dat += "<a href='?_src_=prefs;preference=phobia;task=input'>[phobia]</a><BR>"
-
 			if(CONFIG_GET(flag/join_with_mutant_humans))
 
 				if(("wings" in pref_species.default_features) && GLOB.r_wings_list.len >1)
@@ -781,18 +696,18 @@ GLOBAL_LIST_EMPTY(chosen_names)
 
 			dat += "<h2>Special Role Settings</h2>"
 
-			if(is_banned_from(user.ckey, ROLE_SYNDICATE))
+			if(is_total_antag_banned(user.ckey))
 				dat += "<font color=red><b>I am banned from antagonist roles.</b></font><br>"
 				src.be_special = list()
 
 
 			for (var/i in GLOB.special_roles_rogue)
-				if(is_banned_from(user.ckey, i))
+				if(is_antag_banned(user.ckey, i))
 					dat += "<b>[capitalize(i)]:</b> <a href='?_src_=prefs;bancheck=[i]'>BANNED</a><br>"
 				else
 					var/days_remaining = null
-					if(ispath(GLOB.special_roles[i]) && CONFIG_GET(flag/use_age_restriction_for_jobs)) //If it's a game mode antag, check if the player meets the minimum age
-						var/mode_path = GLOB.special_roles[i]
+					if(ispath(GLOB.special_roles_rogue[i]) && CONFIG_GET(flag/use_age_restriction_for_jobs)) //If it's a game mode antag, check if the player meets the minimum age
+						var/mode_path = GLOB.special_roles_rogue[i]
 						var/datum/game_mode/temp_mode = new mode_path
 						days_remaining = temp_mode.get_remaining_days(user.client)
 
@@ -926,20 +841,22 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	dat += "<tr>"
 	dat += "<td width='33%' align='left'></td>"
 	dat += "<td width='33%' align='center'>"
-	if(SSticker.current_state <= GAME_STATE_PREGAME)
-		switch(N.ready)
-			if(PLAYER_NOT_READY)
-				dat += "<b>UNREADY</b> <a href='byond://?src=[REF(N)];ready=[PLAYER_READY_TO_PLAY]'>READY</a>"
-			if(PLAYER_READY_TO_PLAY)
-				dat += "<a href='byond://?src=[REF(N)];ready=[PLAYER_NOT_READY]'>UNREADY</a> <b>READY</b>"
-				log_game("([user || "NO KEY"]) readied as ([real_name])")
-	else
-		if(!is_active_migrant())
-			dat += "<a href='byond://?src=[REF(N)];late_join=1'>JOINLATE</a>"
+	var/mob/dead/new_player/N = user
+	if(istype(N))
+		if(SSticker.current_state <= GAME_STATE_PREGAME)
+			switch(N.ready)
+				if(PLAYER_NOT_READY)
+					dat += "<b>UNREADY</b> <a href='byond://?src=[REF(N)];ready=[PLAYER_READY_TO_PLAY]'>READY</a>"
+				if(PLAYER_READY_TO_PLAY)
+					dat += "<a href='byond://?src=[REF(N)];ready=[PLAYER_NOT_READY]'>UNREADY</a> <b>READY</b>"
 		else
-			dat += "<a class='linkOff' href='byond://?src=[REF(N)];late_join=1'>JOINLATE</a>"
-		dat += " - <a href='?_src_=prefs;preference=migrants'>MIGRATION</a>"
-//	dat += "<a href='?_src_=prefs;preference=reset_all'>Reset Setup</a>"
+			if(!is_active_migrant())
+				dat += "<a href='byond://?src=[REF(N)];late_join=1'>JOINLATE</a>"
+			else
+				dat += "<a class='linkOff' href='byond://?src=[REF(N)];late_join=1'>JOINLATE</a>"
+			dat += " - <a href='?_src_=prefs;preference=migrants'>MIGRATION</a>"
+	else
+		dat += "<a href='?_src_=prefs;preference=finished'>DONE</a>"
 		dat += "</center>"
 
 	dat += "</td>"
@@ -953,7 +870,8 @@ GLOBAL_LIST_EMPTY(chosen_names)
 		dat = list("<center>REGISTER!</center>")
 
 	winshow(user, "stonekeep_prefwin", TRUE)
-	var/datum/browser/popup = new(user, "preferences_browser", "<div align='center'>[used_title]</div>", 700, 530)
+	winshow(user, "stonekeep_prefwin.character_preview_map", TRUE)
+	var/datum/browser/noclose/popup = new(user, "preferences_browser", "<div align='center'>[used_title]</div>")
 	popup.set_window_options("can_close=0")
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
@@ -983,7 +901,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	</script>
 	"}
 	winshow(user, "capturekeypress", TRUE)
-	var/datum/browser/popup = new(user, "capturekeypress", "<div align='center'>Keybindings</div>", 350, 300)
+	var/datum/browser/noclose/popup = new(user, "capturekeypress", "<div align='center'>Keybindings</div>", 350, 300)
 	popup.set_content(HTML)
 	popup.open(FALSE)
 	onclose(user, "capturekeypress", src)
@@ -1046,7 +964,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 			if(gender == FEMALE && job.f_title)
 				used_name = "[job.f_title]"
 			lastJob = job
-			if(is_banned_from(user.ckey, rank))
+			if(is_role_banned(user.ckey, job.title))
 				HTML += "[used_name]</td> <td><a href='?_src_=prefs;bancheck=[rank]'> BANNED</a></td></tr>"
 				continue
 			var/required_playtime_remaining = job.required_playtime_remaining(user.client)
@@ -1061,9 +979,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 				if(job.whitelist_req && (!user.client.whitelisted()))
 					HTML += "<font color=#6183a5>[used_name]</font></td> <td> </td></tr>"
 					continue
-			if((!job.bypass_jobban) && (user.client.blacklisted()))
-				HTML += "<font color=#a36c63>[used_name]</font></td> <td> </td></tr>"
-				continue
 			if(job.plevel_req > user.client.patreonlevel())
 				HTML += "<font color=#a59461>[used_name]</font></td> <td> </td></tr>"
 				continue
@@ -1194,7 +1109,7 @@ Slots: [job.spawn_positions]</span>
 			HTML += "<br>"
 		HTML += "<center><a href='?_src_=prefs;preference=job;task=reset'>Reset</a></center>"
 
-	var/datum/browser/popup = new(user, "mob_occupation", "<div align='center'>Class Selection</div>", width, height)
+	var/datum/browser/noclose/popup = new(user, "mob_occupation", "<div align='center'>Class Selection</div>", width, height)
 	popup.set_window_options("can_close=0")
 	popup.set_content(HTML)
 	popup.open(FALSE)
@@ -1270,78 +1185,6 @@ Slots: [job.spawn_positions]</span>
 			user.client.prefs.lastclass = null
 			user.client.prefs.save_preferences()
 
-/datum/preferences/proc/SetQuirks(mob/user)
-	if(!SSquirks)
-		to_chat(user, "<span class='danger'>The quirk subsystem is still initializing! Try again in a minute.</span>")
-		return
-
-	var/list/dat = list()
-	if(!SSquirks.quirks.len)
-		dat += "The quirk subsystem hasn't finished initializing, please hold..."
-		dat += "<center><a href='?_src_=prefs;preference=trait;task=close'>Done</a></center><br>"
-	else
-		dat += "<center><b>Choose quirk setup</b></center><br>"
-		dat += "<div align='center'>Left-click to add or remove quirks. You need negative quirks to have positive ones.<br>\
-		Quirks are applied at roundstart and cannot normally be removed.</div>"
-		dat += "<center><a href='?_src_=prefs;preference=trait;task=close'>Done</a></center>"
-		dat += "<hr>"
-		dat += "<center><b>Current quirks:</b> [all_quirks.len ? all_quirks.Join(", ") : "None"]</center>"
-		dat += "<center>[GetPositiveQuirkCount()] / [MAX_QUIRKS] max positive quirks<br>\
-		<b>Quirk balance remaining:</b> [GetQuirkBalance()]</center><br>"
-		for(var/V in SSquirks.quirks)
-			var/datum/quirk/T = SSquirks.quirks[V]
-			var/quirk_name = initial(T.name)
-			var/has_quirk
-			var/quirk_cost = initial(T.value) * -1
-			var/lock_reason = "This trait is unavailable."
-			var/quirk_conflict = FALSE
-			for(var/_V in all_quirks)
-				if(_V == quirk_name)
-					has_quirk = TRUE
-			if(initial(T.mood_quirk) && CONFIG_GET(flag/disable_human_mood))
-				lock_reason = "Mood is disabled."
-				quirk_conflict = TRUE
-			if(has_quirk)
-				if(quirk_conflict)
-					all_quirks -= quirk_name
-					has_quirk = FALSE
-				else
-					quirk_cost *= -1 //invert it back, since we'd be regaining this amount
-			if(quirk_cost > 0)
-				quirk_cost = "+[quirk_cost]"
-			var/font_color = "#AAAAFF"
-			if(initial(T.value) != 0)
-				font_color = initial(T.value) > 0 ? "#AAFFAA" : "#FFAAAA"
-			if(quirk_conflict)
-				dat += "<font color='[font_color]'>[quirk_name]</font> - [initial(T.desc)] \
-				<font color='red'><b>LOCKED: [lock_reason]</b></font><br>"
-			else
-				if(has_quirk)
-					dat += "<a href='?_src_=prefs;preference=trait;task=update;trait=[quirk_name]'>[has_quirk ? "Remove" : "Take"] ([quirk_cost] pts.)</a> \
-					<b><font color='[font_color]'>[quirk_name]</font></b> - [initial(T.desc)]<br>"
-				else
-					dat += "<a href='?_src_=prefs;preference=trait;task=update;trait=[quirk_name]'>[has_quirk ? "Remove" : "Take"] ([quirk_cost] pts.)</a> \
-					<font color='[font_color]'>[quirk_name]</font> - [initial(T.desc)]<br>"
-		dat += "<br><center><a href='?_src_=prefs;preference=trait;task=reset'>Reset Quirks</a></center>"
-
-	var/datum/browser/popup = new(user, "mob_occupation", "<div align='center'>Quirk Preferences</div>", 900, 600) //no reason not to reuse the occupation window, as it's cleaner that way
-	popup.set_window_options("can_close=0")
-	popup.set_content(dat.Join())
-	popup.open(FALSE)
-
-/datum/preferences/proc/GetQuirkBalance()
-	var/bal = 0
-	for(var/V in all_quirks)
-		var/datum/quirk/T = SSquirks.quirks[V]
-		bal -= initial(T.value)
-	return bal
-
-/datum/preferences/proc/GetPositiveQuirkCount()
-	. = 0
-	for(var/q in all_quirks)
-		if(SSquirks.quirk_points[q] > 0)
-			.++
-
 /datum/preferences/proc/SetKeybinds(mob/user)
 	var/list/dat = list()
 	// Create an inverted list of keybindings -> key
@@ -1382,7 +1225,7 @@ Slots: [job.spawn_positions]</span>
 	dat += "<a href ='?_src_=prefs;preference=keybinds;task=keybindings_reset'>\[Reset to default\]</a>"
 	dat += "</body>"
 
-	var/datum/browser/popup = new(user, "keybind_setup", "<div align='center'>Keybinds</div>", 600, 600) //no reason not to reuse the occupation window, as it's cleaner that way
+	var/datum/browser/noclose/popup = new(user, "keybind_setup", "<div align='center'>Keybinds</div>", 600, 600) //no reason not to reuse the occupation window, as it's cleaner that way
 	popup.set_window_options("can_close=0")
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
@@ -1395,18 +1238,18 @@ Slots: [job.spawn_positions]</span>
 	dat += "<center><a href='?_src_=prefs;preference=antag;task=close'>Done</a></center><br>"
 
 
-	if(is_banned_from(user.ckey, ROLE_SYNDICATE))
+	if(is_total_antag_banned(user.ckey))
 		dat += "<font color=red><b>I am banned from antagonist roles.</b></font><br>"
 		src.be_special = list()
 
 
 	for (var/i in GLOB.special_roles_rogue)
-		if(is_banned_from(user.ckey, i))
+		if(is_antag_banned(user.ckey, i))
 			dat += "<b>[capitalize(i)]:</b> <a href='?_src_=prefs;bancheck=[i]'>BANNED</a><br>"
 		else
 			var/days_remaining = null
-			if(ispath(GLOB.special_roles[i]) && CONFIG_GET(flag/use_age_restriction_for_jobs)) //If it's a game mode antag, check if the player meets the minimum age
-				var/mode_path = GLOB.special_roles[i]
+			if(ispath(GLOB.special_roles_rogue[i]) && CONFIG_GET(flag/use_age_restriction_for_jobs)) //If it's a game mode antag, check if the player meets the minimum age
+				var/mode_path = GLOB.special_roles_rogue[i]
 				var/datum/game_mode/temp_mode = new mode_path
 				days_remaining = temp_mode.get_remaining_days(user.client)
 
@@ -1418,7 +1261,7 @@ Slots: [job.spawn_positions]</span>
 
 	dat += "</body>"
 
-	var/datum/browser/popup = new(user, "antag_setup", "<div align='center'>Special Role</div>", 250, 300) //no reason not to reuse the occupation window, as it's cleaner that way
+	var/datum/browser/noclose/popup = new(user, "antag_setup", "<div align='center'>Special Role</div>", 250, 300) //no reason not to reuse the occupation window, as it's cleaner that way
 	popup.set_window_options("can_close=0")
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
@@ -1474,10 +1317,7 @@ Slots: [job.spawn_positions]</span>
 			if("random")
 				switch(joblessrole)
 					if(RETURNTOLOBBY)
-						if(is_banned_from(user.ckey, SSjob.overflow_role))
-							joblessrole = BERANDOMJOB
-						else
-							joblessrole = BERANDOMJOB
+						joblessrole = BERANDOMJOB
 					if(BEOVERFLOW)
 						joblessrole = BERANDOMJOB
 					if(BERANDOMJOB)
@@ -1490,45 +1330,6 @@ Slots: [job.spawn_positions]</span>
 			else
 				SetChoices(user)
 		return 1
-
-
-	else if(href_list["preference"] == "trait")
-		switch(href_list["task"])
-			if("close")
-				user << browse(null, "window=mob_occupation")
-				ShowChoices(user)
-			if("update")
-				var/quirk = href_list["trait"]
-				if(!SSquirks.quirks[quirk])
-					return
-				for(var/V in SSquirks.quirk_blacklist) //V is a list
-					var/list/L = V
-					for(var/Q in all_quirks)
-						if((quirk in L) && (Q in L) && !(Q == quirk)) //two quirks have lined up in the list of the list of quirks that conflict with each other, so return (see quirks.dm for more details)
-							to_chat(user, "<span class='danger'>[quirk] is incompatible with [Q].</span>")
-							return
-				var/value = SSquirks.quirk_points[quirk]
-				var/balance = GetQuirkBalance()
-				if(quirk in all_quirks)
-					if(balance + value < 0)
-						to_chat(user, "<span class='warning'>Refunding this would cause you to go below your balance!</span>")
-						return
-					all_quirks -= quirk
-				else
-					if(GetPositiveQuirkCount() >= MAX_QUIRKS)
-						to_chat(user, "<span class='warning'>I can't have more than [MAX_QUIRKS] positive quirks!</span>")
-						return
-					if(balance - value < 0)
-						to_chat(user, "<span class='warning'>I don't have enough balance to gain this quirk!</span>")
-						return
-					all_quirks += quirk
-				SetQuirks(user)
-			if("reset")
-				all_quirks = list()
-				SetQuirks(user)
-			else
-				SetQuirks(user)
-		return TRUE
 
 	else if(href_list["preference"] == "antag")
 		switch(href_list["task"])
@@ -1704,10 +1505,6 @@ Slots: [job.spawn_positions]</span>
 					random_species()
 					accessory = "Nothing"
 					detail = "Nothing"
-				if("bag")
-					backpack = pick(GLOB.backpacklist)
-				if("suit")
-					jumpsuit_style = PREF_SUIT
 				if("all")
 					random_character(gender)
 					accessory = "Nothing"
@@ -1758,14 +1555,11 @@ Slots: [job.spawn_positions]</span>
 							real_name = new_name
 						else
 							to_chat(user, "<font color='red'>Invalid name. Your name should be at least 2 and at most [MAX_NAME_LEN] characters long. It may only contain the characters A-Z, a-z, -, ' and .</font>")
-
-//				if("age")
-//					var/new_age = input(user, "Choose your character's age:\n([AGE_MIN]-[AGE_MAX])", "Years Dead") as num|null
-//					if(new_age)
-//						age = max(min( round(text2num(new_age)), AGE_MAX),AGE_MIN)
+					GLOB.name_adjustments |= "[parent] changed their characters name to [new_name]."
+					log_character("[parent] changed their characters name to [new_name].")
 
 				if("age")
-					var/new_age = input(user, "Choose your character's age (18-[pref_species.max_age])", "Yils Dead") as null|anything in pref_species.possible_ages
+					var/new_age = input(user, "Choose your character's age (Youngling-[pref_species.max_age])", "Yils Dead") as null|anything in pref_species.possible_ages
 					if(new_age)
 						age = new_age
 						var/list/hairs
@@ -1809,6 +1603,8 @@ Slots: [job.spawn_positions]</span>
 						to_chat(user, "<font color='purple'>Flawed aspects: [selected_patron.flaws]</font>")
 						to_chat(user, "<font color='purple'>Likely Worshippers: [selected_patron.worshippers]</font>")
 						to_chat(user, "<font color='red'>Considers these to be Sins: [selected_patron.sins]</font>")
+						to_chat(user, "<font color='white'>Blessed with boon(s): [selected_patron.boons]</font>")
+
 
 				if("hair")
 					var/new_hair
@@ -1853,23 +1649,7 @@ Slots: [job.spawn_positions]</span>
 					new_hairstyle = input(user, "Choose your character's beard:", "Barber")  as null|anything in hairlist
 					if(new_hairstyle)
 						facial_hairstyle = new_hairstyle
-/*
-				if("next_facehairstyle")
-					if (gender == MALE)
-						facial_hairstyle = next_list_item(facial_hairstyle, GLOB.facial_hairstyles_male_list)
-					else if(gender == FEMALE)
-						facial_hairstyle = next_list_item(facial_hairstyle, GLOB.facial_hairstyles_female_list)
-					else
-						facial_hairstyle = next_list_item(facial_hairstyle, GLOB.facial_hairstyles_list)
 
-				if("previous_facehairstyle")
-					if (gender == MALE)
-						facial_hairstyle = previous_list_item(facial_hairstyle, GLOB.facial_hairstyles_male_list)
-					else if (gender == FEMALE)
-						facial_hairstyle = previous_list_item(facial_hairstyle, GLOB.facial_hairstyles_female_list)
-					else
-						facial_hairstyle = previous_list_item(facial_hairstyle, GLOB.facial_hairstyles_list)
-*/
 				if("underwear")
 					var/new_underwear
 					if(gender == MALE)
@@ -1960,7 +1740,7 @@ Slots: [job.spawn_positions]</span>
 							continue
 						crap += bla
 
-					var/result = input(user, "Select a race", "Roguetown") as null|anything in crap
+					var/result = input(user, "Select a species", "Roguetown") as null|anything in crap
 
 					if(result)
 						//var/newtype = GLOB.species_list[result]
@@ -2094,32 +1874,6 @@ Slots: [job.spawn_positions]</span>
 					if(new_asaycolor)
 						asaycolor = new_asaycolor
 
-				if("bag")
-					var/new_backpack = input(user, "Choose your character's style of bag:", "Character Preference")  as null|anything in GLOB.backpacklist
-					if(new_backpack)
-						backpack = new_backpack
-
-				if("suit")
-					if(jumpsuit_style == PREF_SUIT)
-						jumpsuit_style = PREF_SUIT
-					else
-						jumpsuit_style = PREF_SUIT
-
-				if("uplink_loc")
-					var/new_loc = input(user, "Choose your character's traitor uplink spawn location:", "Character Preference") as null|anything in GLOB.uplink_spawn_loc_list
-					if(new_loc)
-						uplink_spawn_loc = new_loc
-
-				if("ai_core_icon")
-					var/ai_core_icon = input(user, "Choose your preferred AI core display screen:", "AI Core Display Screen Selection") as null|anything in GLOB.ai_core_display_screens
-					if(ai_core_icon)
-						preferred_ai_core_display = ai_core_icon
-
-				if("sec_dept")
-					var/department = input(user, "Choose your preferred security department:", "Security Departments") as null|anything in GLOB.security_depts_prefs
-					if(department)
-						prefered_security_department = department
-
 				if ("preferred_map")
 					var/maplist = list()
 					var/default = "Default"
@@ -2191,13 +1945,13 @@ Slots: [job.spawn_positions]</span>
 						domhand = 1
 				if("family")
 					var/list/famtree_options_list = list(FAMILY_NONE, FAMILY_PARTIAL, FAMILY_NEWLYWED, FAMILY_FULL, "EXPLAIN THIS TO ME")
-					var/new_family = input(user, "Do you have relatives in rockhill?", "The Major Houses of Rockhill") as null|anything in famtree_options_list
+					var/new_family = input(user, "Do you have relatives in the kingdom?", "The Major Houses") as null|anything in famtree_options_list
 					if(new_family == "EXPLAIN THIS TO ME")
 						to_chat(user, span_purple("\
 						--[FAMILY_NONE] will disable this feature.<br>\
 						--[FAMILY_PARTIAL] will assign you as a progeny of a local house based on your species. This feature will instead assign you as a aunt or uncle to a local family if your older than ADULT.<br>\
 						--[FAMILY_NEWLYWED] assigns you a spouse without adding you to a family. Setspouse will prioritize pairing you with another newlywed with the same name as your setspouse.<br>\
-						--[FAMILY_FULL] will attempt to assign you as matriarch or patriarch of one of the local houses of rockhill. Setspouse will will prevent \
+						--[FAMILY_FULL] will attempt to assign you as matriarch or patriarch of one of the local houses of the kingdom/town. Setspouse will will prevent \
 						players with the setspouse = None from matching with you unless their name equals your setspouse."))
 
 					else if(new_family)
@@ -2415,6 +2169,21 @@ Slots: [job.spawn_positions]</span>
 					migrant.show_ui()
 					return
 
+				if("finished")
+					user << browse(null, "window=latechoices") //closes late choices window
+					user << browse(null, "window=playersetup") //closes the player setup window
+					user << browse(null, "window=preferences") //closes job selection
+					user << browse(null, "window=mob_occupation")
+					user << browse(null, "window=latechoices") //closes late job selection
+					user << browse(null, "window=migration") // Closes migrant menu
+
+					SStriumphs.remove_triumph_buy_menu(user.client)
+
+					winshow(user, "stonekeep_prefwin", FALSE)
+					user << browse(null, "window=preferences_browser")
+					user << browse(null, "window=lobby_window")
+					return
+
 				if("save")
 					save_preferences()
 					save_character()
@@ -2520,15 +2289,10 @@ Slots: [job.spawn_positions]</span>
 	character.hairstyle = hairstyle
 	character.facial_hairstyle = facial_hairstyle
 	character.underwear = underwear
-//	character.underwear_color = underwear_color
 	character.undershirt = undershirt
-//	character.accessory = accessory
 	character.detail = detail
 	character.socks = socks
-	character.patron = selected_patron
-	character.backpack = backpack
-
-	character.jumpsuit_style = jumpsuit_style
+	character.set_patron(selected_patron)
 
 	if(charflaw)
 		var/obj/item/bodypart/O = character.get_bodypart(BODY_ZONE_R_ARM)
@@ -2540,16 +2304,30 @@ Slots: [job.spawn_positions]</span>
 			O.drop_limb()
 		character.regenerate_limb(BODY_ZONE_R_ARM)
 		character.regenerate_limb(BODY_ZONE_L_ARM)
+		var/datum/job/target_job = SSjob.GetJob(parent.mob?.mind?.assigned_role)
+		if(target_job?.forced_flaw)
+			charflaw = target_job.forced_flaw
+
 		character.charflaw = new charflaw.type()
 		character.charflaw.on_mob_creation(character)
 
 	character.dna.real_name = character.real_name
 
 	if(parent)
-		var/list/L = get_player_curses(parent.ckey)
-		if(L)
-			for(var/X in L)
-				ADD_TRAIT(character, curse2trait(X), TRAIT_GENERIC)
+		var/datum/role_bans/bans = get_role_bans_for_ckey(parent.ckey)
+		for(var/datum/role_ban_instance/ban as anything in bans.bans)
+			if(!ban.curses)
+				continue
+			for(var/curse_name as anything in ban.curses)
+				var/datum/curse/curse = GLOB.curse_names[curse_name]
+				character.add_curse(curse.type)
+
+	apply_trait_bans(character, parent.ckey)
+
+	if(is_misc_banned(parent.ckey, BAN_MISC_LEPROSY))
+		ADD_TRAIT(character, TRAIT_LEPROSY, TRAIT_BAN_PUNISHMENT)
+	if(is_misc_banned(parent.ckey, BAN_MISC_PUNISHMENT_CURSE))
+		ADD_TRAIT(character, TRAIT_PUNISHMENT_CURSE, TRAIT_BAN_PUNISHMENT)
 
 	if("tail_lizard" in pref_species.default_features)
 		character.dna.species.mutant_bodyparts |= "tail_lizard"
@@ -2566,14 +2344,6 @@ Slots: [job.spawn_positions]</span>
 	switch(name_id)
 		if("human")
 			return random_unique_name()
-		if("ai")
-			return pick(GLOB.ai_names)
-		if("cyborg")
-			return DEFAULT_CYBORG_NAME
-		if("clown")
-			return pick(GLOB.clown_names)
-		if("mime")
-			return pick(GLOB.mime_names)
 		if("religion")
 			return DEFAULT_RELIGION
 		if("deity")
@@ -2603,5 +2373,12 @@ Slots: [job.spawn_positions]</span>
 	if(!migrant)
 		return FALSE
 	if(!migrant.active)
+		return FALSE
+	return TRUE
+
+/datum/preferences/proc/allowed_respawn()
+	if(!has_spawned)
+		return TRUE
+	if(is_misc_banned(parent.ckey, BAN_MISC_RESPAWN))
 		return FALSE
 	return TRUE

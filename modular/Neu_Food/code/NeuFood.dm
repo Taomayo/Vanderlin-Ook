@@ -5,7 +5,6 @@
  *						*
  * * * * * * * * * * * **/
 
-
 #define SIMPLE_COOKING_XPGAIN 10
 #define COMPLEX_COOKING_XPGAIN 25
 
@@ -22,7 +21,6 @@
 	foodtype = GRAIN
 	drop_sound = 'sound/foley/dropsound/gen_drop.ogg'
 	cooktime = 30 SECONDS
-	var/process_step // used for pie making and other similar modular foods
 
 /obj/item/reagent_containers/food/snacks/rogue/Initialize()
 	. = ..()
@@ -78,7 +76,7 @@
 
 /obj/item/reagent_containers/food/snacks/rotten/meat
 	name = "rotten meat"
-	icon_state = "meatslab"
+	icon_state = "meatcutlet"
 /obj/item/reagent_containers/food/snacks/rotten/bacon
 	name = "rotten meat"
 	icon_state = "bacon"
@@ -128,6 +126,52 @@
 	icon_state = "spoon"
 	force = 0
 	w_class = WEIGHT_CLASS_TINY
+
+/obj/item/kitchen/ironspoon
+	name = "iron spoon"
+	desc = "Traditional utensil for shoveling soup into your mouth, now made with iron for that metallic taste!"
+	icon = 'modular/Neu_Food/icons/cooking.dmi'
+	icon_state = "spoon_iron"
+	force = 0
+	w_class = WEIGHT_CLASS_TINY
+
+/obj/item/kitchen/fork
+	name = "wooden fork"
+	desc = "Traditional utensil for stabbing your food in order to shove it into your mouth."
+	icon = 'modular/Neu_Food/icons/cooking.dmi'
+	icon_state = "fork"
+	force = 0
+	w_class = WEIGHT_CLASS_TINY
+
+/obj/item/kitchen/ironfork
+	name = "iron fork"
+	desc = "Traditional utensil for stabbing your food, now made with iron for extra stabbiness!"
+	icon = 'modular/Neu_Food/icons/cooking.dmi'
+	icon_state = "fork_iron"
+	force = 0
+	w_class = WEIGHT_CLASS_TINY
+
+/obj/item/reagent_containers/glass/bowl
+	name = "bowl"
+	desc = "It is the empty space that makes the bowl useful."
+	icon = 'icons/roguetown/items/cooking.dmi'
+	icon_state = "bowl"
+	force = 5
+	throwforce = 10
+	reagent_flags = OPENCONTAINER
+	amount_per_transfer_from_this = 6
+	possible_transfer_amounts = list(6)
+	dropshrink = 0.8
+	w_class = WEIGHT_CLASS_SMALL
+	volume = 24
+	obj_flags = CAN_BE_HIT
+	sellprice = 1
+	drinksounds = list('sound/items/drink_cup (1).ogg','sound/items/drink_cup (2).ogg','sound/items/drink_cup (3).ogg','sound/items/drink_cup (4).ogg','sound/items/drink_cup (5).ogg')
+	fillsounds = list('sound/items/fillcup.ogg')
+	metalizer_result = /obj/item/roguecoin/copper
+
+/obj/item/reagent_containers/glass/bowl/iron
+	icon_state = "bowl_iron"
 
 /obj/item/kitchen/rollingpin
 	icon = 'modular/Neu_Food/icons/cooking.dmi'
@@ -390,7 +434,7 @@
 	if(M.mind.assigned_role == "Beggar") // beggars gets revitalized, a little
 		M.adjustBruteLoss(-0.1*REM, 0)
 		M.adjustFireLoss(-0.1*REM, 0)
-		M.rogstam_add(2)
+		M.adjust_energy(2)
 		return
 	if(HAS_TRAIT(M, TRAIT_NASTY_EATER ))
 		return
@@ -423,7 +467,7 @@
 			M.blood_volume = min(M.blood_volume+2, BLOOD_VOLUME_MAXIMUM)
 		M.adjustBruteLoss(-0.2*REM, 0)
 		M.adjustFireLoss(-0.2*REM, 0)
-		M.rogstam_add(5)
+		M.adjust_energy(5)
 		return
 	else
 		if(prob(12))
@@ -498,7 +542,6 @@
 	list_reagents = list(/datum/reagent/floure = 1)
 	volume = 1
 	sellprice = 0
-	possible_potion = "spdpot"
 
 /obj/item/reagent_containers/powder/salt/throw_impact(atom/hit_atom, datum/thrownthing/thrownthing)
 	new /obj/effect/decal/cleanable/food/flour(get_turf(src))

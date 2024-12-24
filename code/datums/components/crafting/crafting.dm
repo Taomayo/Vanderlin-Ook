@@ -99,10 +99,7 @@
 			continue
 		if(I.flags_1 & HOLOGRAM_1)
 			continue
-		if(istype(I, /obj/item/stack))
-			var/obj/item/stack/S = I
-			.["other"][I.type] += S.amount
-		else if(istype(I, /obj/item/natural/bundle))
+		if(istype(I, /obj/item/natural/bundle))
 			var/obj/item/natural/bundle/B = I
 			.["other"][B.stacktype] += B.amount
 		else if(I.tool_behaviour)
@@ -150,7 +147,8 @@
 /atom/proc/OnCrafted(dirin)
 	return
 
-/obj/item/OnCrafted(dirin)
+/obj/structure/OnCrafted(dirin)
+	obj_flags |= CAN_BE_HIT
 	. = ..()
 
 /turf/open/OnCrafted(dirin)
@@ -174,6 +172,14 @@
 	var/list/contents = get_surroundings(user)
 //	var/send_feedback = 1
 	var/turf/T = get_step(user, user.dir)
+	var/obj/N
+	var/result_name
+	if(islist(R.result))
+		N = R.result[1]
+		result_name = N.name + "s"
+	else
+		N = R.result
+		result_name = N.name
 	if(isopenturf(T) && R.wallcraft)
 		to_chat(user, "<span class='warning'>Need to craft this on a wall.</span>")
 		return
@@ -196,18 +202,18 @@
 		for(var/obj/structure/S in T)
 			if(R.buildsame && istype(S, R.result))
 				if(user.dir == S.dir)
-					to_chat(user, "<span class='warning'>Something in the way.</span>")
+					to_chat(user, "<span class='warning'>Something is in the way.</span>")
 					return
 				continue
 			if(R.structurecraft && istype(S, R.structurecraft))
 				testing("isstructurecraft")
 				continue
 			if(S.density)
-				to_chat(user, "<span class='warning'>Something in the way.</span>")
+				to_chat(user, "<span class='warning'>Something is in the way.</span>")
 				return
 		for(var/obj/machinery/M in T)
 			if(M.density)
-				to_chat(user, "<span class='warning'>Something in the way.</span>")
+				to_chat(user, "<span class='warning'>Something is in the way.</span>")
 				return
 	if(R.req_table)
 		if(!(locate(/obj/structure/table) in T))
@@ -253,14 +259,14 @@
 						return
 					else
 						prob2craft = CLAMP(prob2craft, 5, 99)
-						if(prob(prob2fail))
-							to_chat(user, "<span class='danger'>MISTAKE! I've failed to craft [R.name]!</span>")
-							continue
+						if(prob(prob2fail)) //critical fail
+							to_chat(user, "<span class='danger'>MISTAKE! I've completely fumbled the crafting of \the [result_name]!</span>")
+							return
 						if(!prob(prob2craft))
 							if(user.client?.prefs.showrolls)
-								to_chat(user, "<span class='danger'>I've failed to craft [R.name]. (Success chance: [prob2craft]%)</span>")
+								to_chat(user, "<span class='danger'>I've failed to craft \the [result_name]. (Success chance: [prob2craft]%)</span>")
 								continue
-								to_chat(user, "<span class='danger'>I've failed to craft [R.name].</span>")
+								to_chat(user, "<span class='danger'>I've failed to craft \the [result_name].</span>")
 							continue
 					var/list/parts = del_reqs(R, user)
 					if(islist(R.result))
@@ -278,22 +284,17 @@
 							var/atom/movable/I = new R.result (T)
 							I.CheckParts(parts, R)
 							I.OnCrafted(user.dir)
-					user.visible_message("<span class='notice'>[user] [R.verbage_tp] \a [R.name]!</span>", \
-										"<span class='notice'>I [R.verbage] \a [R.name]!</span>")
+					user.visible_message("<span class='notice'>[user] [R.verbage_tp] \the [result_name]!</span>", \
+										"<span class='notice'>I [R.verbage] \the [result_name]!</span>")
 					if(user.mind && R.skillcraft)
 						if(isliving(user))
 							var/mob/living/L = user
-							var/amt2raise = L.STAINT
-							var/boon = user.mind.get_learning_boon(R.skillcraft)
+							var/amt2raise = L.STAINT * 2// its different over here
 							if(R.craftdiff > 0) //difficult recipe
-								amt2raise += (R.craftdiff * 6)
+								amt2raise += (R.craftdiff * 10)
 							if(amt2raise > 0)
-								user.mind.adjust_experience(R.skillcraft, amt2raise * boon, FALSE)
+								user.mind.add_sleep_experience(R.skillcraft, amt2raise, FALSE)
 					return
-//				if(isitem(I))
-//					user.put_in_hands(I)
-//				if(send_feedback)
-//					SSblackbox.record_feedback("tally", "object_crafted", 1, I.type)
 				return 0
 			return "."
 		to_chat(usr, "<span class='warning'>I'm missing a tool.</span>")
@@ -365,28 +366,6 @@
 						RC.on_reagent_change()
 					else
 						surroundings -= RC
-			else if(ispath(A, /obj/item/stack))
-				var/obj/item/stack/S
-				var/obj/item/stack/SD
-				while(amt > 0)
-					S = locate(A) in surroundings
-					if(S.amount >= amt)
-						if(!locate(S.type) in Deletion)
-							SD = new S.type()
-							Deletion += SD
-						S.use(amt)
-						SD = locate(S.type) in Deletion
-						SD.amount += amt
-						continue main_loop
-					else
-						amt -= S.amount
-						if(!locate(S.type) in Deletion)
-							Deletion += S
-						else
-							data = S.amount
-							S = locate(S.type) in Deletion
-							S.add(data)
-						surroundings -= S
 			else if(ispath(A, /obj/item/natural) || A == /obj/item/grown/log/tree/stick)
 				while(amt > 0)
 					for(var/obj/item/natural/bundle/B in get_environment(user))
@@ -433,13 +412,6 @@
 				RG.volume = partlist[A]
 			. += RG
 			Deletion -= RG
-			continue
-		else if(istype(A, /obj/item/stack))
-			var/obj/item/stack/ST = locate(A) in Deletion
-			if(ST.amount > partlist[A])
-				ST.amount = partlist[A]
-			. += ST
-			Deletion -= ST
 			continue
 		else
 			while(partlist[A] > 0)
@@ -591,6 +563,11 @@
 	if(!learned_recipes)
 		learned_recipes = list()
 	learned_recipes |= R
+
+/datum/mind/proc/forget_crafting_recipe(R)
+	if(!learned_recipes)
+		return
+	learned_recipes -= R
 
 // new crafting button interaction
 

@@ -4,13 +4,19 @@
 	opacity = 1
 	density = TRUE
 	blocks_air = TRUE
-	rad_flags = RAD_PROTECT_CONTENTS | RAD_NO_CONTAMINATE
-	rad_insulation = RAD_MEDIUM_INSULATION
 	baseturfs = list(/turf/open/floor/rogue/naturalstone, /turf/open/transparent/openspace)
 	var/above_floor
 	var/wallpress = TRUE
 	var/wallclimb = FALSE
 	var/climbdiff = 0
+
+	var/obj/effect/skill_tracker/thieves_cant/thieves_marking
+
+/turf/closed/examine(mob/user)
+	. = ..()
+	if(thieves_marking)
+		if(thieves_marking.can_see(user))
+			thieves_marking.examine(user)
 
 /turf/closed/MouseDrop_T(atom/movable/O, mob/user)
 	. = ..()
@@ -25,6 +31,14 @@
 		if(L.mobility_flags & MOBILITY_MOVE)
 			wallpress(L)
 			return
+
+/turf/closed/proc/feel_turf(mob/living/user)
+	to_chat(user, span_notice("I start feeling around the [src]"))
+	if(!do_after(user, 1.5 SECONDS, target = src))
+		return
+
+	for(var/obj/structure/lever/hidden/lever in contents)
+		lever.feel_button(user)
 
 /turf/closed/proc/wallpress(mob/living/user)
 	if(user.wallpressed)
@@ -88,7 +102,7 @@
 			var/mob/living/carbon/human/H = AM
 			if(H.dir == get_dir(H,src) && H.m_intent == MOVE_INTENT_RUN && !H.lying)
 				H.Immobilize(10)
-				H.apply_damage(15, BRUTE, "head", H.run_armor_check("head", "melee", damage = 15))
+				H.apply_damage(15, BRUTE, "head", H.run_armor_check("head", "blunt", damage = 15))
 				H.toggle_rogmove_intent(MOVE_INTENT_WALK, TRUE)
 				playsound(src, "genblunt", 100, TRUE)
 				H.visible_message("<span class='warning'>[H] runs into [src]!</span>", "<span class='warning'>I run into [src]!</span>")
@@ -167,7 +181,7 @@
 							climbsound = 'sound/foley/ladder.ogg'
 
 				if(myskill < climbdiff)
-					to_chat(user, "<span class='warning'>I can't climb here.</span>")
+					to_chat(user, "<span class='warning'>I'm not capable of climbing this.</span>")
 					return
 				used_time = max(70 - (myskill * 10) - (L.STASPD * 3), 30)
 			if(user.m_intent != MOVE_INTENT_SNEAK)
@@ -199,11 +213,6 @@
 	user.forceMove(target)
 	to_chat(user, "<span class='warning'>I crawl up the wall.</span>")
 	. = ..()
-
-
-/turf/closed/AfterChange()
-	..()
-	SSair.high_pressure_delta -= src
 
 /turf/closed/get_smooth_underlay_icon(mutable_appearance/underlay_appearance, turf/asking_turf, adjacency_dir)
 	return FALSE

@@ -1,11 +1,10 @@
 /obj/item/natural/fibers
-	name = "fibers"
-	desc = "Plant fibers. The peasants make their living making these into clothing."
+	name = "fiber"
+	desc = "Plant fiber. The peasants make their living sewing these into fabrics and clothing."
 	icon_state = "fibers"
 	possible_item_intents = list(/datum/intent/use)
 	force = 0
 	throwforce = 0
-	obj_flags = null
 	color = "#454032"
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
@@ -16,32 +15,13 @@
 	spitoutmouth = FALSE
 	bundletype = /obj/item/natural/bundle/fibers
 
-/obj/item/natural/fibers/attack_right(mob/user)
-	to_chat(user, "<span class='warning'>I start to collect [src]...</span>")
-	if(move_after(user, 5 SECONDS, target = src))
-		var/fibercount = 0
-		for(var/obj/item/natural/fibers/F in get_turf(src))
-			fibercount++
-		while(fibercount > 0)
-			if(fibercount == 1)
-				new /obj/item/natural/fibers(get_turf(user))
-				fibercount--
-			else if(fibercount >= 2)
-				var/obj/item/natural/bundle/fibers/B = new(get_turf(user))
-				B.amount = clamp(fibercount, 2, 6)
-				B.update_bundle()
-				fibercount -= clamp(fibercount, 2, 6)
-		for(var/obj/item/natural/fibers/F in get_turf(src))
-			qdel(F)
-
 /obj/item/natural/silk
 	name = "silk"
 	icon_state = "fibers"
 	possible_item_intents = list(/datum/intent/use)
-	desc = "Silken strands. Their usage in clothing is exotic in all places save the underdark"
+	desc = "Silken strands. Their usage in clothing is exotic in all places save the Underdark."
 	force = 0
 	throwforce = 0
-	obj_flags = null
 	color = "#e6e3db"
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
@@ -51,24 +31,6 @@
 	w_class = WEIGHT_CLASS_TINY
 	spitoutmouth = FALSE
 	bundletype = /obj/item/natural/bundle/silk
-
-/obj/item/natural/silk/attack_right(mob/user)
-	to_chat(user, "<span class='warning'>I start to collect [src]...</span>")
-	if(move_after(user, 5 SECONDS, target = src))
-		var/silkcount = 0
-		for(var/obj/item/natural/silk/F in get_turf(src))
-			silkcount++
-		while(silkcount > 0)
-			if(silkcount == 1)
-				new /obj/item/natural/silk(get_turf(user))
-				silkcount--
-			else if(silkcount >= 2)
-				var/obj/item/natural/bundle/silk/B = new(get_turf(user))
-				B.amount = clamp(silkcount, 2, 6)
-				B.update_bundle()
-				silkcount -= clamp(silkcount, 2, 6)
-		for(var/obj/item/natural/silk/F in get_turf(src))
-			qdel(F)
 
 #ifdef TESTSERVER
 
@@ -94,7 +56,6 @@
 	possible_item_intents = list(/datum/intent/use)
 	force = 0
 	throwforce = 0
-	obj_flags = null
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
 	slot_flags = ITEM_SLOT_MOUTH|ITEM_SLOT_HIP
@@ -244,7 +205,6 @@
 	force = 0
 	throwforce = 0
 	maxamount = 6
-	obj_flags = null
 	color = "#454032"
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
@@ -270,7 +230,6 @@
 	force = 0
 	throwforce = 0
 	maxamount = 6
-	obj_flags = null
 	color = "#e6e3db"
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
@@ -291,7 +250,6 @@
 	force = 0
 	throwforce = 0
 	maxamount = 10
-	obj_flags = null
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
 	w_class = WEIGHT_CLASS_TINY
@@ -305,13 +263,12 @@
 
 /obj/item/natural/bundle/stick
 	name = "bundle of sticks"
-	desc = "A bundle of wooden sticks, weak when seperated, mighty together."
+	desc = "A bundle of wooden sticks, looks like they all need to stick together!"
 	icon_state = "stickbundle1"
 	possible_item_intents = list(/datum/intent/use)
 	maxamount = 10
 	force = 0
 	throwforce = 0
-	obj_flags = null
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
 	w_class = WEIGHT_CLASS_TINY
@@ -331,7 +288,6 @@
 	possible_item_intents = list(/datum/intent/use)
 	force = 0
 	throwforce = 0
-	obj_flags = null
 	color = COLOR_BEIGE
 	firefuel = 5 MINUTES
 	resistance_flags = FLAMMABLE
@@ -354,33 +310,14 @@
 	stacktype = /obj/item/natural/worms
 	stackname = "worms"
 
-/obj/item/natural/worms/attack_right(mob/user)
-	to_chat(user, "<span class='warning'>I start to collect [src]...</span>")
-	if(move_after(user, 5 SECONDS, target = src))
-		var/wormcount = 0
-		for(var/obj/item/natural/worms/F in get_turf(src))
-			wormcount++
-		while(wormcount > 0)
-			if(wormcount == 1)
-				new /obj/item/natural/worms(user.drop_location())
-				wormcount--
-			else if(wormcount >= 2)
-				var/obj/item/natural/bundle/worms/B = new(user.drop_location())
-				B.amount = clamp(wormcount, 2, 12)
-				B.update_bundle()
-				wormcount -= clamp(wormcount, 2, 12)
-		for(var/obj/item/natural/worms/F in get_turf(src))
-			qdel(F)
-
 /obj/item/natural/bundle/bone
 	name = "stack of bones"
 	icon_state = "bonestack1"
 	possible_item_intents = list(/datum/intent/use)
-	desc = "bones, stacked together."
+	desc = "Bones stacked upon one another."
 	force = 0
 	throwforce = 0
 	maxamount = 6
-	obj_flags = null
 	color = null
 	firefuel = null
 	resistance_flags = FLAMMABLE
@@ -395,8 +332,10 @@
 	icon1step = 2
 	icon2 = "bonestack2"
 	icon2step = 4
+
 /obj/item/natural/bundle/bone/full
 	amount = 6
+
 /*/obj/item/alch/bone/attackby(obj/item/I, mob/living/user, params)
 	var/mob/living/carbon/human/H = user
 	user.changeNext_move(CLICK_CD_MELEE)

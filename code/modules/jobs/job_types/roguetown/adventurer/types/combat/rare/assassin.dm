@@ -45,6 +45,9 @@
 	var/disguises = list("Bard", "Beggar", "Fisher", "Hunter", "Miner", "Noble", "Peasant", "Woodcutter")
 	var/disguisechoice = input("Choose your cover", "Available disguises") as anything in disguises
 
+	if(disguisechoice)
+		H.advjob = disguisechoice
+
 	switch(disguisechoice)
 		if("Bard")
 			H.mind?.adjust_skillrank(/datum/skill/misc/music, 1, TRUE) //Have to know to "PLAY" the part... Eh? Eh?
@@ -216,9 +219,6 @@
 
 	H.change_stat("perception", 2)
 	H.change_stat("speed", 2)
-	if(H.patron != /datum/patron/inhumen/graggar)
-		H.patron = GLOB.patronlist[/datum/patron/inhumen/graggar] // Assassins are associated with the God of murder, Graggar
-		to_chat(H, "<span class='danger'>I've memorized my list of targets, time to get to work. For [H.patron] has led me to who I am tonight.")
 	if(H.dna.species.id == "human")
 		if(H.gender == "male")
 			H.dna.species.soundpack_m = new /datum/voicepack/male/assassin()

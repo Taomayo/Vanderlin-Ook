@@ -14,7 +14,11 @@
 	job_rank = ROLE_VAMPIRE
 	antag_hud_type = ANTAG_HUD_TRAITOR
 	antag_hud_name = "vampire"
-	confess_lines = list("I WANT YOUR BLOOD!", "DRINK THE BLOOD!", "CHILD OF KAIN!")
+	confess_lines = list(
+		"I WANT YOUR BLOOD!",
+		"DRINK THE BLOOD!",
+		"CHILD OF KAIN!",
+	)
 	var/disguised = TRUE
 	var/vitae = 2000
 	var/last_transform
@@ -55,7 +59,7 @@
 		owner.adjust_skillrank(/datum/skill/combat/unarmed, 6, TRUE)
 		ADD_TRAIT(owner.current, TRAIT_NOBLE, TRAIT_GENERIC)
 	owner.special_role = name
-	owner.current.patron = GLOB.patronlist[/datum/patron/divine/noc] // Spurned by the scorching light of Astrata, the Moon Prince Noc has taken you under his wing.
+	owner.current.set_patron(/datum/patron/divine/noc) // Spurned by the scorching light of Astrata, the Moon Prince Noc has taken you under his wing.
 	ADD_TRAIT(owner.current, TRAIT_STRONGBITE, TRAIT_GENERIC)
 	ADD_TRAIT(owner.current, TRAIT_NOHUNGER, TRAIT_GENERIC)
 	ADD_TRAIT(owner.current, TRAIT_NOBREATH, TRAIT_GENERIC)
@@ -63,7 +67,7 @@
 	ADD_TRAIT(owner.current, TRAIT_TOXIMMUNE, TRAIT_GENERIC)
 	ADD_TRAIT(owner.current, TRAIT_STEELHEARTED, TRAIT_GENERIC)
 	ADD_TRAIT(owner.current, TRAIT_VILLAIN, TRAIT_GENERIC)
-	owner.current.cmode_music = 'sound/music/combat_vamp2.ogg'
+	owner.current.cmode_music = 'sound/music/cmode/antag/combat_vamp2.ogg'
 	var/obj/item/organ/eyes/eyes = owner.current.getorganslot(ORGAN_SLOT_EYES)
 	if(eyes)
 		eyes.Remove(owner.current,1)
@@ -382,7 +386,7 @@
 	desc = ""
 	icon_state = null
 	body_parts_covered = FULL_BODY
-	armor = list("melee" = 100, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 100, "slash" = 100, "stab" = 100,  "piercing" = 0, "fire" = 0, "acid" = 0)
 	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_BLUNT, BCLASS_TWIST)
 	blocksound = SOFTHIT
 	blade_dulling = DULLING_BASHCHOP

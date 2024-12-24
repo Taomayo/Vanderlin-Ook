@@ -15,9 +15,11 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	tutorial = "It is a simple life you live, your basic understanding of life is something many would be envious of if they knew how perfect it was. You know a good day's work, the sweat on your brow is yours: Famines and plague may take its toll, but you know how to celebrate life well. Till the soil and produce fresh food for those around you, and maybe youll be more than an unsung hero someday."
+	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
 
 
 	f_title = "Soilbride"
@@ -61,7 +63,7 @@
 		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/random
 		shoes = /obj/item/clothing/shoes/roguetown/simpleshoes
 		belt = /obj/item/storage/belt/rogue/leather/rope
-		beltr = /obj/item/roguekey/soilson
+		beltr = /obj/item/key/soilson
 		beltl = /obj/item/rogueweapon/knife/villager
 	else
 		head = /obj/item/clothing/head/roguetown/armingcap
@@ -69,5 +71,5 @@
 		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt
 		shoes = /obj/item/clothing/shoes/roguetown/simpleshoes
 		belt = /obj/item/storage/belt/rogue/leather/rope
-		beltr = /obj/item/roguekey/soilson
+		beltr = /obj/item/key/soilson
 		beltl = /obj/item/rogueweapon/knife/villager

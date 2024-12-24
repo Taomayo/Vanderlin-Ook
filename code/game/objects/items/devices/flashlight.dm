@@ -132,7 +132,7 @@
 	item_state = "torch"
 	lefthand_file = 'icons/mob/inhands/items_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/items_righthand.dmi'
-	light_color = "#ff7b00"
+	light_color = "#ffb773"
 	on_damage = 2
 	flags_1 = null
 	possible_item_intents = list(/datum/intent/hit, /datum/intent/use)
@@ -143,6 +143,7 @@
 	fuel = 30 MINUTES
 	light_depth = 0
 	light_height = 0
+	metalizer_result = /obj/item/flashlight/flare/torch/lantern
 
 /obj/item/flashlight/flare/torch/getonmobprop(tag)
 	. = ..()
@@ -155,7 +156,7 @@
 
 /obj/item/flashlight/flare/torch/Initialize()
 	. = ..()
-	soundloop = new(list(src), FALSE)
+	soundloop = new(src, FALSE)
 
 /obj/item/flashlight/flare/torch/process()
 	open_flame(heat)
@@ -205,6 +206,7 @@
 	damtype = BRUTE
 
 /obj/item/flashlight/flare/torch/fire_act(added, maxstacks)
+	. = ..()
 	if(fuel)
 		if(!on)
 			playsound(src.loc, 'sound/items/firelight.ogg', 100)
@@ -217,7 +219,7 @@
 				var/mob/M = loc
 				M.update_inv_hands()
 			START_PROCESSING(SSobj, src)
-	..()
+			return TRUE
 
 /obj/item/flashlight/flare/torch/afterattack(atom/movable/A, mob/user, proximity)
 	. = ..()
@@ -240,7 +242,7 @@
 
 /obj/item/flashlight/flare/torch/get_temperature()
 	if(on)
-		return FIRE_MINIMUM_TEMPERATURE_TO_SPREAD
+		return 150+T0C
 	return ..()
 
 /obj/item/flashlight/flare/torch/prelit/Initialize() //Prelit version, testing to see if it causes less issues with pre_equip dropping stuff in your hands
@@ -254,6 +256,7 @@
 	light_outer_range = 6
 	fuel = 120 MINUTES
 	should_self_destruct = TRUE
+	metalizer_result = null
 
 /obj/item/flashlight/flare/torch/metal/afterattack(atom/movable/A, mob/user, proximity)
 	. = ..()
@@ -272,7 +275,7 @@
 				qdel(src)
 
 /obj/item/flashlight/flare/torch/lantern
-	name = "lamptern"
+	name = "iron lamptern"
 	icon_state = "lamp"
 	desc = "A light to guide the way."
 	light_outer_range = 7
@@ -283,6 +286,8 @@
 	on_damage = 5
 	fuel = 120 MINUTES
 	should_self_destruct = FALSE
+	metalizer_result = null
+	smeltresult = /obj/item/ingot/iron
 
 /obj/item/flashlight/flare/torch/lantern/afterattack(atom/movable/A, mob/user, proximity)
 	. = ..()
@@ -313,6 +318,16 @@
 			if("onbelt")
 				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
 
+/obj/item/flashlight/flare/torch/lantern/bronzelamptern
+	name = "bronze lamptern"
+	icon_state = "bronzelamp"
+	item_state = "bronzelamp"
+	desc = "A marvel of engineering that emits a strange green glow."
+	light_outer_range = 8
+	light_color ="#4ac77e"
+	on = FALSE
+	smeltresult = /obj/item/ingot/bronze
+
 /obj/item/flashlight/flare/torch/lantern/copper
 	name = "copper lamptern"
 	icon_state = "clamp"
@@ -334,13 +349,3 @@
 				return list("shrink" = 0.4,"sx" = -2,"sy" = -4,"nx" = 9,"ny" = -4,"wx" = -3,"wy" = -4,"ex" = 2,"ey" = -4,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0)
 			if("onbelt")
 				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
-
-
-/obj/item/flashlight/lantern
-	name = "lantern"
-	icon_state = "lantern"
-	item_state = "lantern"
-	lefthand_file = 'icons/mob/inhands/equipment/mining_lefthand.dmi'
-	righthand_file = 'icons/mob/inhands/equipment/mining_righthand.dmi'
-	desc = ""
-	light_outer_range = 6			// luminosity when on

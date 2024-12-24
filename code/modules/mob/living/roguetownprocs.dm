@@ -69,7 +69,7 @@
 		return FALSE
 	if(lying)
 		return FALSE
-	if(user.badluck(4))
+	if(user.stat_roll(STATKEY_LCK,4,10,TRUE))
 		var/list/usedp = list("Critical miss!", "Damn! Critical miss!", "No! Critical miss!", "It can't be! Critical miss!", "Betrayed by lady luck! Critical miss!", "Bad luck! Critical miss!", "Curse creation! Critical miss!", "What?! Critical miss!")
 		to_chat(user, "<span class='boldwarning'>[pick(usedp)]</span>")
 		flash_fullscreen("blackflash2")
@@ -222,13 +222,14 @@
 						else
 							U.mind?.adjust_experience(/datum/skill/combat/unarmed, max(round(U.STAINT/2), 0), FALSE)
 
+					var/obj/effect/temp_visual/dir_setting/block/blk = new(get_turf(src), get_dir(H, U))
+					blk.icon_state = "p[U.used_intent.animname]"
 					if(prob(66) && AB)
 						if((used_weapon.flags_1 & CONDUCT_1) && (AB.flags_1 & CONDUCT_1))
 							flash_fullscreen("whiteflash")
 							user.flash_fullscreen("whiteflash")
 							var/datum/effect_system/spark_spread/S = new()
-							var/turf/front = get_step(src,src.dir)
-							S.set_up(1, 1, front)
+							S.set_up(n = 1, loca = get_turf(src))
 							S.start()
 						else
 							flash_fullscreen("blackflash2")
@@ -237,7 +238,7 @@
 
 					var/dam2take = round((get_complex_damage(AB,user,used_weapon.blade_dulling)/2),1)
 					if(dam2take)
-						used_weapon.take_damage(max(dam2take,1), BRUTE, "melee")
+						used_weapon.take_damage(max(dam2take,1), BRUTE, used_weapon.damage_type)
 					return TRUE
 				else
 					return FALSE
@@ -317,7 +318,7 @@
 /mob/proc/do_parry(obj/item/W, parrydrain as num, mob/living/user)
 	if(ishuman(src))
 		var/mob/living/carbon/human/H = src
-		if(H.rogfat_add(parrydrain))
+		if(H.adjust_stamina(parrydrain))
 			if(W)
 				playsound(get_turf(src), pick(W.parrysound), 100, FALSE)
 			if(istype(rmb_intent, /datum/rmb_intent/riposte))
@@ -342,7 +343,7 @@
 /mob/proc/do_unarmed_parry(parrydrain as num, mob/living/user)
 	if(ishuman(src))
 		var/mob/living/carbon/human/H = src
-		if(H.rogfat_add(parrydrain))
+		if(H.adjust_stamina(parrydrain))
 			playsound(get_turf(src), pick(parry_sound), 100, FALSE)
 			src.visible_message("<span class='warning'><b>[src]</b> parries [user] with their hands!</span>")
 			return TRUE
@@ -355,96 +356,133 @@
 
 
 /mob/proc/do_dodge(mob/user, turf/turfy)
-	if(!dodgecd)
-		var/mob/living/L = src
-		var/mob/living/U = user
-		var/mob/living/carbon/human/H
-		var/mob/living/carbon/human/UH
-		var/obj/item/I
-		var/drained = 10
-		if(ishuman(src))
-			H = src
-		if(ishuman(user))
-			UH = user
-			I = UH.used_intent.masteritem
-		var/prob2defend = U.defprob
-		if(L.rogfat >= L.maxrogfat)
-			return FALSE
-		if(L)
-			if(H?.check_dodge_skill())
-				prob2defend = prob2defend + (L.STASPD * 12)
-			else
-				prob2defend = prob2defend + (L.STASPD * 10)
-		if(U)
-			prob2defend = prob2defend - (U.STASPD * 10)
-		if(I)
-			if(I.wbalance > 0 && U.STASPD > L.STASPD) //nme weapon is quick, so they get a bonus based on spddiff
-				prob2defend = prob2defend - ( I.wbalance * ((U.STASPD - L.STASPD) * 10) )
-			if(I.wbalance < 0 && L.STASPD > U.STASPD) //nme weapon is slow, so its easier to dodge if we're faster
-				prob2defend = prob2defend + ( I.wbalance * ((U.STASPD - L.STASPD) * 10) )
-			if(UH?.mind)
-				prob2defend = prob2defend - (UH.mind.get_skill_level(I.associated_skill) * 10)
-		if(H)
-			if(!H?.check_armor_skill())
-				H.Knockdown(1)
-				return FALSE
-			if(H?.check_dodge_skill())
-				drained = drained - 2
-//			if(H.mind)
-//				drained = drained + max((H.checkwornweight() * 10)-(mind.get_skill_level(/datum/skill/misc/athletics) * 10),0)
-//			else
-//				drained = drained + (H.checkwornweight() * 10)
-			if(I) //the enemy attacked us with a weapon
-				if(!I.associated_skill) //the enemy weapon doesn't have a skill because its improvised, so penalty to attack
-					prob2defend = prob2defend + 10
-				else
-					if(H.mind)
-						prob2defend = prob2defend + (H.mind.get_skill_level(I.associated_skill) * 10)
-//				var/thing = H.encumbrance
-//				if(thing > 0)
-//					drained = drained + (thing * 10)
-			else //the enemy attacked us unarmed or is nonhuman
-				if(UH)
-					if(UH.used_intent.unarmed)
-						if(UH.mind)
-							prob2defend = prob2defend - (UH.mind.get_skill_level(/datum/skill/combat/unarmed) * 10)
-						if(H.mind)
-							prob2defend = prob2defend + (H.mind.get_skill_level(/datum/skill/combat/unarmed) * 10)
-			if(!(L.mobility_flags & MOBILITY_STAND))	// checks if laying down and applies 50% defense malus if so
-				prob2defend *= 0.5
-			prob2defend = clamp(prob2defend, 5, 95)
-			if(client?.prefs.showrolls)
-				to_chat(src, "<span class='info'>Roll to dodge... [prob2defend]%</span>")
-			if(!prob(prob2defend))
-				return FALSE
-			if(!H.rogfat_add(max(drained,5)))
-				to_chat(src, "<span class='warning'>I'm too tired to dodge!</span>")
-				return FALSE
-		else //we are a non human
-			if(client?.prefs.showrolls)
-				to_chat(src, "<span class='info'>Roll to dodge... [prob2defend]%</span>")
-			prob2defend = clamp(prob2defend, 5, 95)
-			if(!prob(prob2defend))
-				return FALSE
-		dodgecd = TRUE
-		throw_at(turfy, 1, 2, src, FALSE)
-		if(drained > 0)
-			src.visible_message("<span class='warning'><b>[src]</b> dodges [user]'s attack!</span>")
+	if(dodgecd)
+		return FALSE
+
+	var/mob/living/D = src
+	var/mob/living/A = user
+	var/mob/living/carbon/human/DH
+	var/mob/living/carbon/human/AH
+	var/obj/item/I
+	var/obj/item/DI = D.get_active_held_item()
+	var/drained = 10
+	var/dodge_speed = floor(D.STASPD / 2)
+
+	if(ishuman(src))
+		DH = src
+	if(ishuman(user))
+		AH = user
+		I = AH.used_intent.masteritem
+
+	var/dodge_score = D.defprob
+	if(D.stamina >= D.maximum_stamina)
+		return FALSE
+	if(!(D.mobility_flags & MOBILITY_STAND))							//Can't dodge when knocked down
+		return FALSE
+	if(D)
+		if(D?.check_dodge_skill())
+			dodge_score += (D.STASPD * 12)
 		else
-			src.visible_message("<span class='warning'><b>[src]</b> easily dodges [user]'s attack!</span>")
-		dodgecd = null
+			dodge_score += ((D.STASPD * 10))
+	if(A)
+		dodge_score -= A.STASPD * 5
+	if(I)
+		if(AH?.mind)
+			dodge_score -= (AH.mind.get_skill_level(I.associated_skill) * 10) //this means at legendary -60 dodge rating
+	if(I)
+		if(I.wbalance > 0)													//Enemy weapon is quick, so they get a bonus based on spddiff
+			dodge_score -= ((A.STASPD - D.STASPD) * 5)
+
+	dodge_score += (D.rmb_intent?.def_bonus)								//Dodge bonus from Poise
+
+				//// ADD WEAPON INTENT MODIFIERS HERE ////
+	if(istype(DI, /obj/item/rogueweapon))
+		switch(DI.wlength)
+			if(WLENGTH_NORMAL)
+				dodge_score -= 5
+				drained += 2
+			if(WLENGTH_LONG)
+				dodge_score -= 10
+				drained += 5
+			if(WLENGTH_GREAT)
+				dodge_score -= 15
+				dodge_speed = floor(dodge_speed * 0.8)
+				drained += 8
+		dodge_score += (DI.wdodgebonus)
+
+	dodge_score += (D.used_intent.idodgebonus)							//Some weapon intents help with dodging
+
+	if(DH)
+		if(!DH?.check_armor_skill() || DH?.legcuffed)
+			DH.Knockdown(1)
+			return FALSE
+		if(I)															//Attacker attacked us with a weapon
+			if(!I.associated_skill)										//Attacker's weapon doesn't have a skill because its improvised, so penalty to attack
+				dodge_score += 10
+			else
+				if(DH.mind)
+					dodge_score += (DH.mind.get_skill_level(I.associated_skill) * 10)
+
+		else //the enemy attacked us unarmed or is nonhuman
+			if(AH)
+				if(AH.used_intent.unarmed)
+					if(AH.mind)
+						dodge_score -= (AH.mind.get_skill_level(/datum/skill/combat/unarmed) * 10)
+					if(DH.mind)
+						dodge_score += (DH.mind.get_skill_level(/datum/skill/combat/unarmed) * 10)
+
+		switch(DH.worn_armor_class)
+			if(AC_LIGHT)
+				dodge_speed -= 10
+				drained += 5
+			if(AC_MEDIUM)
+				dodge_score *= 0.5
+				dodge_speed = floor(dodge_speed * 0.5)
+				drained += 10
+			if(AC_HEAVY)
+				dodge_score *= 0.2
+				dodge_speed = floor(dodge_speed * 0.25)
+				drained += 20
+
+		dodge_score = clamp(dodge_score, 0, 95)
+		var/dodgeroll = rand(1, 100)
+
+		if(D.client?.prefs.showrolls)
+			to_chat(src, span_info("Roll under [dodge_score] to dodge... [dodgeroll]"))
+		if(dodgeroll > dodge_score)
+			return FALSE
+		if(!DH.adjust_stamina(max(drained, 5)))
+			to_chat(src, span_warning("I'm too tired to dodge!"))
+			return FALSE
+	else																//Defender is non human
+		dodge_score = clamp(dodge_score, 0, 95)
+		var/dodgeroll = rand(1, 100)
+
+		if(D.client?.prefs.showrolls)
+			to_chat(src, span_info("Roll under [dodge_score] to dodge... [dodgeroll]"))
+		if(dodgeroll > dodge_score)
+			return FALSE
+	dodgecd = TRUE
+	dodge_speed = (11 - dodge_speed)
+	playsound(src, 'sound/combat/dodge.ogg', 100, FALSE)
+	throw_at(turfy, 1, dodge_speed, src, FALSE)
+	if(drained > 0)
+		src.visible_message(span_warning("<b>[src]</b> dodges [user]'s attack!"))
+	else
+		src.visible_message(span_warning("<b>[src]</b> easily dodges [user]'s attack!"))
+	dodgecd = FALSE
 //		if(H)
 //			if(H.IsOffBalanced())
 //				H.Knockdown(1)
 //				to_chat(H, "<span class='danger'>I tried to dodge off-balance!</span>")
-		playsound(src, 'sound/combat/dodge.ogg', 100, FALSE)
+//		playsound(src, 'sound/combat/dodge.ogg', 100, FALSE)
 //		if(isturf(loc))
 //			var/turf/T = loc
 //			if(T.landsound)
 //				playsound(T, T.landsound, 100, FALSE)
-		return TRUE
-	else
-		return FALSE
+	return TRUE
+//	else
+		//return FALSE
 
 /mob/proc/food_tempted(/obj/item/W, mob/user)
 	return

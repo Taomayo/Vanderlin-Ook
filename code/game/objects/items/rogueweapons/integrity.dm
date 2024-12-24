@@ -5,8 +5,6 @@
 	var/dismember_blade_int = 0
 	/// Maximum blade integrity
 	var/max_blade_int = 0
-	/// Required skill to repair the blade integrity
-	var/required_repair_skill = 0
 
 /obj/item/proc/remove_bintegrity(amt as num)
 	blade_int = blade_int - amt
@@ -43,7 +41,15 @@
 	user.changeNext_move(user.used_intent.clickcd)
 	. = ..()
 
-/obj/item/attackby(obj/item/I, mob/user, params)
+/obj/item/attackby(obj/item/I, mob/living/user, params)
+	if(user.try_orderless_slapcraft(I, src))
+		user.changeNext_move(CLICK_CD_FAST)
+		return TRUE
+
+	if(user.try_slapcraft(src, I))
+		user.changeNext_move(CLICK_CD_FAST)
+		return TRUE
+
 	user.changeNext_move(user.used_intent.clickcd)
 	if(max_blade_int)
 		if(istype(I, /obj/item/natural/stone))

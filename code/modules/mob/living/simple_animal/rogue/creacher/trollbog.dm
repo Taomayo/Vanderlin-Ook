@@ -42,10 +42,10 @@
 	melee_damage_upper = 50
 	environment_smash = ENVIRONMENT_SMASH_STRUCTURES
 
-	STACON = 16
-	STASTR = 16
-	STASPD = 3
-	STAEND = 15
+	TOTALCON = 16
+	TOTALSTR = 16
+	TOTALSPD = 3
+	TOTALEND = 15
 
 	retreat_distance = 0
 	minimum_distance = 0
@@ -62,6 +62,11 @@
 //	stat_attack = UNCONSCIOUS
 	remains_type = /obj/effect/decal/remains/troll // Placeholder until Troll remains are sprited.
 	body_eater = TRUE
+
+	ai_controller = /datum/ai_controller/bog_troll
+	AIStatus = AI_OFF
+	can_have_ai = FALSE
+
 	var/critvuln = FALSE
 
 

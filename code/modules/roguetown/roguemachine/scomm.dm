@@ -59,10 +59,9 @@
 	playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
 	var/canread = user.can_read(src, TRUE)
 	var/contents
-	if(SSticker.rulertype == "King")
-		contents += "<center>KING'S DECREES<BR>"
-	else
-		contents += "<center>QUEEN'S DECREES<BR>"
+	if(SSticker.rulertype == "Monarch")
+		contents += "<center>MONARCH'S DECREES<BR>"
+
 	contents += "-----------<BR><BR></center>"
 	for(var/i = GLOB.lord_decrees.len to 1 step -1)
 		contents += "[i]. <span class='info'>[GLOB.lord_decrees[i]]</span><BR>"
@@ -170,7 +169,6 @@
 	force = 10
 	throwforce = 10
 	slot_flags = ITEM_SLOT_MOUTH|ITEM_SLOT_HIP|ITEM_SLOT_NECK|ITEM_SLOT_RING
-	obj_flags = null
 
 	w_class = WEIGHT_CLASS_SMALL
 	flags_1 = HEAR_1

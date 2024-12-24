@@ -1,7 +1,7 @@
 
 /datum/advclass/combat/puritan
 	name = "Witch Hunter"
-	tutorial = "Witch Hunters dedicate their lives to the eradication of the varied evils infesting Grimoria. They know the vile sorcery of the necromancer, the insidious nature of the cultist and monstrousness of vampires and werevolfs. They also know how best to end them."
+	tutorial = "Witch Hunters dedicate their lives to the eradication of the varied evils infesting Psydonia. They know the vile sorcery of the necromancer, the insidious nature of the cultist and monstrousness of vampires and werevolfs. They also know how best to end them."
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = list(
 		"Humen",
@@ -17,6 +17,7 @@
 	pickprob = 15
 	category_tags = list(CTAG_ADVENTURER)
 	min_pq = 2
+	cmode_music = 'sound/music/cmode/church/CombatInquisitor.ogg'
 
 /datum/outfit/job/roguetown/adventurer/puritan/pre_equip(mob/living/carbon/human/H)
 	..()

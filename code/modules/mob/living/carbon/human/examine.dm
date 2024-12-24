@@ -26,11 +26,6 @@
 		m2 = "my"
 		m3 = "I have"
 
-	if(isliving(user))
-		var/mob/living/L = user
-		if(HAS_TRAIT(L, TRAIT_PROSOPAGNOSIA))
-			obscure_name = TRUE
-
 	if(name == "Unknown" || name == "Unknown Man" || name == "Unknown Woman")
 		obscure_name = TRUE
 
@@ -59,10 +54,15 @@
 				is_returning = TRUE
 		if(display_as_wanderer)
 			. = list("<span class='info'>ø ------------ ø\nThis is <EM>[used_name]</EM>, the wandering [race_name].")
+		else if(mind?.apprentice)
+			. = list("<span class='info'>ø ------------ ø\nThis is <EM>[used_name]</EM>, [used_title].")
 		else if(used_title)
 			. = list("<span class='info'>ø ------------ ø\nThis is <EM>[used_name]</EM>, the [is_returning ? "returning " : ""][race_name] [used_title].")
 		else
 			. = list("<span class='info'>ø ------------ ø\nThis is the <EM>[used_name]</EM>, the [race_name].")
+
+		if(GLOB.lord_titles[real_name])
+			. += span_notice("[m3] been granted the title of \"[GLOB.lord_titles[name]]\".")
 
 		if(dna.species.use_skintones)
 			var/skin_tone_wording = dna.species.skin_tone_wording ? lowertext(dna.species.skin_tone_wording) : "skin tone"
@@ -110,8 +110,19 @@
 			if(mind && mind.special_role == "Vampire Lord")
 				. += "<span class='userdanger'>A MONSTER!</span>"
 
-	if(leprosy == 1)
-		. += "<span class='necrosis'>A LEPER...</span>"
+		if(HAS_TRAIT(src, TRAIT_THIEVESGUILD) && HAS_TRAIT(user, TRAIT_THIEVESGUILD))
+			. += span_green("They are also a member of the Thieves Guild.")
+
+		var/list/known_frumentarii = user.mind.cached_frumentarii
+		if(name in known_frumentarii)
+			. += span_greentext("<b>[m1] an agent of the court!</b>")
+
+
+	if(HAS_TRAIT(src, TRAIT_MANIAC_AWOKEN))
+		. += span_userdanger("MANIAC!")
+
+	if(HAS_TRAIT(src, TRAIT_LEPROSY))
+		. += span_necrosis("A LEPER...")
 
 	if(user != src)
 		var/datum/mind/Umind = user.mind
@@ -144,7 +155,7 @@
 	//head
 	if(head && !(SLOT_HEAD in obscured))
 		. += "[m3] [head.get_examine_string(user)] on [m2] head."
-	//suit/armor
+	//suit/armorF
 	if(wear_armor && !(SLOT_ARMOR in obscured))
 		. += "[m3] [wear_armor.get_examine_string(user)]."
 		//suit/armor storage
@@ -221,10 +232,10 @@
 
 	//handcuffed?
 	if(handcuffed)
-		. += "<A href='?src=[REF(src)];item=[SLOT_HANDCUFFED]'><span class='warning'>[m1] tied up with \a [handcuffed]!</span></A>"
+		. += "<A href='byond://?src=[REF(src)];item=[SLOT_HANDCUFFED]'><span class='warning'>[m1] tied up with \a [handcuffed]!</span></A>"
 
 	if(legcuffed)
-		. += "<A href='?src=[REF(src)];item=[SLOT_LEGCUFFED]'><span class='warning'>[m3] \a [legcuffed] around [m2] legs!</span></A>"
+		. += "<A href='byond://?src=[REF(src)];item=[SLOT_LEGCUFFED]'><span class='warning'>[m3] \a [legcuffed] around [m2] legs!</span></A>"
 
 	//Gets encapsulated with a warning span
 	var/list/msg = list()
@@ -433,6 +444,8 @@
 	if(isliving(user))
 		var/mob/living/L = user
 		var/final_str = STASTR
+		if(HAS_TRAIT(src, TRAIT_DECEIVING_MEEKNESS))
+			final_str = 10
 		var/strength_diff = final_str - L.STASTR
 		switch(strength_diff)
 			if(5 to INFINITY)
@@ -460,13 +473,13 @@
 				var/obj/item/bodypart/bodypart = get_bodypart(zone)
 				if(!bodypart)
 					continue
-				. += "<a href='?src=[REF(src)];inspect_limb=[zone]'>Inspect [parse_zone(zone)]</a>"
-			. += "<a href='?src=[REF(src)];check_hb=1'>Check Heartbeat</a>"
+				. += "<a href='byond://?src=[REF(src)];inspect_limb=[zone]'>Inspect [parse_zone(zone)]</a>"
+			. += "<a href='byond://?src=[REF(src)];check_hb=1'>Check Heartbeat</a>"
 		else
 			var/checked_zone = check_zone(user.zone_selected)
-			. += "<a href='?src=[REF(src)];inspect_limb=[checked_zone]'>Inspect [parse_zone(checked_zone)]</a>"
+			. += "<a href='byond://?src=[REF(src)];inspect_limb=[checked_zone]'>Inspect [parse_zone(checked_zone)]</a>"
 			if(!(mobility_flags & MOBILITY_STAND) && user != src && (user.zone_selected == BODY_ZONE_CHEST))
-				. += "<a href='?src=[REF(src)];check_hb=1'>Listen to Heartbeat</a>"
+				. += "<a href='byond://?src=[REF(src)];check_hb=1'>Listen to Heartbeat</a>"
 
 	// Characters with the hunted flaw will freak out if they can't see someone's face.
 	if(!appears_dead)
@@ -486,43 +499,6 @@
 	var/trait_exam = common_trait_examine()
 	if(!isnull(trait_exam))
 		. += trait_exam
-
-	var/traitstring = get_trait_string()
-
-	var/perpname = get_face_name(get_id_name(""))
-	if(perpname && (HAS_TRAIT(user, TRAIT_SECURITY_HUD) || HAS_TRAIT(user, TRAIT_MEDICAL_HUD)))
-		var/datum/data/record/R = find_record("name", perpname, GLOB.data_core.general)
-		if(R)
-			. += "<span class='deptradio'>Rank:</span> [R.fields["rank"]]\n<a href='?src=[REF(src)];hud=1;photo_front=1'>\[Front photo\]</a><a href='?src=[REF(src)];hud=1;photo_side=1'>\[Side photo\]</a>"
-		if(HAS_TRAIT(user, TRAIT_MEDICAL_HUD))
-			if(R)
-				var/health_r = R.fields["p_stat"]
-				. += "<a href='?src=[REF(src)];hud=m;p_stat=1'>\[[health_r]\]</a>"
-				health_r = R.fields["m_stat"]
-				. += "<a href='?src=[REF(src)];hud=m;m_stat=1'>\[[health_r]\]</a>"
-			R = find_record("name", perpname, GLOB.data_core.medical)
-			if(R)
-				. += "<a href='?src=[REF(src)];hud=m;evaluation=1'>\[Medical evaluation\]</a><br>"
-			if(traitstring)
-				. += "<span class='info'>Detected physiological traits:\n[traitstring]"
-
-		if(HAS_TRAIT(user, TRAIT_SECURITY_HUD))
-			if(!user.stat && user != src)
-			//|| !user.canmove || user.restrained()) Fluff: Sechuds have eye-tracking technology and sets 'arrest' to people that the wearer looks and blinks at.
-				var/criminal = "None"
-
-				R = find_record("name", perpname, GLOB.data_core.security)
-				if(R)
-					criminal = R.fields["criminal"]
-
-				. += "<span class='deptradio'>Criminal status:</span> <a href='?src=[REF(src)];hud=s;status=1'>\[[criminal]\]</a>"
-				. += jointext(list("<span class='deptradio'>Security record:</span> <a href='?src=[REF(src)];hud=s;view=1'>\[View\]</a>",
-					"<a href='?src=[REF(src)];hud=s;add_crime=1'>\[Add crime\]</a>",
-					"<a href='?src=[REF(src)];hud=s;view_comment=1'>\[View comment log\]</a>",
-					"<a href='?src=[REF(src)];hud=s;add_comment=1'>\[Add comment\]</a>"), "")
-//	else if(isobserver(user) && traitstring)
-//		. += "<span class='info'><b>Traits:</b> [traitstring]</span>"
-	. += "ø ------------ ø</span>"
 
 /mob/living/proc/status_effect_examines(pronoun_replacement) //You can include this in any mob's examine() to show the examine texts of status effects!
 	var/list/dat = list()

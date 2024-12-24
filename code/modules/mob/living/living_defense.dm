@@ -1,5 +1,5 @@
 
-/mob/living/proc/run_armor_check(def_zone = null, attack_flag = "melee", absorb_text = null, soften_text = null, armor_penetration, penetrated_text, damage, blade_dulling)
+/mob/living/proc/run_armor_check(def_zone = null, attack_flag = "blunt", absorb_text = null, soften_text = null, armor_penetration, penetrated_text, damage, blade_dulling)
 	var/armor = getarmor(def_zone, attack_flag, damage, armor_penetration, blade_dulling)
 
 	//the if "armor" check is because this is used for everything on /living, including humans
@@ -57,7 +57,7 @@
 		if(!apply_damage(P.damage, P.damage_type, def_zone, armor))
 			nodmg = TRUE
 			next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
-		apply_effects(P.stun, P.knockdown, P.unconscious, P.irradiate, P.slur, P.stutter, P.eyeblur, P.drowsy, armor, P.stamina, P.jitter, P.paralyze, P.immobilize)
+		apply_effects(P.stun, 0, 0, 0,0, 0, 0, 0, armor, P.jitter, P.paralyze, 0)
 		if(!nodmg)
 			if(P.dismemberment)
 				check_projectile_dismemberment(P, def_zone,armor)
@@ -102,18 +102,16 @@
 	else
 		return 0
 
-/mob/living/hitby(atom/movable/AM, skipcatch, hitpush = TRUE, blocked = FALSE, datum/thrownthing/throwingdatum)
+/mob/living/hitby(atom/movable/AM, skipcatch, hitpush = TRUE, blocked = FALSE, datum/thrownthing/throwingdatum, damage_type = "blunt")
 	if(istype(AM, /obj/item))
 		var/obj/item/I = AM
-		var/dtype = BRUTE
 		var/zone = ran_zone(BODY_ZONE_CHEST, 65)//Hits a random part of the body, geared towards the chest
 		SEND_SIGNAL(I, COMSIG_MOVABLE_IMPACT_ZONE, src, zone)
-		dtype = I.damtype
 		if(!blocked)
-			var/armor = run_armor_check(zone, "melee", "", "",I.armor_penetration, damage = I.throwforce)
+			var/armor = run_armor_check(zone, damage_type, "", "",I.armor_penetration, damage = I.throwforce)
 			next_attack_msg.Cut()
 			var/nodmg = FALSE
-			if(!apply_damage(I.throwforce, dtype, zone, armor))
+			if(!apply_damage(I.throwforce, damage_type, zone, armor))
 				nodmg = TRUE
 				next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
 			if(!nodmg)
@@ -141,6 +139,8 @@
 	..()
 
 /mob/living/fire_act(added, maxstacks)
+	if(HAS_TRAIT(src,TRAIT_MOB_FIRE_IMMUNE))
+		return
 	if(added > 20)
 		added = 20
 	if(maxstacks > 20)
@@ -201,7 +201,7 @@
 		playsound(src.loc, 'sound/foley/struggle.ogg', 100, FALSE, -1)
 		user.Immobilize(2 SECONDS)
 		user.changeNext_move(2 SECONDS)
-		user.rogfat_add(5)
+		user.adjust_stamina(5)
 		src.Immobilize(1 SECONDS)
 		src.changeNext_move(1 SECONDS)
 		return
@@ -349,16 +349,8 @@
 							"<span class='danger'>I avoid [M.name]'s bite!</span>", "<span class='hear'>I hear the sound of jaws snapping shut!</span>", COMBAT_MESSAGE_RANGE, M)
 			to_chat(M, "<span class='warning'>My bite misses [src]!</span>")
 	return FALSE
-/mob/living/attack_hulk(mob/living/carbon/human/user)
-	..()
-	if(HAS_TRAIT(user, TRAIT_PACIFISM))
-		to_chat(user, "<span class='warning'>I don't want to hurt [src]!</span>")
-		return FALSE
-	return TRUE
 
-/mob/living/ex_act(severity, target, origin)
-	if(origin && istype(origin, /datum/spacevine_mutation) && isvineimmune(src))
-		return
+/mob/living/ex_act(severity, target)
 	..()
 
 /mob/living/attack_paw(mob/living/carbon/monkey/M)
@@ -388,8 +380,6 @@
 			to_chat(M, "<span class='warning'>My bite misses [src]!</span>")
 	return FALSE
 
-//Looking for irradiate()? It's been moved to radiation.dm under the rad_act() for mobs.
-
 /mob/living/acid_act(acidpwr, acid_volume)
 	take_bodypart_damage(acidpwr * min(1, acid_volume * 0.1))
 	return 1
@@ -406,8 +396,6 @@
 		return FALSE
 	if(!(flags & SHOCK_ILLUSION))
 		adjustFireLoss(shock_damage)
-	else
-		adjustStaminaLoss(shock_damage)
 	visible_message(
 		"<span class='danger'>[src] was shocked by \the [source]!</span>", \
 		"<span class='danger'>I feel a powerful shock coursing through my body!</span>", \

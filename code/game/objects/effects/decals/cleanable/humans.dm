@@ -1,20 +1,3 @@
-
-/obj/effect/decal/cleanable/coom
-	name = "mess"
-	desc = ""
-	icon = 'icons/roguetown/items/natural.dmi'
-	icon_state = "mess1"
-	random_icon_states = list("mess1", "mess2", "mess3")
-	beauty = -100
-	alpha = 150
-	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
-	appearance_flags = NO_CLIENT_COLOR
-
-/obj/effect/decal/cleanable/coom/Initialize(mapload)
-	. = ..()
-	pixel_x = rand(-8, 8)
-	pixel_y = rand(-8, 8)
-
 /obj/effect/decal/cleanable/blood
 	name = "blood"
 	desc = ""
@@ -43,7 +26,7 @@
 /obj/effect/decal/cleanable/blood/weather_act_on(weather_trait, severity)
 	if(weather_trait != PARTICLEWEATHER_RAIN || !COOLDOWN_FINISHED(src, wash_cooldown))
 		return
-	wash_precent += min(10, severity / 4)
+	wash_precent += min(25, severity / 2)
 	alpha = 255 *((100 - wash_precent) * 0.01)
 	if(wash_precent >= 100)
 		qdel(src)
@@ -163,7 +146,7 @@
 
 /obj/effect/decal/cleanable/blood/gibs/Crossed(mob/living/L)
 	if(istype(L) && has_gravity(loc))
-		playsound(loc, 'sound/blank.ogg', HAS_TRAIT(L, TRAIT_LIGHT_STEP) ? 20 : 50, TRUE)
+		playsound(loc, 'sound/blank.ogg', 50, TRUE)
 	. = ..()
 
 /obj/effect/decal/cleanable/blood/gibs/proc/streak(list/directions)

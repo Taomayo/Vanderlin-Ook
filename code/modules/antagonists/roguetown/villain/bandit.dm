@@ -28,7 +28,7 @@
 	ADD_TRAIT(H, TRAIT_SEEPRICES, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_STEELHEARTED, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_VILLAIN, TRAIT_GENERIC)
-	H.patron = GLOB.patronlist[/datum/patron/inhumen/matthios]
+	H.set_patron(/datum/patron/inhumen/matthios)
 
 /datum/antagonist/bandit/greet()
 	to_chat(owner.current, "<span class='alertsyndie'>I am a BANDIT!</span>")
@@ -38,15 +38,6 @@
 
 /datum/antagonist/bandit/proc/forge_objectives()
 	return
-/*
-	if(!(locate(/datum/objective/bandit) in objectives))
-		var/datum/objective/bandit/bandit_objective = new
-		bandit_objective.owner = owner
-		objectives += bandit_objective
-	if(!(locate(/datum/objective/escape) in objectives))
-		var/datum/objective/escape/boat/escape_objective = new
-		escape_objective.owner = owner
-		objectives += escape_objective*/
 
 /proc/isbandit(mob/living/M)
 	return istype(M) && M.mind && M.mind.has_antag_datum(/datum/antagonist/bandit)

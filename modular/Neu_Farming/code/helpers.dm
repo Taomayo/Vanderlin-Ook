@@ -24,11 +24,10 @@
 
 /proc/apply_farming_fatigue(mob/user, fatigue_amount)
 	var/multiplier = get_farming_effort_multiplier(user)
-	user.rogfat_add(fatigue_amount / multiplier)
+	user.adjust_stamina(fatigue_amount / multiplier)
 
 /proc/adjust_experience(mob/user, skill_type, exp_amount)
 	user.mind.adjust_experience(skill_type, exp_amount)
-/* sleep xp not a thing here yet
+
 /proc/add_sleep_experience(mob/user, skill_type, exp_amount)
 	user.mind.add_sleep_experience(skill_type, exp_amount)
-*/

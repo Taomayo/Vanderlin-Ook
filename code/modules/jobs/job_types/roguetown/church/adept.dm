@@ -12,15 +12,19 @@
 		"Half-Elf",
 		"Dwarf",
 		"Dark Elf",
+		"Tiefling",
+		"Aasimar",
+		"Half-Orc"
 	)
-	allowed_sexes = list(MALE)
-	tutorial = "You were a convicted criminal, the lowest scum of Rockhill. Your master, the Inquisitor, saved you from the gallows and has given you true purpose in service to the Forgotten God. You will not let him down."
+	allowed_sexes = list(MALE, FEMALE)
+	tutorial = "You were a convicted criminal, the lowest scum of Vanderlin. Your master, the Inquisitor, saved you from the gallows and has given you true purpose in service to Psydon. You will not let him down."
 
 	outfit = /datum/outfit/job/roguetown/adept
 	advclass_cat_rolls = list(CTAG_ADEPT = 20)
 	display_order = JDO_SHEPHERD
 	bypass_lastclass = TRUE
 	min_pq = 0
+	can_have_apprentices = FALSE
 
 /datum/outfit/job/roguetown/adept
 	name = "Adept"
@@ -38,10 +42,11 @@
 // Brutal Zealot, a class balanced to town guard, with 1 more strength but less intelligence and perception. Axe/Mace and shield focus.
 /datum/advclass/adept/bzealot
 	name = "Brutal Zealot"
-	tutorial = "You are a former thug who has been given a chance to redeem yourself by the Inquisitor. You serve him and the Forgotten God with your physical strength and zeal."
+	tutorial = "You are a former thug who has been given a chance to redeem yourself by the Inquisitor. You serve him and Psydon with your physical strength and zeal."
 	outfit = /datum/outfit/job/roguetown/adept/bzealot
 
 	category_tags = list(CTAG_ADEPT)
+	cmode_music = 'sound/music/cmode/church/CombatInquisitor.ogg'
 	maximum_possible_slots = 2
 
 /datum/outfit/job/roguetown/adept/bzealot/pre_equip(mob/living/carbon/human/H)
@@ -53,7 +58,7 @@
 	beltl = /obj/item/rogueweapon/mace/spiked
 	backr = /obj/item/rogueweapon/shield/wood/adept
 	gloves = /obj/item/clothing/gloves/roguetown/leather
-	backpack_contents = list(/obj/item/keyring/shepherd = 1, /obj/item/rogueweapon/knife/dagger/silver = 1)
+	backpack_contents = list(/obj/item/storage/keyring/shepherd = 1, /obj/item/rogueweapon/knife/dagger/silver = 1)
 
 	//Stats for class
 	H.mind?.adjust_skillrank(/datum/skill/combat/wrestling, 3, TRUE)
@@ -79,10 +84,11 @@
 // Reformed Thief, a class balanced to rogue. Axe and crossbow focus.
 /datum/advclass/adept/rthief
 	name = "Reformed Thief"
-	tutorial = "You are a former thief who has been given a chance to redeem yourself by the Inquisitor. You serve him and the Forgotten God with your stealth and cunning."
+	tutorial = "You are a former thief who has been given a chance to redeem yourself by the Inquisitor. You serve him and Psydon with your stealth and cunning."
 	outfit = /datum/outfit/job/roguetown/adept/rthief
 
 	category_tags = list(CTAG_ADEPT)
+	cmode_music = 'sound/music/cmode/adventurer/CombatRogue.ogg'
 	maximum_possible_slots = 2
 
 /datum/outfit/job/roguetown/adept/rthief/pre_equip(mob/living/carbon/human/H)
@@ -95,7 +101,7 @@
 	backl = /obj/item/quiver/bolts
 	pants = /obj/item/clothing/under/roguetown/trou/leather
 	cloak = /obj/item/clothing/cloak/raincloak/brown
-	backpack_contents = list(/obj/item/lockpick = 1, /obj/item/keyring/shepherd = 1, /obj/item/rogueweapon/knife/dagger/silver = 1)
+	backpack_contents = list(/obj/item/lockpick = 1, /obj/item/storage/keyring/shepherd = 1, /obj/item/rogueweapon/knife/dagger/silver = 1)
 
 	//Stats for class
 	H.mind?.adjust_skillrank(/datum/skill/combat/axesmaces, 3, TRUE)
@@ -128,8 +134,11 @@
 			return
 		var/datum/antagonist/new_antag = new /datum/antagonist/purishep()
 		H.mind.add_antag_datum(new_antag)
-		H.patron = GLOB.patronlist[/datum/patron/forgotten]
+		H.set_patron(/datum/patron/psydon)
 		H.verbs |= /mob/living/carbon/human/proc/torture_victim
+		if(!H.has_language(/datum/language/oldpsydonic))
+			H.grant_language(/datum/language/oldpsydonic)
+			to_chat(H, "<span class='info'>I can speak Old Psydonic with ,m before my speech.</span>")
 
 /datum/job/roguetown/adept/after_spawn(mob/living/carbon/human/H, mob/M, latejoin = TRUE)
 	..()

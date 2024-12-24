@@ -10,7 +10,7 @@
 	category_tags = list(CTAG_MERCENARY)
 	maximum_possible_slots = 5
 
-	cmode_music = 'sound/music/combat_grenzelhoft.ogg'
+	cmode_music = 'sound/music/cmode/combat_grenzelhoft.ogg'
 
 /datum/outfit/job/roguetown/mercenary/grenzelhoft/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -55,4 +55,3 @@
 	H.change_stat("endurance", 1)
 	H.change_stat("constitution", 2)
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
-	H.patron = GLOB.patronlist[/datum/patron/forgotten] // SCREAM IF YOU LOVE THE FORGOTTEN GOD

@@ -10,7 +10,8 @@
 	"Dwarf",
 	"Tiefling",
 	"Dark Elf",
-	"Aasimar"
+	"Aasimar",
+	"Half-Orc"
 	)
 	var/list/allowed_patrons
 	var/list/allowed_ages
@@ -28,6 +29,8 @@
 
 	//What categories we are going to sort it in
 	var/list/category_tags = list(CTAG_DISABLED)
+	var/displays_adv_job = TRUE
+	var/apprentice_name
 
 /datum/advclass/proc/equipme(mob/living/carbon/human/H)
 	// input sleeps....
@@ -38,12 +41,16 @@
 	if(outfit)
 		H.equipOutfit(outfit)
 
-	H.advjob = "Adventurer"
+	if(displays_adv_job)
+		H.advjob = "Adventurer"
+		if(name)
+			H.advjob = name
 
 	var/turf/TU = get_turf(H)
 	if(TU)
 		if(horse)
 			new horse(TU)
+	H.mind?.apprentice_name = apprentice_name
 
 /*	for(var/trait in traits_applied)
 		ADD_TRAIT(H, trait, ADVENTURER_TRAIT) */
@@ -106,5 +113,5 @@
 		H.change_stat(S, plus_factor)
 
 
-//Final proc in the set for really retarded shit
+//Final proc in the set for really dumb shit
 ///datum/advclass/proc/extra_slop_proc_ending(mob/living/carbon/human/H)

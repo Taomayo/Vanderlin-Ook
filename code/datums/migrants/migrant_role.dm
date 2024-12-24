@@ -21,12 +21,15 @@
 		/// Whether to show wanderer examine like adventurers or pilgrims
 	var/show_wanderer_examine = TRUE
 	var/advjob_examine = TRUE
+	var/banned_leprosy = TRUE
+	var/banned_lunatic = TRUE
 
 /datum/migrant_role/proc/after_spawn(mob/living/carbon/human/character)
 	return
 
 /datum/migrant_role/pilgrim
 	name = "Pilgrim"
+	banned_leprosy = FALSE
 	advclass_cat_rolls = list(CTAG_PILGRIM = 10)
 
 /datum/migrant_role/adventurer
@@ -37,4 +40,9 @@
 	name = "Bandit"
 	antag_datum = /datum/antagonist/bandit
 	advclass_cat_rolls = list(CTAG_BANDIT = 20)
+	grant_lit_torch = TRUE
+
+/datum/migrant_role/mercenary
+	name = "Mercenary"
+	advclass_cat_rolls = list(CTAG_MERCENARY = 20)
 	grant_lit_torch = TRUE

@@ -12,17 +12,15 @@
 	icon_state = "metal"
 	max_integrity = 1000
 	integrity_failure = 0.5
-	armor = list("melee" = 10, "bullet" = 0, "laser" = 0, "energy" = 100, "bomb" = 10, "bio" = 100, "rad" = 100, "fire" = 50, "acid" = 50)
+	armor = list("blunt" = 10, "slash" = 10, "stab" = 10,  "piercing" = 0, "fire" = 50, "acid" = 50)
 	CanAtmosPass = ATMOS_PASS_DENSITY
-	rad_flags = RAD_PROTECT_CONTENTS | RAD_NO_CONTAMINATE
-	rad_insulation = RAD_MEDIUM_INSULATION
 
 	var/ridethrough = FALSE
 
 	var/door_opened = FALSE //if it's open or not.
 	var/isSwitchingStates = FALSE //don't try to change stats if we're already opening
 
-	var/close_delay = -1 //-1 if does not auto close.
+	var/close_delay = -1 //Time to close after opening. Negative number if does not auto close.
 	var/openSound = 'sound/blank.ogg'
 	var/closeSound = 'sound/blank.ogg'
 
@@ -43,7 +41,8 @@
 	var/rattlesound = 'sound/foley/doors/lockrattle.ogg'
 	var/masterkey = TRUE //if masterkey can open this regardless
 	var/kickthresh = 15
-	var/swing_closed = TRUE
+	var/bump_closed = TRUE
+	var/can_add_lock = TRUE
 
 	var/ghostproof = FALSE	// Set to true to stop dead players passing through closed ones. Only use this for special areas, not generally
 
@@ -54,6 +53,8 @@
 	var/obj/item/repair_cost_first = null
 	var/obj/item/repair_cost_second = null
 	var/repair_skill = null
+
+	var/animate_time = 10 // How long should it take for the door to change states? Ideally matches the icon's animation length
 
 /obj/structure/mineral_door/onkick(mob/user)
 	if(isSwitchingStates)
@@ -97,7 +98,7 @@
 	update_icon()
 	isSwitchingStates = FALSE
 
-	if(close_delay != -1)
+	if(close_delay >= 0)
 		addtimer(CALLBACK(src, PROC_REF(Close)), close_delay)
 
 /obj/structure/mineral_door/proc/force_closed()
@@ -157,7 +158,7 @@
 		if(HAS_TRAIT(user, TRAIT_BASHDOORS))
 			if(locked)
 				user.visible_message(span_warning("[user] bashes into [src]!"))
-				take_damage(200, "brute", "melee", 1)
+				take_damage(200, "brute", "blunt", 1)
 			else
 				playsound(src, 'sound/combat/hits/onwood/woodimpact (1).ogg', 100)
 				force_open()
@@ -166,27 +167,24 @@
 		if(HAS_TRAIT(user, TRAIT_ROTMAN))
 			if(locked)
 				user.visible_message(span_warning("The deadite bashes into [src]!"))
-				take_damage(50, "brute", "melee", 1)
+				take_damage(50, "brute", "blunt", 1)
 			else
 				playsound(src, 'sound/combat/hits/onwood/woodimpact (1).ogg', 90)
 				force_open()
 				user.visible_message(span_warning("The deadite smashes through [src]!"))
 			return
 		if(locked)
-			playsound(src, rattlesound, 90)
-			var/oldx = pixel_x
-			animate(src, pixel_x = oldx+1, time = 0.5)
-			animate(pixel_x = oldx-1, time = 0.5)
-			animate(pixel_x = oldx, time = 0.5)
+			door_rattle()
 			return
 		if(TryToSwitchState(AM))
-			if(swing_closed)
+			if(bump_closed)
 				if(isliving(AM))
 					var/mob/living/M = AM
+					var/delay = (close_delay >= 0) ? close_delay : 25
 					if(M.m_intent == MOVE_INTENT_SNEAK)
-						addtimer(CALLBACK(src, PROC_REF(Close), TRUE), 25)
+						addtimer(CALLBACK(src, PROC_REF(Close), TRUE), delay)
 					else
-						addtimer(CALLBACK(src, PROC_REF(Close), FALSE), 25)
+						addtimer(CALLBACK(src, PROC_REF(Close), FALSE), delay)
 
 
 /obj/structure/mineral_door/attack_paw(mob/user)
@@ -204,7 +202,7 @@
 		if( user.used_intent.type == /datum/intent/unarmed/claw )
 			user.changeNext_move(CLICK_CD_MELEE)
 			to_chat(user, "<span class='warning'>The deadite claws at the door!!</span>")
-			take_damage(40, "brute", "melee", 1)
+			take_damage(40, "brute", "slash", 1)
 			return
 		if(isliving(user))
 			var/mob/living/L = user
@@ -256,7 +254,7 @@
 	if(!windowed)
 		set_opacity(FALSE)
 	flick("[base_state]opening",src)
-	sleep(10)
+	sleep(animate_time)
 	density = FALSE
 	door_opened = TRUE
 	layer = OPEN_DOOR_LAYER
@@ -264,8 +262,8 @@
 	update_icon()
 	isSwitchingStates = FALSE
 
-	if(close_delay != -1)
-		addtimer(CALLBACK(src, PROC_REF(Close)), close_delay)
+	if(close_delay >= 0)
+		addtimer(CALLBACK(src, PROC_REF(Close), silent), close_delay)
 
 /obj/structure/mineral_door/proc/Close(silent = FALSE)
 	if(isSwitchingStates || !door_opened)
@@ -277,7 +275,7 @@
 	if(!silent)
 		playsound(src, closeSound, 90)
 	flick("[base_state]closing",src)
-	sleep(10)
+	sleep(animate_time)
 	density = TRUE
 	if(!windowed)
 		set_opacity(TRUE)
@@ -289,6 +287,13 @@
 
 /obj/structure/mineral_door/update_icon()
 	icon_state = "[base_state][door_opened ? "open":""]"
+
+/obj/structure/mineral_door/proc/door_rattle()
+	playsound(src, rattlesound, 100)
+	var/oldx = pixel_x
+	animate(src, pixel_x = oldx+1, time = 0.5)
+	animate(pixel_x = oldx-1, time = 0.5)
+	animate(pixel_x = oldx, time = 0.5)
 
 /obj/structure/mineral_door/examine(mob/user)
 	. = ..()
@@ -303,10 +308,13 @@
 			. += span_notice("An additional [initial(cast_repair_cost_second.name)] is needed to finish repairs.")
 
 /obj/structure/mineral_door/attackby(obj/item/I, mob/user)
-	if(istype(I, /obj/item/roguekey) || istype(I, /obj/item/keyring))
+	user.changeNext_move(CLICK_CD_FAST)
+	if(istype(I, /obj/item/key) || istype(I, /obj/item/storage/keyring))
+		if(!locked)
+			to_chat(user, span_warning("It won't turn this way. Try turning to the right."))
+			door_rattle()
+			return
 		trykeylock(I, user)
-//	else if(user.used_intent.type != INTENT_HARM)
-//		return attack_hand(user)
 	if(istype(I, /obj/item/lockpick))
 		trypicklock(I, user)
 	else
@@ -314,6 +322,19 @@
 			repairdoor(I,user)
 		else
 			return ..()
+
+/obj/structure/mineral_door/attack_right(mob/user)
+	user.changeNext_move(CLICK_CD_FAST)
+	var/obj/item = user.get_active_held_item()
+	if(istype(item, /obj/item/key) || istype(item, /obj/item/storage/keyring))
+		if(locked)
+			to_chat(user, span_warning("It won't turn this way. Try turning to the left."))
+			door_rattle()
+			return
+		trykeylock(item, user)
+		return
+	else
+		return ..()
 
 /obj/structure/mineral_door/proc/repairdoor(obj/item/I, mob/user)
 	if(brokenstate)
@@ -369,12 +390,12 @@
 	if(lockbroken)
 		to_chat(user, "<span class='warning'>The lock to this door is broken.</span>")
 	user.changeNext_move(CLICK_CD_MELEE)
-	if(istype(I,/obj/item/keyring))
-		var/obj/item/keyring/R = I
-		if(!R.keys.len)
+	if(istype(I,/obj/item/storage/keyring))
+		var/obj/item/storage/keyring/R = I
+		if(!R.contents.len)
 			return
-		var/list/keysy = shuffle(R.keys.Copy())
-		for(var/obj/item/roguekey/K in keysy)
+		var/list/keysy = shuffle(R.contents.Copy())
+		for(var/obj/item/key/K in keysy)
 			if(user.cmode)
 				if(!do_after(user, 10, TRUE, src))
 					break
@@ -383,31 +404,16 @@
 				break
 			else
 				if(user.cmode)
-					playsound(src, rattlesound, 100)
-					var/oldx = pixel_x
-					animate(src, pixel_x = oldx+1, time = 0.5)
-					animate(pixel_x = oldx-1, time = 0.5)
-					animate(pixel_x = oldx, time = 0.5)
+					door_rattle()
 		return
 	else
-		var/obj/item/roguekey/K = I
+		var/obj/item/key/K = I
 		if(K.lockhash == lockhash)
 			lock_toggle(user, is_right)
 			return
 		else
-			playsound(src, rattlesound, 100)
-			var/oldx = pixel_x
-			animate(src, pixel_x = oldx+1, time = 0.5)
-			animate(pixel_x = oldx-1, time = 0.5)
-			animate(pixel_x = oldx, time = 0.5)
+			door_rattle()
 		return
-
-/obj/structure/mineral_door/attack_right(mob/user)
-	if(istype(user.get_active_held_item(), /obj/item/roguekey))
-		var/obj/item/roguekey/held = user.get_active_held_item()
-		trykeylock(held, user, TRUE)
-		return
-	. = ..()
 
 /obj/structure/mineral_door/proc/trypicklock(obj/item/I, mob/user)
 	if(door_opened || isSwitchingStates)
@@ -463,7 +469,7 @@
 					continue
 			else
 				playsound(loc, 'sound/items/pickbad.ogg', 40, TRUE)
-				I.take_damage(1, BRUTE, "melee")
+				I.take_damage(1, BRUTE, "blunt")
 				to_chat(user, span_warning("Clack."))
 				continue
 		return
@@ -471,16 +477,17 @@
 /obj/structure/mineral_door/proc/lock_toggle(mob/user, is_right = FALSE)
 	if(isSwitchingStates || door_opened)
 		return
-	if(locked && is_right)
+	if(locked)
 		user.visible_message(span_warning("[user] unlocks [src]."), \
 			span_notice("I unlock [src]."))
 		playsound(src, unlocksound, 100)
 		locked = 0
-	else if(!is_right && !locked)
+	else
 		user.visible_message(span_warning("[user] locks [src]."), \
 			span_notice("I lock [src]."))
 		playsound(src, locksound, 100)
 		locked = 1
+
 
 /obj/structure/mineral_door/setAnchored(anchorvalue) //called in default_unfasten_wrench() chain
 	. = ..()
@@ -573,6 +580,7 @@
 	repair_cost_first = /obj/item/grown/log/tree/small
 	repair_cost_second = /obj/item/grown/log/tree/small
 	repair_skill = /datum/skill/craft/carpentry
+	metalizer_result = /obj/structure/mineral_door/wood/donjon
 
 /obj/structure/mineral_door/wood/Initialize()
 	if(icon_state =="woodhandle")
@@ -635,6 +643,9 @@
 	repair_cost_first = /obj/item/grown/log/tree/small
 	repair_cost_second = /obj/item/grown/log/tree/small
 	repair_skill = /datum/skill/craft/carpentry
+	metalizer_result = null
+	close_delay = 1 SECONDS
+	animate_time = 4
 
 /obj/structure/mineral_door/wood/window
 	opacity = FALSE
@@ -649,7 +660,7 @@
 	over_state = "fancy_woodopen"
 
 /obj/structure/mineral_door/wood/deadbolt
-	desc = ""
+	desc = "This door comes with a deadbolt."
 	icon_state = "wooddir"
 	base_state = "wood"
 	var/lockdir
@@ -663,6 +674,7 @@
 /obj/structure/mineral_door/wood/deadbolt/OnCrafted(dirin)
 	dir = turn(dirin, 180)
 	lockdir = dir
+	. = ..()
 
 /obj/structure/mineral_door/wood/deadbolt/Initialize()
 	. = ..()
@@ -670,9 +682,14 @@
 	icon_state = base_state
 
 /obj/structure/mineral_door/wood/deadbolt/attack_right(mob/user)
-	if(istype(user.get_active_held_item(), /obj/item/roguekey))
-		var/obj/item/roguekey/held = user.get_active_held_item()
-		trykeylock(held, user, TRUE)
+	user.changeNext_move(CLICK_CD_FAST)
+	var/obj/item = user.get_active_held_item()
+	if(istype(item, /obj/item/key) || istype(item, /obj/item/storage/keyring))
+		if(locked)
+			to_chat(user, span_warning("It won't turn this way. Try turning to the left."))
+			door_rattle()
+			return
+		trykeylock(item, user)
 		return
 	if(door_opened || isSwitchingStates)
 		return
@@ -688,7 +705,7 @@
 		to_chat(user, span_warning("The door doesn't lock from this side."))
 
 /obj/structure/mineral_door/wood/donjon
-	desc = ""
+	desc = "This door has a built-in viewport."
 	icon_state = "donjondir"
 	base_state = "donjon"
 	keylock = TRUE
@@ -702,8 +719,11 @@
 	attacked_sound = list("sound/combat/hits/onmetal/metalimpact (1).ogg", "sound/combat/hits/onmetal/metalimpact (2).ogg")
 	repair_cost_second = /obj/item/ingot/iron
 	repair_skill = /datum/skill/craft/carpentry
+	metalizer_result = null
+	smeltresult = /obj/item/ingot/iron
 
 /obj/structure/mineral_door/wood/donjon/stone
+	name = "stone door"
 	desc = ""
 	icon_state = "stone"
 	base_state = "stone"
@@ -714,26 +734,45 @@
 	repair_cost_first = /obj/item/natural/stone
 	repair_cost_second = /obj/item/natural/stone
 	repair_skill = /datum/skill/craft/masonry
+	smeltresult = null
 
 /obj/structure/mineral_door/wood/donjon/stone/attack_right(mob/user)
-	if(istype(user.get_active_held_item(), /obj/item/roguekey))
-		var/obj/item/roguekey/held = user.get_active_held_item()
-		trykeylock(held, user, TRUE)
+	user.changeNext_move(CLICK_CD_FAST)
+	var/obj/item = user.get_active_held_item()
+	if(istype(item, /obj/item/key) || istype(item, /obj/item/storage/keyring))
+		if(locked)
+			to_chat(user, span_warning("It won't turn this way. Try turning to the left."))
+			door_rattle()
+			return
+		trykeylock(item, user)
 		return
 	return
 
 /obj/structure/mineral_door/wood/donjon/stone/view_toggle(mob/user)
 	return
 
+/obj/structure/mineral_door/wood/donjon/stone/OnCrafted(dirin)
+	return ..()
+
 /obj/structure/mineral_door/wood/donjon/Initialize()
 	viewportdir = dir
 	icon_state = base_state
 	..()
 
+/obj/structure/mineral_door/wood/donjon/OnCrafted(dirin)
+	dir = turn(dirin, 180)
+	viewportdir = dir
+	. = ..()
+
 /obj/structure/mineral_door/wood/donjon/attack_right(mob/user)
-	if(istype(user.get_active_held_item(), /obj/item/roguekey))
-		var/obj/item/roguekey/held = user.get_active_held_item()
-		trykeylock(held, user, TRUE)
+	user.changeNext_move(CLICK_CD_FAST)
+	var/obj/item = user.get_active_held_item()
+	if(istype(item, /obj/item/key) || istype(item, /obj/item/storage/keyring))
+		if(locked)
+			to_chat(user, span_warning("It won't turn this way. Try turning to the left."))
+			door_rattle()
+			return
+		trykeylock(item, user)
 		return
 	if(door_opened || isSwitchingStates)
 		return
@@ -743,7 +782,7 @@
 	if(get_dir(src,user) == viewportdir)
 		view_toggle(user)
 	else
-		to_chat(user, span_warning("The viewport doesn't toggle from this side."))
+		to_chat(user, span_warning("The viewport can't be moved from this side."))
 		return
 
 /obj/structure/mineral_door/wood/donjon/proc/view_toggle(mob/user)
@@ -780,10 +819,11 @@
 	rattlesound = 'sound/foley/doors/lockrattlemetal.ogg'
 	attacked_sound = list("sound/combat/hits/onmetal/metalimpact (1).ogg", "sound/combat/hits/onmetal/metalimpact (2).ogg")
 	ridethrough = TRUE
-	swing_closed = FALSE
+	bump_closed = FALSE
 	repair_cost_first = /obj/item/ingot/iron
 	repair_cost_second = /obj/item/ingot/iron
 	repair_skill = /datum/skill/craft/blacksmithing
+	animate_time = 6
 
 /obj/structure/mineral_door/bars/Initialize()
 	. = ..()
@@ -806,3 +846,4 @@
 	closeSound = 'modular/Neu_Food/sound/blindsclose.ogg'
 	dir = NORTH
 	locked = TRUE
+	animate_time = 21

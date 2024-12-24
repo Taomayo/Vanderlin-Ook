@@ -5,7 +5,7 @@
 	allowed_races = ALL_PLAYER_RACES_BY_NAME
 	outfit = /datum/outfit/job/roguetown/bandit/sawbones
 	category_tags = list(CTAG_BANDIT)
-	cmode_music = 'sound/music/combat_physician.ogg'
+	cmode_music = 'sound/music/cmode/nobility/combat_physician.ogg'
 
 /datum/outfit/job/roguetown/bandit/sawbones/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -24,7 +24,7 @@
 	H.mind.adjust_skillrank(/datum/skill/combat/wrestling, 2, TRUE)
 	H.mind.adjust_skillrank(/datum/skill/craft/crafting, 2, TRUE)
 	H.mind.adjust_skillrank(/datum/skill/craft/carpentry, 2, TRUE)
-	//H.mind.adjust_skillrank(/datum/skill/labor/lumberjacking, 1, TRUE)
+	H.mind.adjust_skillrank(/datum/skill/labor/lumberjacking, 1, TRUE)
 	H.mind.adjust_skillrank(/datum/skill/misc/athletics, 2, TRUE)
 	H.mind.adjust_skillrank(/datum/skill/misc/reading, 3, TRUE)
 	H.mind.adjust_skillrank(/datum/skill/misc/climbing, 3, TRUE) //needed for getting into hideout

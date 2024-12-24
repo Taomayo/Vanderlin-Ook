@@ -12,6 +12,7 @@
 	outfit = /datum/outfit/job/roguetown/adventurer/monk
 	min_pq = 0
 	category_tags = list(CTAG_ADVENTURER)
+	cmode_music = 'sound/music/cmode/adventurer/CombatMonk.ogg'
 	vampcompat = FALSE
 
 /datum/outfit/job/roguetown/adventurer/monk
@@ -48,5 +49,4 @@
 
 		ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
 
-	if(H.patron != /datum/patron/divine/ravox)
-		H.patron = GLOB.patronlist[/datum/patron/divine/ravox]
+

@@ -10,7 +10,6 @@
 	force = 10
 	throwforce = 15
 	slot_flags = ITEM_SLOT_MOUTH
-	obj_flags = null
 	w_class = WEIGHT_CLASS_TINY
 
 /obj/item/natural/stone/Initialize()
@@ -23,9 +22,9 @@
 		to_chat(user, span_info("The [src] slips through dead fingers..."))
 		user.dropItemToGround(src, TRUE)
 
-/obj/item/natural/stone/attackby(obj/item/W, mob/user, params)
+/obj/item/natural/stone/pre_attack_right(atom/A, mob/living/user, params)
 	user.changeNext_move(CLICK_CD_MELEE)
-	if(istype(W, /obj/item/natural/stone))
+	if(istype(A, /obj/item/natural/stone))
 		playsound(src.loc, pick('sound/items/stonestone.ogg'), 100)
 		user.visible_message("<span class='info'>[user] strikes the stones together.</span>")
 		if(prob(10))
@@ -33,8 +32,8 @@
 			var/turf/front = get_step(user,user.dir)
 			S.set_up(1, 1, front)
 			S.start()
-	else
-		..()
+		return
+	. = ..()
 
 /obj/item/natural/rock
 	name = "rock"
@@ -58,14 +57,17 @@
 
 
 /obj/item/natural/rock/Initialize()
-	icon_state = "stonebig[rand(1,2)]"
+	if(!isnull(mineralType))
+		icon_state = "stonebigshiny[rand(1,2)]"
+	else
+		icon_state = "stonebig[rand(1,2)]"
 	..()
 
 
 /obj/item/natural/rock/Crossed(mob/living/L)
 	if(istype(L) && !L.throwing)
 		if(L.m_intent == MOVE_INTENT_RUN)
-			L.visible_message("<span class='warning'>[L] trips over the rock!</span>","<span class='warning'>I trip over the rock!</span>")
+			L.visible_message(span_warning("[L] trips over the rock!"),span_warning("I trip over the rock!"))
 			L.Knockdown(10)
 			L.consider_ambush()
 	..()
@@ -93,7 +95,7 @@
 /obj/item/natural/rock/attackby(obj/item/W, mob/user, params)
 	user.changeNext_move(CLICK_CD_MELEE)
 	if(istype(W, /obj/item/natural/stone))
-		user.visible_message("<span class='info'>[user] strikes the stone against the rock.</span>")
+		user.visible_message(span_info("[user] strikes the stone against the rock.</span>"))
 		playsound(src.loc, 'sound/items/stonestone.ogg', 100)
 		if(prob(35))
 			var/datum/effect_system/spark_spread/S = new()
@@ -103,7 +105,7 @@
 		return
 	if(istype(W, /obj/item/natural/rock))
 		playsound(src.loc, pick('sound/items/stonestone.ogg'), 100)
-		user.visible_message("<span class='info'>[user] strikes the rocks together.</span>")
+		user.visible_message(span_info("[user] strikes the rocks together."))
 		if(prob(10))
 			var/datum/effect_system/spark_spread/S = new()
 			var/turf/front = get_turf(src)
@@ -131,5 +133,28 @@
 /obj/item/natural/rock/copper
 	mineralType = /obj/item/rogueore/copper
 
+/obj/item/natural/rock/tin
+	mineralType = /obj/item/rogueore/tin
+
 /obj/item/natural/rock/gemerald
-	mineralType = /obj/item/natural/rock/gemerald
+	mineralType = /obj/item/roguegem
+
+/obj/item/natural/rock/random_ore
+	name = "rock?"
+	desc = "Wait, this shouldn't be here?"
+	icon_state = "stonerandom"
+
+/obj/item/natural/rock/random/Initialize()
+	. = ..()
+	var/obj/item/natural/rock/theboi = pick(list(
+		/obj/item/natural/rock/gold,
+		/obj/item/natural/rock/iron,
+		/obj/item/natural/rock/coal,
+		/obj/item/natural/rock/salt,
+		/obj/item/natural/rock/silver,
+		/obj/item/natural/rock/copper,
+		/obj/item/natural/rock/tin,
+		/obj/item/natural/rock/gemerald
+	))
+	new theboi(get_turf(src))
+	return INITIALIZE_HINT_QDEL

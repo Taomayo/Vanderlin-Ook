@@ -13,7 +13,8 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	tutorial = "The dead dont speak, least if youre doing your job right. Youve a pilfers dream, for few have enough to pay for your services out of pocket- So you take it from the fallen. Your job isnt considered highly, but without you: who else would disgrace the sanctity of the dead?"
 
@@ -22,6 +23,7 @@
 	give_bank_account = 34
 	min_pq = -50
 	bypass_lastclass = TRUE
+	cmode_music = 'sound/music/cmode/church/CombatGravekeeper.ogg'
 
 /datum/outfit/job/roguetown/undertaker/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -29,7 +31,7 @@
 	cloak = /obj/item/clothing/cloak/raincloak/mortus
 	shoes = /obj/item/clothing/shoes/roguetown/boots
 	belt = /obj/item/storage/belt/rogue/leather
-	beltl = /obj/item/roguekey/graveyard
+	beltl = /obj/item/key/graveyard
 	beltr = /obj/item/storage/belt/rogue/pouch
 	backr = /obj/item/rogueweapon/shovel
 	if(H.gender == FEMALE)

@@ -13,13 +13,7 @@
 	var/textr = copytext(HTMLstring, 2, 4)
 	var/textg = copytext(HTMLstring, 4, 6)
 	var/textb = copytext(HTMLstring, 6, 8)
-	var/r = hex2num(textr)
-	var/g = hex2num(textg)
-	var/b = hex2num(textb)
-	textr = num2hex(255 - r, 2)
-	textg = num2hex(255 - g, 2)
-	textb = num2hex(255 - b, 2)
-	return text("#[][][]", textr, textg, textb)
+	return rgb(255 - hex2num(textr), 255 - hex2num(textg), 255 - hex2num(textb))
 
 /proc/Get_Angle(atom/movable/start,atom/movable/end)//For beams.
 	if(!start || !end)
@@ -198,21 +192,13 @@ Turf and target are separate in case you want to teleport some distance from a t
 	var/loop = 1
 	var/safety = 0
 
-	var/banned = C ? is_banned_from(C.ckey, "Appearance") : null
-
 	while(loop && safety < 5)
-		if(C && C.prefs.custom_names[role] && !safety && !banned)
+		if(C && C.prefs.custom_names[role] && !safety)
 			newname = C.prefs.custom_names[role]
 		else
 			switch(role)
 				if("human")
 					newname = random_unique_name(gender)
-				if("clown")
-					newname = pick(GLOB.clown_names)
-				if("mime")
-					newname = pick(GLOB.mime_names)
-				if("ai")
-					newname = pick(GLOB.ai_names)
 				else
 					return FALSE
 
@@ -731,10 +717,9 @@ will handle it, but:
 Checks if that loc and dir has an item on the wall
 */
 GLOBAL_LIST_INIT(WALLITEMS, typecacheof(list(
-	/obj/structure/sign,
 	/obj/structure/noticeboard,
-	/obj/structure/mirror, /obj/structure/fireaxecabinet,
-	/obj/structure/sign/picture_frame
+	/obj/structure/mirror,
+	/obj/structure/fireaxecabinet,
 	)))
 
 GLOBAL_LIST_INIT(WALLITEMS_EXTERNAL, typecacheof(list(
@@ -1183,6 +1168,30 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 	pixel_x = initialpixelx
 	pixel_y = initialpixely
 
+
+///Checks if the given iconstate exists in the given file, caching the result. Setting scream to TRUE will print a stack trace ONCE.
+/proc/icon_exists(file, state, scream)
+	var/static/list/icon_states_cache = list()
+	if(icon_states_cache[file]?[state])
+		return TRUE
+
+	if(icon_states_cache[file]?[state] == FALSE)
+		return FALSE
+
+	var/list/states = icon_states(file)
+
+	if(!icon_states_cache[file])
+		icon_states_cache[file] = list()
+
+	if(state in states)
+		icon_states_cache[file][state] = TRUE
+		return TRUE
+	else
+		icon_states_cache[file][state] = FALSE
+		if(scream)
+			stack_trace("Icon Lookup for state: [state] in file [file] failed.")
+		return FALSE
+
 /proc/weightclass2text(w_class)
 	switch(w_class)
 		if(WEIGHT_CLASS_TINY)
@@ -1394,6 +1403,7 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 	else if(isatom(target))
 		var/atom/the_atom2 = target
 		ADD_TRAIT(the_atom2,trait,source)
+	SEND_GLOBAL_SIGNAL(COMSIG_ATOM_ADD_TRAIT, target, trait)
 
 ///DO NOT USE ___TraitAdd OR ___TraitRemove as a replacement for ADD_TRAIT / REMOVE_TRAIT defines. To be used explicitly for callback.
 /proc/___TraitRemove(target,trait,source)
@@ -1408,6 +1418,7 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 	else if(isatom(target))
 		var/atom/the_atom2 = target
 		REMOVE_TRAIT(the_atom2,trait,source)
+	SEND_GLOBAL_SIGNAL(COMSIG_ATOM_REMOVE_TRAIT, target, trait)
 
 /proc/get_random_food()
 	var/list/blocked = list(
@@ -1415,7 +1426,6 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 		/obj/item/reagent_containers/food/snacks/meat,
 		/obj/item/reagent_containers/food/snacks/meat/slab,
 		/obj/item/reagent_containers/food/snacks/grown,
-		/obj/item/reagent_containers/food/snacks/clothing,
 		/obj/item/reagent_containers/food/snacks/grown/nettle
 		)
 

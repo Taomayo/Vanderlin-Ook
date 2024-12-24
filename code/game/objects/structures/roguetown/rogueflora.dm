@@ -19,6 +19,8 @@
 	static_debris = list(/obj/item/grown/log/tree = 1)
 	alpha = 200
 	var/stump_type = /obj/structure/table/wood/treestump
+	metalizer_result = /obj/machinery/light/roguestreet
+	smeltresult = /obj/item/rogueore/coal
 
 /obj/structure/flora/roguetree/attack_right(mob/user)
 	if(user.mind && isliving(user))
@@ -83,7 +85,7 @@
 /obj/structure/flora/roguetree/evil/Initialize()
 	. = ..()
 	icon_state = "wv[rand(1,2)]"
-	soundloop = new(list(src), FALSE)
+	soundloop = new(src, FALSE)
 	soundloop.start()
 
 /obj/structure/flora/roguetree/evil/Destroy()
@@ -102,15 +104,11 @@
 	name = "wise tree"
 	desc = "Dendor's favored."
 	icon_state = "mystical"
+	var/activated = 0
 
 /obj/structure/flora/roguetree/wise/Initialize()
 	. = ..()
 	icon_state = "mystical"
-/*
-/obj/structure/flora/roguetree/wise/examine(mob/user)
-	. = ..()
-	user.play_priomusic('sound/music/tree.ogg', MUSIC_PRIO_DEFAULT)
-*/
 
 /obj/structure/flora/roguetree/burnt
 	name = "burnt tree"
@@ -119,6 +117,7 @@
 	icon_state = "t1"
 	stump_type = /obj/structure/table/wood/treestump/burnt
 	pixel_x = -32
+	metalizer_result = /obj/machinery/anvil
 
 /obj/structure/flora/roguetree/burnt/Initialize()
 	. = ..()
@@ -132,6 +131,7 @@
 	icon_state = "screaming1"
 	opacity = 1
 	density = 1
+	resistance_flags = INDESTRUCTIBLE
 
 /obj/structure/flora/roguetree/underworld/Initialize()
 	. = ..()
@@ -151,6 +151,8 @@
 	debris = null
 	climb_offset = 14
 	var/isunburnt = TRUE // Var needed for the burnt stump
+	metalizer_result = /obj/machinery/anvil
+	var/stump_loot = /obj/item/grown/log/tree/small
 
 /obj/structure/table/wood/treestump/Initialize()
 	. = ..()
@@ -164,7 +166,7 @@
 			user.visible_message("<span class='notice'>[user] unearths \the [src].</span>", \
 								"<span class='notice'>I unearth \the [src].</span>")
 			if(isunburnt)
-				new /obj/item/grown/log/tree/small(loc) // Rewarded with an extra small log if done the right way.return
+				new stump_loot(loc) // Rewarded with an extra small log if done the right way.return
 			obj_destruction("brute")
 	else
 		. = ..()
@@ -635,33 +637,26 @@
 		return ..()
 
 /obj/structure/flora/rogueshroom/obj_destruction(damage_flag)
-	var/obj/structure/S = new /obj/structure/flora/shroomstump(loc)
+	var/obj/structure/S = new /obj/structure/table/wood/treestump/shroomstump(loc)
 	S.icon_state = "[icon_state]stump"
 	. = ..()
 
 
-/obj/structure/flora/shroomstump
+/obj/structure/table/wood/treestump/shroomstump
 	name = "shroom stump"
 	desc = "It was a very happy shroom. Not anymore."
 	icon_state = "mush1stump"
 	desc = "Here once stood a mighty nether-cap, you feel a great sadness."
 	opacity = 0
-	max_integrity = 100
-	climbable = TRUE
-	climb_time = 0
-	density = TRUE
 	icon = 'icons/roguetown/misc/foliagetall.dmi'
-	layer = TABLE_LAYER
-	blade_dulling = DULLING_PICK
-	static_debris = null
-	debris = null
 	alpha = 255
 	pixel_x = -16
 	climb_offset = 14
+	stump_loot = /obj/item/reagent_containers/food/snacks/rogue/truffles
 
-/obj/structure/flora/shroomstump/Initialize()
+/obj/structure/table/wood/treestump/shroomstump/Initialize()
 	. = ..()
-	icon_state = "t[rand(1,4)]stump"
+	icon_state = "mush[rand(1,4)]stump"
 
 /obj/structure/roguerock
 	name = "rock"

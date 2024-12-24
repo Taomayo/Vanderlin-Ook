@@ -96,7 +96,7 @@
 #define NOBLEMEN		(1<<0)
 
 #define LORD		(1<<0)
-#define LADY		(1<<1)
+#define CONSORT		(1<<1)
 #define HAND		(1<<2)
 #define STEWARD		(1<<3)
 #define WIZARD		(1<<4)
@@ -109,9 +109,12 @@
 #define GARRISON		(1<<1)
 
 #define GUARDSMAN	(1<<0)
-#define DUNGEONEER	(1<<1)
-#define WATCHMAN	(1<<2)
-#define MAYOR       (1<<3)
+#define WATCHMAN	(1<<1)
+#define JAILOR	    (1<<2)
+#define DUNGEONEER	(1<<3)
+#define MAYOR       (1<<4)
+#define FORWARDEN   (1<<5)
+#define FORGUARD    (1<<6)
 
 #define CHURCHMEN		(1<<2)
 
@@ -123,11 +126,12 @@
 #define SERFS			(1<<3)
 
 #define INNKEEP		(1<<0)
-#define BLACKSMITH	(1<<2)
-#define ALCHEMIST	(1<<3)
-#define MASON		(1<<4)
-#define TAILOR		(1<<5)
-#define SCRIBE		(1<<7)
+#define BLACKSMITH	(1<<1)
+#define ALCHEMIST	(1<<2)
+#define MASON		(1<<3)
+#define TAILOR		(1<<4)
+#define ARTIFICER	(1<<5)
+#define SCRIBE		(1<<6)
 
 #define PEASANTS		(1<<4)
 
@@ -151,8 +155,12 @@
 #define APPRENTICE	(1<<0)
 #define SQUIRE		(1<<1)
 #define SERVANT		(1<<2)
-#define ORPHAN		(1<<3)
-#define PRINCE		(1<<4)
+#define PRINCE		(1<<3)
+
+#define YOUNGFOLK           (1<<6)
+#define INNKEEPCHILD    (1<<1)
+#define CHURCHLING      (1<<2)
+#define ORPHAN		    (1<<3)
 
 #define JCOLOR_NOBLE "#9c40bf"
 #define JCOLOR_MERCHANT "#c2b449"
@@ -164,7 +172,7 @@
 // job display orders //
 
 #define JDO_LORD 1
-#define JDO_LADY 1.1
+#define JDO_CONSORT 1.1
 #define JDO_PRINCE 1.2
 #define JDO_HAND 2
 #define JDO_STEWARD 3
@@ -176,11 +184,14 @@
 
 #define JDO_CAPTAIN 7
 #define JDO_ROYALGUARD 7.1
-#define JDO_GARRISONGUARD 8
-#define JDO_GARRISONARCHER 9
-#define JDO_DUNGEONEER 10
-#define JDO_SQUIRE 11
-#define JDO_VET 11.1
+#define JDO_GARRISONGUARD 7.5
+#define JDO_WATCHMAN 8
+#define JDO_JAILOR 8.5
+#define JDO_DUNGEONEER 9
+#define JDO_SQUIRE 9.5
+#define JDO_VET 10
+#define JDO_FORWARDEN 11
+#define JDO_FORGUARD 11.5
 
 #define JDO_PRIEST 12
 #define JDO_CLERIC 13
@@ -198,35 +209,37 @@
 #define JDO_ARMORER 20
 #define JDO_WSMITH 21
 #define JDO_BAPP 22
+#define JDO_ARTIFICER 23
 
-#define JDO_MASON 23
+#define JDO_MASON 24
 
-#define JDO_BUTLER 24
-#define JDO_SERVANT 25
+#define JDO_BUTLER 25
+#define JDO_SERVANT 26
 
-#define JDO_INNKEEP 26
-#define JDO_COOK 27
+#define JDO_INNKEEP 27
+#define JDO_INNKEEP_CHILD 27.5
+#define JDO_COOK 28
 
-#define JDO_BUTCHER 27.1
-#define JDO_SOILSON 27.2
+#define JDO_BUTCHER 28.1
+#define JDO_SOILSON 28.2
 
-#define JDO_GRAVEMAN 28
+#define JDO_GRAVEMAN 29
 
-#define JDO_NITEMAN 28.1
-#define JDO_NITEMAIDEN 28.2
+#define JDO_NITEMAN 29.1
+//#define JDO_NITEMAIDEN 29.2
 
-#define JDO_JESTER 29
-#define JDO_PRISONER 30
+#define JDO_JESTER 30
+#define JDO_PRISONER 31
 
-#define JDO_CHIEF 31
-#define JDO_VILLAGER 32
+#define JDO_CHIEF 32
+#define JDO_VILLAGER 33
 
-#define JDO_ADVENTURER 32.1
-#define JDO_PILGRIM 32.2
-#define JDO_MIGRANT  32.3
-#define JDO_BANDIT 31.3
+#define JDO_ADVENTURER 33.1
+#define JDO_PILGRIM 33.2
+#define JDO_MIGRANT  33.3
+#define JDO_BANDIT 33.3
 
-#define JDO_MERCENARY 33
+#define JDO_MERCENARY 34
 
-#define JDO_VAGRANT 34
-#define JDO_ORPHAN 35
+#define JDO_VAGRANT 35
+#define JDO_ORPHAN 36

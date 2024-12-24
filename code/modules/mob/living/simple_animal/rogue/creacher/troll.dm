@@ -2,9 +2,9 @@
 	icon = 'icons/roguetown/mob/monster/trolls.dmi'
 	name = "troll"
 	desc = "Elven legends say these monsters were servants of Dendor tasked to guard his realm; nowadays they are sometimes found in the company of orcs."
-	icon_state = "Troll2"
-	icon_living = "Troll2"
-	icon_dead = "Troll2d"
+	icon_state = "Troll"
+	icon_living = "Troll"
+	icon_dead = "Trolld"
 	pixel_x = -16
 
 	faction = list("orcs")
@@ -37,16 +37,16 @@
 					/obj/item/bodypart,
 					/obj/item/organ)
 
-	base_intents = list(/datum/intent/unarmed/wwolf, /datum/intent/simple/bigbite)
+	base_intents = list(/datum/intent/unarmed/claw, /datum/intent/simple/bigbite)
 	attack_sound = list('sound/combat/wooshes/blunt/wooshhuge (1).ogg','sound/combat/wooshes/blunt/wooshhuge (2).ogg','sound/combat/wooshes/blunt/wooshhuge (3).ogg')
 	melee_damage_lower = 40
 	melee_damage_upper = 60
 	environment_smash = ENVIRONMENT_SMASH_STRUCTURES
 
-	STACON = 16
-	STASTR = 16
-	STASPD = 2
-	STAEND = 17
+	TOTALCON = 16
+	TOTALSTR = 16
+	TOTALSPD = 2
+	TOTALEND = 17
 
 	retreat_distance = 0
 	minimum_distance = 0
@@ -62,6 +62,11 @@
 //	stat_attack = UNCONSCIOUS
 	remains_type = /obj/effect/decal/remains/troll
 	body_eater = TRUE
+
+	ai_controller = /datum/ai_controller/troll
+	AIStatus = AI_OFF
+	can_have_ai = FALSE
+
 	var/critvuln = FALSE
 
 /mob/living/simple_animal/hostile/retaliate/rogue/troll/Initialize()
@@ -146,8 +151,8 @@
 /obj/effect/decal/remains/troll
 	name = "remains"
 	gender = PLURAL
-	icon_state = "mole_bones"
-	icon = 'icons/roguetown/mob/monster/mole.dmi' // mole bones is a placeholder
+	icon_state = "Trolld"
+
 
 // You know I had to. Hostile, killer cabbit. Strong. Fast. But not as durable.
 // The most foul, cruel and bad tempered feline-rodent you ever set eyes on.
@@ -166,10 +171,10 @@
 	maxHealth = 160
 	move_to_delay = 3 // FAST.
 	attack_sound = list('sound/vo/mobs/rat/aggro (1).ogg', 'sound/vo/mobs/rat/aggro (2).ogg', 'sound/vo/mobs/rat/aggro (3).ogg')
-	STACON = 5
-	STASTR = 5
-	STASPD = 10
-	STAEND = 5
+	TOTALCON = 5
+	TOTALSTR = 5
+	TOTALSPD = 10
+	TOTALEND = 5
 	remains_type = /obj/effect/decal/remains/cabbit
 	melee_damage_lower = 20
 	melee_damage_upper = 40

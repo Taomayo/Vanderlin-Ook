@@ -13,7 +13,8 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 
 	tutorial = "Being a stevedore is one of the lowest yet most needed positions in town, as they are expected to aid the Merchant, Steward, Masons, and Blacksmiths in hauling materials and goods while keeping a guarding eye on the town's warehouses for the safety of the items stashed within."
@@ -23,6 +24,7 @@
 	min_pq = -50
 	display_order = JDO_GRABBER
 	bypass_lastclass = TRUE
+	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
 
 /datum/job/roguetown/grabber/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
 	..()
@@ -44,7 +46,7 @@
 		head = /obj/item/clothing/head/roguetown/headband/red
 		beltr = /obj/item/rogueweapon/mace/cudgel
 		beltl = /obj/item/storage/belt/rogue/pouch/coins/poor
-		neck = /obj/item/roguekey/warehouse
+		neck = /obj/item/key/warehouse
 		belt = /obj/item/storage/belt/rogue/leather/rope
 		armor = /obj/item/clothing/suit/roguetown/armor/leather/jacket/sea
 		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/sailor/red
@@ -56,7 +58,7 @@
 		pants = /obj/item/clothing/under/roguetown/tights/sailor
 		beltr = /obj/item/rogueweapon/mace/cudgel
 		beltl = /obj/item/storage/belt/rogue/pouch/coins/poor
-		neck = /obj/item/roguekey/warehouse
+		neck = /obj/item/key/warehouse
 		belt = /obj/item/storage/belt/rogue/leather/rope
 		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/sailor
 		armor = /obj/item/clothing/suit/roguetown/armor/leather/jacket/sea

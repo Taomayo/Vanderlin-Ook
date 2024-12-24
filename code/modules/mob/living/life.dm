@@ -30,8 +30,6 @@
 		return
 
 	if(!IS_IN_STASIS(src))
-		//Mutations and radiation
-		handle_mutations_and_radiation()
 		//Breathing, if applicable
 		handle_breathing(times_fired)
 		if(HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
@@ -47,10 +45,6 @@
 
 		//Random events (vomiting etc)
 		handle_random_events()
-		//Handle temperature/pressure differences between body and environment
-		var/datum/gas_mixture/environment = loc?.return_air()
-		if(environment)
-			handle_environment(environment)
 
 		handle_gravity()
 
@@ -94,10 +88,6 @@
 /mob/living/proc/handle_breathing(times_fired)
 	return
 
-/mob/living/proc/handle_mutations_and_radiation()
-	radiation = 0 //so radiation don't accumulate in simple animals
-	return
-
 /mob/living/proc/handle_random_events()
 	//random painstun
 	if(!stat && !HAS_TRAIT(src, TRAIT_NOPAINSTUN))
@@ -116,9 +106,6 @@
 					Stun(110)
 					Knockdown(110)
 
-/mob/living/proc/handle_environment(datum/gas_mixture/environment)
-	return
-
 /mob/living/proc/handle_fire()
 	if(fire_stacks < 0) //If we've doused ourselves in water to avoid fire, dry off slowly
 		fire_stacks = min(0, fire_stacks + 1)//So we dry ourselves back to default, nonflammable.
@@ -131,10 +118,6 @@
 	else
 		ExtinguishMob()
 		return TRUE //mob was put out, on_fire = FALSE via ExtinguishMob(), no need to update everything down the chain.
-//	var/datum/gas_mixture/G = loc.return_air() // Check if we're standing in an oxygenless environment
-//	if(!G.gases[/datum/gas/oxygen] || G.gases[/datum/gas/oxygen][MOLES] < 1)
-//		ExtinguishMob() //If there's no oxygen in the tile we're on, put out the fire
-//		return TRUE
 	update_fire()
 	var/turf/location = get_turf(src)
 	location.hotspot_expose(700, 50, 1)

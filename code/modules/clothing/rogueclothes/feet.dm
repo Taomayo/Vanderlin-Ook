@@ -27,7 +27,7 @@
 	gender = PLURAL
 	icon_state = "blackboots"
 	item_state = "blackboots"
-	armor = list("melee" = 15, "bullet" = 5, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 15, "slash" = 15, "stab" = 15,  "piercing" = 5, "fire" = 0, "acid" = 0)
 	sellprice = 10
 
 /obj/item/clothing/shoes/roguetown/nobleboot
@@ -38,7 +38,7 @@
 	gender = PLURAL
 	icon_state = "nobleboots"
 	item_state = "nobleboots"
-	armor = list("melee" = 20, "bullet" = 15, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 20, "slash" = 20, "stab" = 20,  "piercing" = 15, "fire" = 0, "acid" = 0)
 	sellprice = 10
 
 /obj/item/clothing/shoes/roguetown/shortboots
@@ -48,13 +48,13 @@
 	gender = PLURAL
 	icon_state = "shortboots"
 	item_state = "shortboots"
-	armor = list("melee" = 10, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 10, "slash" = 10, "stab" = 10,  "piercing" = 0, "fire" = 0, "acid" = 0)
 
 /obj/item/clothing/shoes/roguetown/ridingboots
 	name = "riding boots"
 	color = "#d5c2aa"
 	desc = "Boots designed for riding a mount."
-	armor = list("melee" = 20, "bullet" = 10, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 20, "slash" = 20, "stab" = 20,  "piercing" = 10, "fire" = 0, "acid" = 0)
 	gender = PLURAL
 	icon_state = "ridingboots"
 	item_state = "ridingboots"
@@ -72,6 +72,8 @@
 	item_state = "simpleshoe"
 	resistance_flags = null
 	color = CLOTHING_OLD_LEATHER
+	salvage_amount = 1
+	salvage_result = /obj/item/natural/hide/cured
 
 /obj/item/clothing/shoes/roguetown/simpleshoes/white
 	color = null
@@ -137,7 +139,7 @@
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_TWIST)
 	color = null
 	blocksound = PLATEHIT
-	armor = list("melee" = 100, "bullet" = 80, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 100, "slash" = 100, "stab" = 100,  "piercing" = 80, "fire" = 0, "acid" = 0)
 	max_integrity = 500
 	armor_class = AC_HEAVY
 	clothing_flags = CANT_SLEEP_IN
@@ -154,7 +156,7 @@
 	icon_state = "soldierboots"
 	item_state = "soldierboots"
 	desc = "Lightly armored boots made from iron offering protection against both melee and ranged attacks."
-	armor = list("melee" = 80, "bullet" = 60, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 60, "fire" = 0, "acid" = 0)
 	max_integrity = 250
 	armor_class = AC_MEDIUM
 	sellprice = 20
@@ -167,9 +169,30 @@
 	gender = PLURAL
 	icon_state = "leatherboots"
 	item_state = "leatherboots"
-	armor = list("melee" = 20, "bullet" = 10, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 20, "slash" = 20, "stab" = 20,  "piercing" = 10, "fire" = 0, "acid" = 0)
 	resistance_flags = FLAMMABLE
 	sellprice = 10
+	salvage_amount = 1
+	salvage_result = /obj/item/natural/hide/cured
+
+
+/obj/item/clothing/shoes/roguetown/boots/leather/advanced
+	name = "hardened leather boots"
+	desc = "Sturdy, durable, flexible. A marvel of the dark ages that exists solely to protect your toes."
+	max_integrity = 200
+	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
+	armor = list("blunt" = 50, "slash" = 40, "stab" = 20, "piercing" = 0, "fire" = 0, "acid" = 0)
+
+/obj/item/clothing/shoes/roguetown/boots/leather/masterwork
+	name = "masterwork leather boots"
+	desc = "These boots are a craftsmanship marvel. Made with the finest leather. Strong, nimible, reliable."
+	max_integrity = 300
+	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST, BCLASS_CHOP) //we're adding chop here!
+	armor = list("blunt" = 80, "slash" = 60, "stab" = 40, "piercing" = 0,"fire" = 0, "acid" = 0)
+
+/obj/item/clothing/shoes/roguetown/boots/leather/masterwork/Initialize()
+	. = ..()
+	filters += filter(type="drop_shadow", x=0, y=0, size=0.5, offset=1, color=rgb(218, 165, 32))
 
 /obj/item/clothing/shoes/roguetown/boots/furlinedboots
 	name = "fur lined boots"
@@ -178,8 +201,7 @@
 	icon_state = "furlinedboots"
 	item_state = "furlinedboots"
 	sewrepair = TRUE
-	//armor = list("blunt" = 30, "slash" = 10, "stab" = 20, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-	armor = list("melee" = 20, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 30, "slash" = 10, "stab" = 20,  "piercing" = 0, "fire" = 0, "acid" = 0)
 
 /obj/item/clothing/shoes/roguetown/boots/furlinedanklets
 	name = "fur lined anklets"
@@ -188,8 +210,7 @@
 	icon_state = "furlinedanklets"
 	item_state = "furlinedanklets"
 	sewrepair = TRUE
-	//armor = list("blunt" = 30, "slash" = 10, "stab" = 20, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-	armor = list("melee" = 20, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 30, "slash" = 10, "stab" = 20,  "piercing" = 0, "fire" = 0, "acid" = 0)
 	is_barefoot = TRUE
 
 /obj/item/clothing/shoes/roguetown/boots/clothlinedanklets
@@ -200,8 +221,7 @@
 	item_state = "furlinedanklets"
 	is_barefoot = TRUE
 	sewrepair = TRUE
-	//armor = list("blunt" = 5, "slash" = 5, "stab" = 5, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0) //Thinks its fair for a piece of cloth and fiber.
-	armor = list("melee" = 5, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0) //Thinks its fair for a piece of cloth and fiber.
+	armor = list("blunt" = 5, "slash" = 5, "stab" = 5,  "piercing" = 0, "fire" = 0, "acid" = 0) //Thinks its fair for a piece of cloth and fiber.
 
 /obj/item/clothing/shoes/roguetown/jester
 	name = "funny shoes"
@@ -215,10 +235,11 @@
 	icon_state = "grenzelboots"
 	item_state = "grenzelboots"
 	sleeved = 'icons/roguetown/clothing/onmob/helpers/stonekeep_merc.dmi'
-	armor = list("melee" = 25, "bullet" = 15, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 25, "slash" = 25, "stab" = 25,  "piercing" = 15, "fire" = 0, "acid" = 0)
 	sellprice = 20
 
 /obj/item/clothing/shoes/roguetown/boots/rare
+	icon_state = "elfshoes"
 	icon = 'icons/roguetown/clothing/Racial_Armour.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/onmob_racial.dmi'
 	sleeved = 'icons/roguetown/clothing/onmob/onmob_racial.dmi'
@@ -230,7 +251,7 @@
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
 	break_sound = 'sound/foley/breaksound.ogg'
 	anvilrepair = /datum/skill/craft/armorsmithing
-	armor = list("melee" = 100, "bullet" = 100, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 100, "slash" = 100, "stab" = 100,  "piercing" = 100, "fire" = 0, "acid" = 0)
 	clothing_flags = CANT_SLEEP_IN
 	sellprice = 30
 

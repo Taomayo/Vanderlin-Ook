@@ -10,11 +10,13 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	outfit = /datum/outfit/job/roguetown/adventurer/hunter
 
 	category_tags = list(CTAG_PILGRIM, CTAG_TOWNER)
+	apprentice_name = "Hunter"
 
 /datum/outfit/job/roguetown/adventurer/hunter/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -70,7 +72,9 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	outfit = /datum/outfit/job/roguetown/adventurer/hunter // Everything is the same
 	category_tags = list(CTAG_PILGRIM, CTAG_TOWNER)
+	apprentice_name = "Hunter"

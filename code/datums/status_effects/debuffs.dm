@@ -66,10 +66,6 @@
 	id = "unconscious"
 	needs_update_stat = TRUE
 
-/datum/status_effect/incapacitating/unconscious/tick()
-	if(owner.getStaminaLoss())
-		owner.adjustStaminaLoss(-0.3) //reduce stamina loss by 0.3 per tick, 6 per 2 seconds
-
 //SLEEPING
 /datum/status_effect/incapacitating/sleeping
 	id = "sleeping"
@@ -127,8 +123,7 @@
 		if(health_ratio > 0.8)
 			owner.adjustBruteLoss(healing)
 			owner.adjustFireLoss(healing)
-			owner.adjustToxLoss(healing * 0.5, TRUE, TRUE)
-		owner.adjustStaminaLoss(healing)
+			owner.adjustToxLoss(healing * 0.5, FALSE, TRUE)
 	if(human_owner && human_owner.drunkenness)
 		human_owner.drunkenness *= 0.997 //reduce drunkenness by 0.3% per tick, 6% per 2 seconds
 	if(prob(20))
@@ -290,24 +285,6 @@
 	deltimer(timerid)
 
 
-/datum/status_effect/gonbolaPacify
-	id = "gonbolaPacify"
-	status_type = STATUS_EFFECT_MULTIPLE
-	tick_interval = -1
-	alert_type = null
-
-/datum/status_effect/gonbolaPacify/on_apply()
-	ADD_TRAIT(owner, TRAIT_PACIFISM, "gonbolaPacify")
-	ADD_TRAIT(owner, TRAIT_MUTE, "gonbolaMute")
-	ADD_TRAIT(owner, TRAIT_JOLLY, "gonbolaJolly")
-	to_chat(owner, "<span class='notice'>I suddenly feel at peace and feel no need to make any sudden or rash actions...</span>")
-	return ..()
-
-/datum/status_effect/gonbolaPacify/on_remove()
-	REMOVE_TRAIT(owner, TRAIT_PACIFISM, "gonbolaPacify")
-	REMOVE_TRAIT(owner, TRAIT_MUTE, "gonbolaMute")
-	REMOVE_TRAIT(owner, TRAIT_JOLLY, "gonbolaJolly")
-
 /datum/status_effect/trance
 	id = "trance"
 	status_type = STATUS_EFFECT_UNIQUE
@@ -416,29 +393,6 @@
 					owner.log_message("threw [I] due to a Muscle Spasm", LOG_ATTACK)
 					owner.throw_item(pick(targets))
 
-/datum/status_effect/dna_melt
-	id = "dna_melt"
-	duration = 600
-	status_type = STATUS_EFFECT_REPLACE
-	alert_type = /atom/movable/screen/alert/status_effect/dna_melt
-	var/kill_either_way = FALSE //no amount of removing mutations is gonna save you now
-
-/datum/status_effect/dna_melt/on_creation(mob/living/new_owner, set_duration, updating_canmove)
-	. = ..()
-	to_chat(new_owner, "<span class='boldwarning'>My body can't handle the mutations! I need to get my mutations removed fast!</span>")
-
-/datum/status_effect/dna_melt/on_remove()
-	if(!ishuman(owner))
-		owner.gib() //fuck you in particular
-		return
-	var/mob/living/carbon/human/H = owner
-	H.something_horrible(kill_either_way)
-
-/atom/movable/screen/alert/status_effect/dna_melt
-	name = "Genetic Breakdown"
-	desc = ""
-	icon_state = "dna_melt"
-
 /datum/status_effect/go_away
 	id = "go_away"
 	duration = 100
@@ -504,3 +458,4 @@
 		to_chat(owner, fake_msg)
 
 	msg_stage++
+

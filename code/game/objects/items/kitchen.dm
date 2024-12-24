@@ -26,7 +26,7 @@
 	flags_1 = CONDUCT_1
 	attack_verb = list("attacked", "stabbed", "poked")
 	hitsound = 'sound/blank.ogg'
-	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 50, "acid" = 30)
+	armor = list("blunt" = 0, "slash" = 0, "stab" = 0,  "piercing" = 0, "fire" = 50, "acid" = 30)
 	var/datum/reagent/forkload //used to eat omelette
 
 /obj/item/kitchen/fork/suicide_act(mob/living/carbon/user)
@@ -49,8 +49,6 @@
 		forkload = null
 
 	else if(user.zone_selected == BODY_ZONE_PRECISE_R_EYE)
-		if(HAS_TRAIT(user, TRAIT_CLUMSY) && prob(50))
-			M = user
 		return eyestab(M,user)
 	else
 		return ..()
@@ -59,6 +57,7 @@
 	name = "rolling pin"
 	desc = ""
 	icon_state = "rolling_pin"
+	item_state = "rolling_pin"
 	force = 8
 	throwforce = 5
 	throw_speed = 1

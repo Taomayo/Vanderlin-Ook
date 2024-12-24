@@ -69,6 +69,13 @@
 
 	var/force_escaped = FALSE  // Set by Into The Sunset command of the shuttle manipulator
 
+	var/apprentice = FALSE
+	var/max_apprentices = 0
+	var/apprentice_name
+
+	///our apprentice name
+	var/our_apprentice_name
+
 	var/list/learned_recipes //List of learned recipe TYPES.
 
 	///Assoc list of skills - level
@@ -84,15 +91,26 @@
 
 	var/list/notes = list() //RTD add notes button
 
+	var/list/cached_frumentarii = list()
+
+	var/datum/sleep_adv/sleep_adv = null
+
+	var/list/apprentice_training_skills = list()
+
+	var/list/apprentices = list()
+
 /datum/mind/New(key)
 	src.key = key
 	soulOwner = src
 	martial_art = default_martial_art
+	sleep_adv = new /datum/sleep_adv(src)
 
 /datum/mind/Destroy()
 	SSticker.minds -= src
+	QDEL_NULL(sleep_adv)
 	if(islist(antag_datums))
 		QDEL_LIST(antag_datums)
+	apprentices = null
 	return ..()
 
 /proc/get_minds(role)
@@ -122,7 +140,7 @@
 		known_people[H.real_name]["VCOLOR"] = H.voice_color
 		var/used_title = H.get_role_title()
 		if(!used_title)
-			used_title = "unknown"
+			used_title = "Unknown"
 		known_people[H.real_name]["FJOB"] = used_title
 		known_people[H.real_name]["FGENDER"] = H.gender
 		known_people[H.real_name]["FAGE"] = H.age
@@ -146,7 +164,7 @@
 				if(H.gender == FEMALE && J.f_title)
 					used_title = J.f_title
 			if(!used_title)
-				used_title = "unknown"
+				used_title = "Unknown"
 			M.known_people[H.real_name]["FJOB"] = used_title
 			M.known_people[H.real_name]["FGENDER"] = H.gender
 			M.known_people[H.real_name]["FAGE"] = H.age
@@ -250,13 +268,13 @@
 	if(active || force_key_move)
 		testing("dotransfer to [new_character]")
 		new_character.key = key		//now transfer the key to link the client to our new body
-
+	new_character.update_fov_angles()
 
 	///Adjust experience of a specific skill
-/datum/mind/proc/adjust_experience(skill, amt, silent = FALSE)
+/datum/mind/proc/adjust_experience(skill, amt, silent = FALSE, check_apprentice = TRUE)
 	var/datum/skill/S = GetSkillRef(skill)
 	skill_experience[S] = max(0, skill_experience[S] + amt) //Prevent going below 0
-	var/old_level = known_skills[S]
+	var/old_level = get_skill_level(skill)
 	switch(skill_experience[S])
 		if(SKILL_EXP_LEGENDARY to INFINITY)
 			known_skills[S] = SKILL_LEVEL_LEGENDARY
@@ -272,17 +290,36 @@
 			known_skills[S] = SKILL_LEVEL_NOVICE
 		if(0 to SKILL_EXP_NOVICE)
 			known_skills[S] = SKILL_LEVEL_NONE
-	if(isnull(old_level) || known_skills[S] == old_level)
+
+	if(length(apprentices) && check_apprentice)
+		for(var/datum/weakref/apprentice_ref as anything in apprentices)
+			var/mob/living/apprentice = apprentice_ref.resolve()
+			if(!istype(apprentice))
+				continue
+			if(!(apprentice in view(7, current)))
+				continue
+			var/multiplier = 0
+			if((skill in apprentice_training_skills))
+				multiplier = apprentice_training_skills[skill]
+			if(apprentice.mind.get_skill_level(skill) <= (get_skill_level(skill) - 1))
+				multiplier += 0.25 //this means a base 35% of your xp is also given to nearby apprentices plus skill modifiers.
+			var/apprentice_amt = amt * 0.1 + multiplier
+			if(apprentice.mind.adjust_experience(skill, apprentice_amt, FALSE, FALSE))
+				current.add_stress(/datum/stressevent/apprentice_making_me_proud)
+
+	if(known_skills[S] == old_level)
 		return //same level or we just started earning xp towards the first level.
 	if(silent)
 		return
 	if(known_skills[S] >= old_level)
 		if(known_skills[S] > old_level)
-			to_chat(current, "<span class='nicegreen'>My proficiency in [S.name] grows!</span>")
+			to_chat(current, span_nicegreen("My proficiency in [S.name] grows to [SSskills.level_names[known_skills[S]]]!"))
+			S.skill_level_effect(src, known_skills[S])
 		if(skill == /datum/skill/magic/arcane)
 			adjust_spellpoints(1)
+		return TRUE
 	else
-		to_chat(current, "<span class='warning'>My [S.name] has weakened!</span>")
+		to_chat(current, span_warning("My [S.name] has weakened to [SSskills.level_names[known_skills[S]]]!"))
 
 /datum/mind/proc/adjust_skillrank(skill, amt, silent = FALSE)
 	var/datum/skill/S = GetSkillRef(skill)
@@ -327,9 +364,9 @@
 	if(silent)
 		return
 	if(known_skills[S] >= old_level)
-		to_chat(current, "<span class='nicegreen'>I feel like I've become more proficient at [S.name]!</span>")
+		to_chat(current, span_nicegreen("I feel like I've become more proficient at [S.name]!"))
 	else
-		to_chat(current, "<span class='warning'>I feel like I've become worse at [S.name]!</span>")
+		to_chat(current, span_warning("I feel like I've become worse at [S.name]!"))
 
 // adjusts the amount of available spellpoints
 /datum/mind/proc/adjust_spellpoints(points)
@@ -359,13 +396,12 @@
 		if(known_skills[i]) //Do we actually have a level in this?
 			shown_skills += i
 	if(!length(shown_skills))
-		to_chat(user, "<span class='warning'>I don't have any skills.</span>")
+		to_chat(user, span_warning("I don't have any skills."))
 		return
 	var/msg = ""
-	msg += "<span class='info'>*---------*\n</span>"
+	msg += span_info("*---------*\n")
 	for(var/i in shown_skills)
 		msg += "[i] - [SSskills.level_names[known_skills[i]]]\n"
-	msg += "</span>"
 	to_chat(user, msg)
 
 
@@ -444,13 +480,6 @@
 		return antaggy.isgoodguy
 
 
-/datum/mind/proc/remove_traitor()
-	remove_antag_datum(/datum/antagonist/traitor)
-
-
-/datum/mind/proc/remove_all_antag() //For the Lazy amongst us.
-	remove_traitor()
-
 /datum/mind/proc/equip_traitor(employer = "The Syndicate", silent = FALSE, datum/antagonist/uplink_owner)
 	return
 
@@ -465,7 +494,7 @@
 
 	if(creator.mind.special_role)
 		message_admins("[ADMIN_LOOKUPFLW(current)] has been created by [ADMIN_LOOKUPFLW(creator)], an antagonist.")
-		to_chat(current, "<span class='danger'>Despite my creators current allegiances, my true master remains [creator.real_name]. If their loyalties change, so do yours. This will never change unless my creator's body is destroyed.</span>")
+		to_chat(current, span_danger("Despite my creators current allegiances, my true master remains [creator.real_name]. If their loyalties change, so do yours. This will never change unless my creator's body is destroyed."))
 
 /datum/mind/proc/show_memory(mob/recipient, window=1)
 	if(!recipient)
@@ -519,15 +548,9 @@
 	if(href_list["remove_antag"])
 		var/datum/antagonist/A = locate(href_list["remove_antag"]) in antag_datums
 		if(!istype(A))
-			to_chat(usr,"<span class='warning'>Invalid antagonist ref to be removed.</span>")
+			to_chat(usr, span_warning("Invalid antagonist ref to be removed."))
 			return
 		A.admin_remove(usr)
-
-	if (href_list["role_edit"])
-		var/new_role = input("Select new role", "Assigned role", assigned_role) as null|anything in sortList(get_all_jobs())
-		if (!new_role)
-			return
-		assigned_role = new_role
 
 	else if (href_list["memory_edit"])
 		var/new_memo = copytext(sanitize(input("Write new memory", "Memory", memory) as null|message),1,MAX_MESSAGE_LEN)
@@ -655,17 +678,12 @@
 
 /datum/mind/proc/announce_objectives()
 	var/obj_count = 1
-	to_chat(current, "<span class='notice'>My current objectives:</span>")
+	to_chat(current, span_notice("My current objectives:"))
 	for(var/objective in get_all_objectives())
 		var/datum/objective/O = objective
 		O.update_explanation_text()
-		to_chat(current, "<B>Objective #[obj_count]</B>: [O.explanation_text]")
+		to_chat(current, "<B>[O.flavor] #[obj_count]</B>: [O.explanation_text]")
 		obj_count++
-
-
-/datum/mind/proc/make_Traitor()
-	if(!(has_antag_datum(/datum/antagonist/traitor)))
-		add_antag_datum(/datum/antagonist/traitor)
 
 
 /datum/mind/proc/AddSpell(obj/effect/proc_holder/spell/S)
@@ -674,6 +692,7 @@
 	if(has_spell(S))
 		return
 	spell_list += S
+	to_chat(current, "<span class='boldnotice'>I have learned a new spell: [S]</span>")
 	S.action.Grant(current)
 
 /datum/mind/proc/check_learnspell(obj/effect/proc_holder/spell/S)
@@ -803,6 +822,46 @@
 // Get a bonus multiplier dependant on age to apply to exp gains. Arg is a skill path.
 /datum/mind/proc/get_learning_boon(skill)
 	var/mob/living/carbon/human/H = current
+	if(!istype(H))
+		return 1
 	var/boon = H.age == AGE_OLD ? 0.8 : 1 // Can't teach an old dog new tricks. Most old jobs start with higher skill too.
 	boon += get_skill_level(skill) / 10
 	return boon
+
+/datum/mind/proc/add_sleep_experience(skill, amt, silent = FALSE, check_apprentice = TRUE)
+	if(length(apprentices) && check_apprentice)
+		for(var/datum/weakref/apprentice_ref as anything in apprentices)
+			var/mob/living/apprentice = apprentice_ref.resolve()
+			if(!istype(apprentice))
+				continue
+			if(!(apprentice in view(7, current)))
+				continue
+			var/multiplier = 0
+			if((skill in apprentice_training_skills))
+				multiplier = apprentice_training_skills[skill]
+			if(apprentice.mind.get_skill_level(skill) <= (get_skill_level(skill) - 1))
+				multiplier += 0.25 //this means a base 35% of your xp is also given to nearby apprentices plus skill modifiers.
+			var/apprentice_amt = amt * 0.1 + multiplier
+			if(apprentice.mind.add_sleep_experience(skill, apprentice_amt, FALSE, FALSE))
+				current.add_stress(/datum/stressevent/apprentice_making_me_proud)
+	if(sleep_adv.add_sleep_experience(skill, amt, silent))
+		return TRUE
+
+/datum/mind/proc/make_apprentice(mob/living/youngling)
+	if(youngling?.mind.apprentice)
+		return
+	if(length(apprentices) >= max_apprentices)
+		return
+
+	var/choice = input(youngling, "Do you wish to become [current.name]'s apprentice?") as anything in list("Yes", "No")
+	if(choice != "Yes")
+		return
+	apprentices |= WEAKREF(youngling)
+	youngling.mind.apprentice = TRUE
+
+	var/datum/job/J = SSjob.GetJob(current:job)
+	var/title = "[J.title] Apprentice"
+	if(apprentice_name)
+		title = apprentice_name
+	youngling.mind.our_apprentice_name = "[current.name]'s [title]"
+	to_chat(current, span_notice("[youngling.name] has become your apprentice."))

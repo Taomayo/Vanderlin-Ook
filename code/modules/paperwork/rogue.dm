@@ -63,13 +63,12 @@
 	if(in_range(user, src) || isobserver(user))
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style></head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+		user.hud_used.reads.maptext = info
+		user.hud_used.reads.maptext_width = 230
+		user.hud_used.reads.maptext_height = 200
+		user.hud_used.reads.maptext_y = 150
+		user.hud_used.reads.maptext_x = 120
+
 		onclose(user, "reading", src)
 	else
 		return "<span class='warning'>I'm too far away to read it.</span>"
@@ -124,14 +123,14 @@
 	textper = 150
 
 /obj/item/paper/scroll/cargo/Destroy()
-	for(var/datum/supply_order/SO in orders)
+	for(var/datum/supply_pack/SO in orders)
 		orders -= SO
 	return ..()
 
 /obj/item/paper/scroll/cargo/examine(mob/user)
 	. = ..()
-//	if(signedname)
-//		. += "It was signed by [signedname] the [signedjob]."
+	if(signedname)
+		. += "It was signed by [signedname] the [signedjob]."
 
 	//for each order, add up total price and display orders
 
@@ -169,21 +168,22 @@
 
 /obj/item/paper/scroll/cargo/proc/rebuild_info()
 	info = null
-	info += "<h2>Shipping Order</h2>"
+	info += "<div style='vertical-align:top'>"
+	info += "<h2 style='color:#06080F;font-family:\"Segoe Script\"'>Shipping Order</h2>"
 	info += "<hr/>"
 
 	if(orders.len)
-		info += "Orders: <br/>"
 		info += "<ul>"
-		for(var/datum/supply_order/A in orders)
-			info += "<li>[A.pack.name]</li><br/>"
+		for(var/datum/supply_pack/A in orders)
+			info += "<li style='color:#06080F;font-size:11px;font-family:\"Segoe Script\"'>[A.name] - [A.cost] mammons</li><br/>"
 		info += "</ul>"
 
 	info += "<br/></font>"
 
 	if(signedname)
-		info += "SIGNED,<br/>"
-		info += "<font face=\"[FOUNTAIN_PEN_FONT]\" color=#27293f>[signedname] the [signedjob] of Rockhill</font>"
+		info += "<font size=\"2\" face=\"[FOUNTAIN_PEN_FONT]\" color=#27293f>[signedname] the [signedjob] of Vanderlin</font>"
+
+	info += "</div>"
 
 /obj/item/paper/confession
 	name = "confession"
@@ -246,7 +246,7 @@
 					<html><head><style type=\"text/css\">
 					body { background-image:url('book.png');background-repeat: repeat; }</style></head><body scroll=yes>"}
 		dat += "[info]<br>"
-		dat += "<a href='?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
 		dat += "</body></html>"
 		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 		onclose(user, "reading", src)
@@ -295,3 +295,76 @@
 				return
 		else
 			return
+
+
+/obj/item/paper/scroll/frumentarii/roundstart/Initialize()
+	. = ..()
+	real_names |= GLOB.roundstart_court_agents
+
+
+/obj/item/paper/scroll/frumentarii
+	name = "List of Known Agents"
+	desc = "A list of the hand's fingers."
+
+	var/list/real_names = list()
+	var/list/removed_names = list()
+	var/names = 12
+
+/obj/item/paper/scroll/frumentarii/afterattack(atom/target, mob/living/user, proximity_flag, click_parameters)
+	. = ..()
+	if(length(real_names) + length(removed_names) >= names)
+		to_chat(user, span_notice("The scroll is full"))
+		return
+
+	if(!isliving(target))
+		return
+	var/mob/living/attacked_target = target
+
+	if(attacked_target.real_name in real_names)
+		return
+
+	if(!attacked_target.client)
+		return
+
+	var/choice = input(attacked_target,"Do you list to become one of the hands fingers?","Binding Contract",null) as null|anything in list("Yes", "No")
+
+	if(choice != "Yes")
+		return
+
+	real_names |= attacked_target.real_name
+	removed_names -= attacked_target.real_name
+
+	user.mind.cached_frumentarii |= attacked_target.real_name
+	rebuild_info()
+
+
+/obj/item/paper/scroll/frumentarii/attackby(obj/item/P, mob/living/carbon/human/user, params)
+	. = ..()
+	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
+		var/remove = input(user,"Who are we removing from the fingers","Binding Contract",null) as null|anything in real_names
+		if(remove)
+			real_names -= remove
+			removed_names |= remove
+
+	rebuild_info()
+
+/obj/item/paper/scroll/frumentarii/read(mob/user)
+	. = ..()
+	user.mind.cached_frumentarii |= real_names
+	user.mind.cached_frumentarii -= removed_names
+
+/obj/item/paper/scroll/frumentarii/proc/rebuild_info()
+	info = null
+	info += "<div style='vertical-align:top'>"
+	info += "<h2 style='color:#06080F;font-family:\"Segoe Script\"'>Known Agents</h2>"
+	info += "<hr/>"
+
+	if(length(real_names))
+		for(var/real_name in real_names)
+			info += "<li style='color:#06080F;font-size:11px;font-family:\"Segoe Script\"'>[real_name]</li><br/>"
+
+	if(length(removed_names))
+		for(var/removed_name in removed_names)
+			info += "<s><li style='color:#610018;font-size:11px;font-family:\"Segoe Script\"'>[removed_name]</li></s><br/>"
+
+	info += "</div>"

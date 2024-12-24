@@ -1,27 +1,243 @@
 /*	..................   Loot spawners   ................... */
 /obj/effect/spawner/roguemap/loot
-	icon_state = "loot"
-	probby = 50
+	icon_state = "lootblank"
+	probby = 100
 
 /obj/effect/spawner/roguemap/loot/common
+	icon_state = "lootlow"
 	spawned = list(
 		/obj/item/roguecoin/copper/pile = 15,
-		/obj/item/rogueweapon/knife/hunting = 10,
+		/obj/item/rogueweapon/knife/hunting = 5,
 		/obj/item/rogueweapon/knife/dagger = 8,
-		/obj/item/rogueweapon/knife/dagger/steel = 4,
-		/obj/item/rogueweapon/knife/dagger/silver = 2,
 		/obj/item/rogueweapon/sword/iron = 3,
-		/obj/item/rogueweapon/axe/iron = 10,
+		/obj/item/rogueweapon/axe/copper = 10,
 		/obj/item/rogueweapon/mace = 5,
-		/obj/item/quiver/arrows = 5,
-		/obj/item/rogueweapon/sword/short = 5,
 		/obj/item/clothing/suit/roguetown/armor/leather = 10,
-		/obj/item/clothing/suit/roguetown/armor/gambeson = 15,
 		/obj/item/clothing/gloves/roguetown/chain/iron = 3,
 		/obj/item/clothing/neck/roguetown/coif = 3,
-		/obj/item/clothing/shoes/roguetown/gladiator = 5
+		/obj/item/natural/poo = 5
 		)
 
+/obj/effect/spawner/roguemap/loot/medium
+	icon_state = "lootmed"
+	spawned = list(
+		/obj/item/roguecoin/silver/pile = 15,
+		/obj/item/rogueweapon/knife/dagger/steel = 4,
+		/obj/item/rogueweapon/axe/iron = 10,
+		/obj/item/quiver/arrows = 5,
+		/obj/item/rogueweapon/sword/short = 5,
+		/obj/item/clothing/suit/roguetown/armor/cuirass/iron = 10,
+		/obj/item/clothing/suit/roguetown/armor/gambeson = 10,
+		/obj/item/clothing/gloves/roguetown/chain/iron = 3,
+		/obj/item/clothing/neck/roguetown/gorget = 3,
+		/obj/item/roguestatue/gold/loot = 1
+		)
+
+/obj/effect/spawner/roguemap/loot/rare
+	icon_state = "loothigh"
+	spawned = list(
+		/obj/item/roguecoin/gold/pile = 15,
+		/obj/item/rogueweapon/knife/dagger/silver = 5,
+		/obj/item/rogueweapon/sword/long/greatsword = 3,
+		/obj/item/rogueweapon/axe/iron = 10,
+		/obj/item/ingot/gold = 5,
+		/obj/item/clothing/head/roguetown/crown/circlet = 2,
+		/obj/item/clothing/suit/roguetown/armor/medium/scale = 8,
+		/obj/item/clothing/suit/roguetown/armor/plate = 8,
+		/obj/item/clothing/gloves/roguetown/chain = 3,
+		/obj/item/clothing/neck/roguetown/bevor = 3,
+		/obj/item/clothing/under/roguetown/chainlegs = 5
+		)
+
+/obj/effect/spawner/roguemap/loot/magic
+	icon_state = "lootmagic"
+	spawned = list(
+		/obj/item/clothing/ring/active/nomag = 20,
+		/obj/item/clothing/ring/gold/protection = 10,
+		/obj/item/clothing/ring/gold/ravox = 6,
+		/obj/item/clothing/ring/silver/calm = 20,
+		/obj/item/clothing/ring/silver/noc = 6,
+		/obj/item/clothing/head/roguetown/crown/circlet/vision = 3,
+		/obj/item/clothing/head/roguetown/crown/circlet/sleepless = 3,
+		/obj/item/clothing/head/roguetown/crown/circlet/stink = 5,
+		/obj/item/clothing/neck/roguetown/talkstone = 10
+		)
+
+/obj/effect/spawner/roguemap/loot/coin
+	icon_state = "lootcoin"
+	lootmax = 3
+	spawned = list(
+		/obj/item/roguecoin/gold/pile = 5,
+		/obj/item/roguecoin/gold = 10,
+		/obj/item/roguecoin/silver/pile = 20,
+		/obj/item/roguecoin/silver = 25,
+		/obj/item/roguecoin/copper/pile = 30,
+		/obj/item/roguecoin/copper = 35
+		)
+
+/obj/effect/spawner/roguemap/loot/coin/low
+	icon_state = "lootcoinlow"
+	spawned = list(
+		/obj/item/roguecoin/copper/pile = 75,
+		/obj/item/roguecoin/copper = 25
+		)
+
+/obj/effect/spawner/roguemap/loot/coin/med
+	icon_state = "lootcoinmed"
+	spawned = list(
+		/obj/item/roguecoin/silver/pile = 75,
+		/obj/item/roguecoin/silver = 25
+		)
+
+/obj/effect/spawner/roguemap/loot/coin/high
+	icon_state = "lootcoinhigh"
+	spawned = list(
+		/obj/item/roguecoin/gold/pile = 75,
+		/obj/item/roguecoin/gold = 25
+		)
+
+/obj/effect/spawner/roguemap/loot/coin/absurd
+	icon_state = "lootcoinabsurd"
+	spawned = list(
+		/obj/item/roguecoin/gold/pile = 50,
+		/obj/item/roguegem = 50
+		)
+
+/obj/effect/spawner/roguemap/loot/weapon
+	icon_state = "lootweapon"
+	spawned = list(
+		/obj/item/rogueweapon/mace/copperbludgeon = 15,
+		/obj/item/rogueweapon/axe/copper = 15,
+		/obj/item/rogueweapon/knife/copper = 15,
+		/obj/item/rogueweapon/sword/long/rider/copper = 15,
+		/obj/item/rogueweapon/sword/coppermesser = 15,
+		/obj/item/rogueweapon/polearm/spear/stone/copper = 15,
+		/obj/item/rogueweapon/axe/iron = 10,
+		/obj/item/rogueweapon/polearm/halberd/bardiche = 10,
+		/obj/item/rogueweapon/sword/rapier/ironestoc = 10,
+		/obj/item/rogueweapon/polearm/eaglebeak/lucerne = 10,
+		/obj/item/rogueweapon/mace = 10,
+		/obj/item/rogueweapon/sword/scimitar/messer = 10,
+		/obj/item/rogueweapon/flail/militia = 10,
+		/obj/item/rogueweapon/sword/short = 10,
+		/obj/item/rogueweapon/sword/long/greatsword/zwei = 10,
+		/obj/item/gun/ballistic/revolver/grenadelauncher/bow/recurve = 10,
+		/obj/item/gun/ballistic/revolver/grenadelauncher/bow = 10,
+		/obj/item/gun/ballistic/revolver/grenadelauncher/bow/long = 5,
+		/obj/item/gun/ballistic/revolver/grenadelauncher/crossbow = 5,
+		/obj/item/rogueweapon/axe/steel = 5,
+		/obj/item/rogueweapon/sword/long/greatsword = 5,
+		/obj/item/rogueweapon/sword/rapier = 5,
+		/obj/item/rogueweapon/sword/sabre = 5,
+		/obj/item/rogueweapon/mace/goden/steel = 5,
+		/obj/item/rogueweapon/mace/steel = 5,
+		/obj/item/rogueweapon/hammer/sledgehammer/war = 5
+		)
+
+/obj/effect/spawner/roguemap/loot/armor
+	icon_state = "lootarmor"
+	spawned = list(
+		/obj/item/clothing/mask/rogue/facemask/copper = 15,
+		/obj/item/clothing/wrists/roguetown/bracers/copper = 15,
+		/obj/item/clothing/head/roguetown/helmet/coppercap = 15,
+		/obj/item/clothing/suit/roguetown/armor/cuirass/copperchest = 15,
+		/obj/item/clothing/under/roguetown/chainlegs/iron = 10,
+		/obj/item/clothing/suit/roguetown/armor/chainmail/iron = 10,
+		/obj/item/clothing/suit/roguetown/armor/plate/iron = 10,
+		/obj/item/clothing/head/roguetown/helmet/heavy/ironplate = 10,
+		/obj/item/clothing/suit/roguetown/armor/leather/splint = 10,
+		/obj/item/clothing/suit/roguetown/armor/brigandine = 5,
+		/obj/item/clothing/head/roguetown/helmet/heavy/frog = 5,
+		/obj/item/clothing/head/roguetown/helmet/visored/hounskull = 5,
+		/obj/item/clothing/mask/rogue/facemask/steel = 5,
+		/obj/item/clothing/suit/roguetown/armor/plate/full = 5,
+		/obj/item/clothing/neck/roguetown/chaincoif = 5
+		)
+
+/obj/effect/spawner/roguemap/loot/food
+	icon_state = "lootfood"
+	spawned = list(
+		/obj/item/reagent_containers/food/snacks/rogue/bread = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/raisinbread = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/bun = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/cheesebun = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/frybread = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/meat/steak/fried = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/peppersteak = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/friedegg = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/meat/poultry/cutlet/fried = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/meat/bacon/fried = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/meat/sausage/cooked = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/preserved/potato_baked = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/preserved/onion_fried = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/raisins = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/meat/salami = 10,
+		/obj/item/reagent_containers/food/snacks/rogue/crackerscooked = 10
+		)
+
+/obj/effect/spawner/roguemap/loot/potion_vitals
+	icon_state = "lootpotion"
+	spawned = list(
+		/obj/item/reagent_containers/glass/bottle/rogue/healthpot = 10,
+		/obj/item/reagent_containers/glass/bottle/rogue/stronghealthpot = 5,
+		/obj/item/reagent_containers/glass/bottle/rogue/manapot = 10,
+		/obj/item/reagent_containers/glass/bottle/rogue/strongmanapot = 5,
+		/obj/item/reagent_containers/glass/bottle/rogue/stampot = 10,
+		/obj/item/reagent_containers/glass/bottle/rogue/strongstampot = 5
+	)
+
+/obj/effect/spawner/roguemap/loot/potion_poisons
+	icon_state = "lootpoison"
+	spawned = list(
+		/obj/item/reagent_containers/glass/bottle/rogue/poison = 10,
+		/obj/item/reagent_containers/glass/bottle/rogue/strongpoison = 5,
+		/obj/item/reagent_containers/glass/bottle/rogue/stampoison = 10,
+		/obj/item/reagent_containers/glass/bottle/rogue/strongstampoison = 5,
+		/obj/item/reagent_containers/glass/bottle/rogue/stampot = 10,
+		/obj/item/reagent_containers/glass/bottle/rogue/strongstampot = 5
+	)
+
+/obj/effect/spawner/roguemap/loot/potion_ingredient
+	icon_state = "lootpotioning"
+	var/static/list/all_potion_ings = list()
+	spawned = list()
+
+/obj/effect/spawner/roguemap/loot/potion_ingredient/Initialize(mapload)
+	if(!all_potion_ings.len)
+		all_potion_ings = subtypesof(/obj/item/alch)
+	if(!spawned.len)
+		spawned = all_potion_ings.Copy()
+	return ..()
+
+/obj/effect/spawner/roguemap/loot/potion_ingredient/herb
+	icon_state = "lootpotionherb"
+	spawned = list(
+		/obj/item/alch/atropa = 5,
+		/obj/item/alch/matricaria = 5,
+		/obj/item/alch/symphitum = 5,
+		/obj/item/alch/taraxacum = 5,
+		/obj/item/alch/euphrasia = 5,
+		/obj/item/alch/paris = 5,
+		/obj/item/alch/calendula = 5,
+		/obj/item/alch/mentha = 5,
+		/obj/item/alch/urtica = 5,
+		/obj/item/alch/salvia = 5,
+		/obj/item/alch/hypericum = 5,
+		/obj/item/alch/benedictus = 5,
+		/obj/item/alch/valeriana = 5,
+		/obj/item/alch/artemisia = 5,
+	)
+/obj/effect/spawner/roguemap/loot/potion_stats
+	icon_state = "lootstatpot"
+	spawned = list(
+		/obj/item/reagent_containers/glass/bottle/vial/strpot = 10,
+		/obj/item/reagent_containers/glass/bottle/vial/perpot = 10,
+		/obj/item/reagent_containers/glass/bottle/vial/endpot = 10,
+		/obj/item/reagent_containers/glass/bottle/vial/conpot = 10,
+		/obj/item/reagent_containers/glass/bottle/vial/intpot = 10,
+		/obj/item/reagent_containers/glass/bottle/vial/spdpot = 10,
+		/obj/item/reagent_containers/glass/bottle/vial/lucpot = 10
+	)
 /obj/effect/spawner/roguemap/sewerencounter
 	icon_state = "srat"
 	icon = 'icons/roguetown/mob/monster/rat.dmi'
@@ -164,38 +380,9 @@
 	. = ..()
 	set_quantity(rand(6,9))
 
-/obj/structure/trap/xylix
-	name = ""
-	desc = ""
-	icon_state = ""
-
-/obj/structure/trap/xylix/trap_effect(mob/living/L)
-	to_chat(L, "<span class='danger'><B>With a crack, the hostile constructs come out of hiding, stunning you!</B></span>")
-	L.electrocute_act(10, src, flags = SHOCK_NOGLOVES) // electrocute act does a message.
-	L.Paralyze(20)
-	new /mob/living/simple_animal/hostile/retaliate/gaseousform/xylix(loc)
-	QDEL_IN(src, 30)
-
-
-/obj/structure/trap/xylix_healing
-	name = ""
-	desc = ""
-	icon_state = ""
-
-/obj/structure/trap/xylix_healing/trap_effect(mob/living/L)
-	to_chat(L, "<span class='danger'><B>Flowers sprouts beneath your feet!</B></span>")
-	L.Paralyze(100)
-	L.adjustBruteLoss(-10)
-	switch(pick(1,2))
-		if (1)
-			new /obj/structure/flora/ausbushes/lavendergrass (drop_location())
-		if (2)
-			new /obj/structure/flora/ausbushes/brflowers (drop_location())
-
-	QDEL_IN(src, 200)
-
 /obj/structure/bars/passage/shutter/xy_a
 	redstone_id = "xhutterA"
+
 /obj/structure/bars/passage/shutter/open/xy_a
 	redstone_id = "xhutterA"
 
@@ -224,20 +411,6 @@
 			redstone_id = "xhutterB"
 	return ..()
 
-/obj/effect/spawner/roguemap/xylixlabyrinth_frowny
-	icon = 'icons/mob/actions/roguespells.dmi'
-	icon_state = "tragedy"
-	alpha = 150
-	probby = 30
-	spawned = list(	/obj/structure/trap/xylix_healing = 10, /obj/structure/trap/xylix = 10)
-
-/obj/effect/spawner/roguemap/xylixlabyrinth_smiley
-	icon = 'icons/mob/actions/roguespells.dmi'
-	icon_state = "comedy"
-	alpha = 150
-	probby = 30
-	spawned = list(	/obj/structure/trap/xylix_healing = 10, /obj/structure/trap/xylix = 10)
-
 /obj/structure/fluff/walldeco/xylfrown
 	icon = 'modular/Mapping/icons/decoration.dmi'
 	icon_state = "wall_sad"
@@ -263,7 +436,48 @@
 
 
 
+/obj/structure/spider/attacked_by(obj/item/I, mob/living/user) //Snipping action for webs, scissors turning webs into silk fast!
+	var/snip_time = 50
+	var/sewing_skill = user.mind.get_skill_level(/datum/skill/misc/sewing)
+	var/amount = rand(1, 2)
+	if(user.used_intent.type == /datum/intent/snip)
+		snip_time = (50 - (sewing_skill * 10))
+		if(!do_after(user, snip_time, target = user))
+			return TRUE
+		for(var/i = 1; i <= amount; i++)
+			new /obj/item/natural/silk (get_turf(src))
+		user.visible_message(span_notice("[user] snips [src] up into silk."))
+		user.mind.add_sleep_experience(/datum/skill/misc/sewing, (user.STAINT / 2)) //We're getting experience for harvesting silk!
+		playsound(src, 'sound/items/flint.ogg', 100, TRUE)
+		qdel(src)
+		return TRUE
+	..()
+
 /*	..................   Spider stuff   ................... */
+
+/obj/structure/spider/stickyweb
+	name = "web"
+	icon = 'modular/Mapping/icons/webbing.dmi'
+	icon_state = "stickyweb1"
+	resistance_flags = FLAMMABLE
+	alpha = 109
+	opacity = TRUE
+
+/obj/structure/spider/stickyweb/CanPass(atom/movable/mover, turf/target)
+	if(isliving(mover))
+		if(prob(50) && !HAS_TRAIT(mover, TRAIT_WEBWALK))
+			to_chat(mover, "<span class='danger'>I get stuck in \the [src] for a moment.</span>")
+			return FALSE
+	else if(istype(mover, /obj/projectile))
+		return prob(30)
+	return TRUE
+
+/obj/structure/spider/stickyweb/fire_act(added, maxstacks)
+	visible_message("<span class='warning'>[src] catches fire!</span>")
+	var/turf/T = get_turf(src)
+	qdel(src)
+	new /obj/effect/hotspot(T)
+
 /obj/structure/spider/stickyweb/solo
 	icon_state = "stickyweb3"
 
@@ -279,6 +493,31 @@
 		if (2)
 			static_debris = list(/obj/item/natural/silk = 1)
 	. = ..()
+
+/obj/structure/spider/cocoon
+	name = "cocoon"
+	desc = ""
+	icon = 'icons/effects/effects.dmi'
+	icon_state = "cocoon1"
+	max_integrity = 40
+
+/obj/structure/spider/cocoon/container_resist(mob/living/user)
+	var/breakout_time = 600
+	user.changeNext_move(CLICK_CD_BREAKOUT)
+	user.last_special = world.time + CLICK_CD_BREAKOUT
+	to_chat(user, "<span class='notice'>I struggle against the tight bonds... (This will take about [DisplayTimeText(breakout_time)].)</span>")
+	visible_message("<span class='notice'>I see something struggling and writhing in \the [src]!</span>")
+	if(do_after(user,(breakout_time), target = src))
+		if(!user || user.stat != CONSCIOUS || user.loc != src)
+			return
+		qdel(src)
+
+/obj/structure/spider/cocoon/Destroy()
+	var/turf/T = get_turf(src)
+	src.visible_message("<span class='warning'>\The [src] splits open.</span>")
+	for(var/atom/movable/A in contents)
+		A.forceMove(T)
+	return ..()
 
 /obj/structure/spider/cocoon/Initialize()
 	switch(pick(1,2,3,4,5))
@@ -634,9 +873,17 @@
 	aportalid = "banditin"
 	aportalgoesto = "banditexit"
 
+/obj/structure/fluff/traveltile/bandit
+	aportalid = "banditexit"
+	aportalgoesto = "banditin"
+
 /obj/structure/fluff/traveltile/exit_vampire	// mus NOT be a traveltile/vampire child, because that one has a check for banditcamp trait. People should always be able to leave the camp.
 	aportalid = "vampin"
 	aportalgoesto = "vampexit"
+
+/obj/structure/fluff/traveltile/vampire
+	aportalid = "vampexit"
+	aportalgoesto = "vampin"
 
 /obj/structure/fluff/traveltile/exit_inhumen
 	aportalid = "inhumenin"

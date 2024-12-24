@@ -8,6 +8,7 @@
 	min_pq = 2
 	pickprob = 15
 	category_tags = list(CTAG_ADVENTURER)
+	cmode_music = 'sound/music/cmode/nobility/CombatKnight.ogg'
 
 
 /datum/outfit/job/roguetown/adventurer/swordmaster/pre_equip(mob/living/carbon/human/H)
@@ -48,4 +49,3 @@
 		to_chat(H, "<span class='info'>I can speak Old Psydonic with ,m before my speech.</span>")
 
 	ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
-	H.patron = GLOB.patronlist[/datum/patron/forgotten] // SCREAM IF YOU LOVE THE FORGOTTEN GOD

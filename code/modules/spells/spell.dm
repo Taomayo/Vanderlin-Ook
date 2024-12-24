@@ -66,12 +66,6 @@ GLOBAL_LIST_INIT(spells, typesof(/obj/effect/proc_holder/spell)) //needed for th
 		remove_ranged_ability()
 	return ..()
 
-/obj/effect/proc_holder/singularity_act()
-	return
-
-/obj/effect/proc_holder/singularity_pull()
-	return
-
 /obj/effect/proc_holder/proc/InterceptClickOn(mob/living/caller, params, atom/A)
 	if(caller.ranged_ability != src || ranged_ability_user != caller) //I'm not actually sure how these would trigger, but, uh, safety, I guess?
 		to_chat(caller, "<span class='info'><b>[caller.ranged_ability.name]</b> has been disabled.</span>")
@@ -179,7 +173,7 @@ GLOBAL_LIST_INIT(spells, typesof(/obj/effect/proc_holder/spell)) //needed for th
 	var/associated_skill = /datum/skill/magic/arcane
 	var/miracle = FALSE
 	var/devotion_cost = 0
-	var/ignore_cockblock = FALSE //whether or not to ignore TRAIT_SPELLCOCKBLOCK
+	var/ignore_cockblock = FALSE //whether or not to ignore TRAIT_SPELLBLOCK
 
 	action_icon_state = "spell0"
 	action_icon = 'icons/mob/actions/roguespells.dmi'
@@ -250,7 +244,11 @@ GLOBAL_LIST_INIT(spells, typesof(/obj/effect/proc_holder/spell)) //needed for th
 		to_chat(user, "<span class='warning'>Not when you're incapacitated!</span>")
 		return FALSE
 
-	if(!ignore_cockblock && HAS_TRAIT(user, TRAIT_SPELLCOCKBLOCK))
+	if(!ignore_cockblock && HAS_TRAIT(user, TRAIT_SPELLBLOCK))
+		return FALSE
+
+	if(HAS_TRAIT(user, TRAIT_NOC_CURSE))
+		to_chat(user, span_warning("My magicka has left me..."))
 		return FALSE
 
 	if(!antimagic_allowed)
@@ -403,6 +401,9 @@ GLOBAL_LIST_INIT(spells, typesof(/obj/effect/proc_holder/spell)) //needed for th
 		if(action)
 			action.UpdateButtonIcon()
 		return TRUE
+	else
+		to_chat(user,span_warn("Your spell [name] fizzles!"))
+		revert_cast(user)
 
 /obj/effect/proc_holder/spell/proc/before_cast(list/targets)
 	if(overlay)
@@ -449,8 +450,8 @@ GLOBAL_LIST_INIT(spells, typesof(/obj/effect/proc_holder/spell)) //needed for th
 	if(miracle)
 		var/mob/living/carbon/human/C = user
 		var/datum/devotion/cleric_holder/D = C.cleric
-		D.update_devotion(devotion_cost)
-	return
+		D.update_devotion(-devotion_cost)
+	return TRUE
 
 /obj/effect/proc_holder/spell/proc/view_or_range(distance = world.view, center=usr, type="view")
 	switch(type)
@@ -619,7 +620,7 @@ GLOBAL_LIST_INIT(spells, typesof(/obj/effect/proc_holder/spell)) //needed for th
 	if(user.stat && !stat_allowed)
 		return FALSE
 
-	if(!ignore_cockblock && HAS_TRAIT(user, TRAIT_SPELLCOCKBLOCK))
+	if(!ignore_cockblock && HAS_TRAIT(user, TRAIT_SPELLBLOCK))
 		return FALSE
 
 	if(!antimagic_allowed && user.anti_magic_check(TRUE, FALSE, FALSE, 0, TRUE))

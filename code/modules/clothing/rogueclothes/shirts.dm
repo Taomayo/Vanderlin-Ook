@@ -93,6 +93,7 @@
 	name = "formal silks"
 	icon_state = "puritan_shirt"
 	allowed_race = list("human", "tiefling", "elf", "dwarf", "aasimar")
+	salvage_result = /obj/item/natural/silk
 
 /obj/item/clothing/suit/roguetown/shirt/undershirt/sailor
 	icon_state = "sailorblues"
@@ -103,6 +104,7 @@
 /obj/item/clothing/suit/roguetown/shirt/undershirt/vagrant
 	r_sleeve_status = SLEEVE_TORN
 	body_parts_covered = CHEST|ARM_LEFT|VITALS
+	torn_sleeve_number = 1
 
 /obj/item/clothing/suit/roguetown/shirt/undershirt/vagrant/l
 	r_sleeve_status = SLEEVE_NORMAL
@@ -136,6 +138,7 @@
 	r_sleeve_status = SLEEVE_TORN
 	l_sleeve_status = SLEEVE_TORN
 	body_parts_covered = CHEST|VITALS
+	torn_sleeve_number = 2
 
 /obj/item/clothing/suit/roguetown/shirt/shadowshirt
 	name = "silk shirt"
@@ -157,6 +160,7 @@
 	item_state = "rags"
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	fiber_salvage = FALSE
 
 /obj/item/clothing/suit/roguetown/shirt/tunic
 	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
@@ -193,6 +197,9 @@
 
 /obj/item/clothing/suit/roguetown/shirt/tunic/purple
 	color = CLOTHING_PLUM_PURPLE
+
+/obj/item/clothing/suit/roguetown/shirt/tunic/black
+	color = CLOTHING_SOOT_BLACK
 
 /obj/item/clothing/suit/roguetown/shirt/tunic/ucolored
 	color = CLOTHING_ASH_GREY
@@ -337,7 +344,8 @@
 	l_sleeve_status = SLEEVE_NORMAL
 	body_parts_covered = CHEST|ARMS|VITALS
 	color = null
-
+	salvage_amount = 1
+	salvage_result = /obj/item/natural/silk
 
 /obj/item/clothing/suit/roguetown/shirt/robe/archivist
 	name = "archivist's robe"
@@ -345,7 +353,7 @@
 	icon_state = "archivist"
 	icon = 'icons/roguetown/clothing/shirts.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/shirts.dmi'
-	sleeved = 'icons/roguetown/clothing/onmob/shirts.dmi'
+	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts.dmi'
 	boobed = TRUE
 	flags_inv = HIDEBOOB
 	r_sleeve_status = SLEEVE_NORMAL
@@ -373,7 +381,7 @@
 	name = "grenzelhoftian hip-shirt"
 	desc = "A true fashion statement worn by Grenzelhoftian swordsmen."
 	body_parts_covered = CHEST|GROIN|ARMS|VITALS
-	armor = list("melee" = 20, "bullet" = 10, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 20, "slash" = 20, "stab" = 20,  "piercing" = 10, "fire" = 0, "acid" = 0)
 	icon_state = "grenzelshirt"
 	sleeved = 'icons/roguetown/clothing/onmob/helpers/stonekeep_merc.dmi'
 	boobed = TRUE

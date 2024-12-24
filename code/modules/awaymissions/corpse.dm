@@ -25,7 +25,7 @@
 	var/mob_color //Change the mob's color
 	var/assignedrole
 	var/show_flavour = TRUE
-	var/banType = ROLE_LAVALAND
+	var/banType = ROLE_NECRO_SKELETON
 	var/ghost_usable = TRUE
 
 //ATTACK GHOST IGNORING PARENT RETURN VALUE
@@ -164,10 +164,7 @@
 /obj/effect/mob_spawn/human/equip(mob/living/carbon/human/H)
 	if(mob_species)
 		H.set_species(mob_species)
-	if(husk)
-		H.Drain()
-	else //Because for some reason I can't track down, things are getting turned into husks even if husk = false. It's in some damage proc somewhere.
-		H.cure_husk()
+	H.cure_husk()
 	H.underwear = "Nude"
 	H.undershirt = "Nude"
 	H.socks = "Nude"

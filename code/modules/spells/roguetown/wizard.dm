@@ -194,9 +194,9 @@
 /obj/projectile/magic/aoe/fireball/rogue
 	name = "fireball"
 	exp_heavy = 0
-	exp_light = 0
+	exp_light = 3
 	exp_flash = 0
-	exp_fire = 1
+	exp_fire = 3
 	damage = 10
 	damage_type = BURN
 	nodamage = FALSE
@@ -216,9 +216,9 @@
 			return BULLET_ACT_BLOCK
 		else
 			// Experience gain!
-			var/boon = sender.mind?.get_learning_boon(/datum/skill/magic/arcane)
-			var/amt2raise = sender.STAINT*2
-			sender.mind?.adjust_experience(/datum/skill/magic/arcane, floor(amt2raise * boon), FALSE)
+			var/boon = sender?.mind?.get_learning_boon(/datum/skill/magic/arcane)
+			var/amt2raise = sender?.STAINT*2
+			sender?.mind?.adjust_experience(/datum/skill/magic/arcane, floor(amt2raise * boon), FALSE)
 
 
 
@@ -232,9 +232,9 @@
 	sound = list('sound/magic/fireball.ogg')
 	active = FALSE
 	releasedrain = 50
-	chargedrain = 1
+	chargedrain = 3
 	chargetime = 15
-	charge_max = 10 SECONDS
+	charge_max = 20 SECONDS
 	warnie = "spellwarning"
 	no_early_release = TRUE
 	movement_interrupt = TRUE
@@ -243,12 +243,14 @@
 
 /obj/projectile/magic/aoe/fireball/rogue/great
 	name = "fireball"
-	exp_heavy = 0
-	exp_light = 1
-	exp_flash = 2
-	exp_fire = 2
+	exp_devi = 0
+	exp_heavy = 1
+	exp_light = 5
+	exp_flash = 0
+	exp_fire = 4
+	exp_hotspot = 0
 	flag = "magic"
-	speed = 4
+	speed = 6
 
 /obj/effect/proc_holder/spell/invoked/projectile/spitfire
 	name = "Spitfire"
@@ -323,7 +325,7 @@
 	damage_type = BRUTE
 	armor_penetration = 10
 	nodamage = FALSE
-	flag = "bullet"
+	flag =  "piercing"
 	hitsound = 'sound/blank.ogg'
 	speed = 2
 
@@ -452,7 +454,7 @@
 		if (PRESTI_MOTE)
 			extra_fatigue = 15 // same deal here
 
-	user.rogfat_add(fatigue_used + extra_fatigue)
+	user.adjust_stamina(fatigue_used + extra_fatigue)
 
 	var/skill_level = user.mind?.get_skill_level(attached_spell.associated_skill)
 	if (skill_level >= SKILL_LEVEL_EXPERT)
@@ -541,6 +543,9 @@
 	pixel_x = 20
 	light_outer_range =  4
 	light_color = "#3FBAFD"
+
+	icon = 'icons/roguetown/items/lighting.dmi'
+	icon_state = "wisp"
 
 //A spell to choose new spells, upon spawning or gaining levels
 /obj/effect/proc_holder/spell/self/learnspell
@@ -976,7 +981,7 @@
 		if(!do_after(user, 5 SECONDS, target = spelltarget))
 			return
 		spelltarget.apply_status_effect(/datum/status_effect/buff/darkvision)
-		user.rogfat_add(80)
+		user.adjust_stamina(80)
 		if(spelltarget != user)
 			user.visible_message("[user] draws a glyph in the air and touches [spelltarget] with an arcyne focus.")
 		else
@@ -1063,11 +1068,7 @@
 	chargedloop = /datum/looping_sound/invokegen
 	associated_skill = /datum/skill/magic/arcane
 	cost = 3
-/mob/living/simple_animal/hostile/retaliate/rogue/wolf/familiar/Initialize(mapload, mob/user)
-	. = ..()
-	if(timeleft)
-		QDEL_IN(src, timeleft) //delete after it runs out, see code/modules/mob/living/simple_animal/rogue/creacher/familiar.dm for timeleft var
-	summoner = user
+
 /obj/effect/proc_holder/spell/invoked/findfamiliar/cast(list/targets,mob/user = usr)
 	var/turf/target_turf = get_turf(targets[1])
 	new /mob/living/simple_animal/hostile/retaliate/rogue/wolf/familiar(target_turf, user)

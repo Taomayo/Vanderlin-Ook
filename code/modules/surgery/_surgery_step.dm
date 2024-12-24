@@ -220,7 +220,7 @@
 			if((key == TOOL_SHARP) && tool.get_sharpness())
 				implement_type = key
 				break
-			if((key == TOOL_HOT) && (tool.get_temperature() >= FIRE_MINIMUM_TEMPERATURE_TO_EXIST))
+			if((key == TOOL_HOT) && (tool.get_temperature() >= 100+T0C))
 				implement_type = key
 				break
 
@@ -291,6 +291,7 @@
 				to_chat(user, "<span class='warning'>Intentional surgery fail... [success_prob]%</span>")
 			else
 				to_chat(user, "<span class='warning'>Surgery fail... [success_prob]%</span>")
+				initiate(user, target, target_zone, tool, intent, try_to_fail)
 		return FALSE
 
 	return FALSE

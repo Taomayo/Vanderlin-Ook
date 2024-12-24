@@ -79,7 +79,7 @@
 						bar_health -= 5
 					if(5 to 6)
 						var/mob/living/L = user
-						if(L.badluck(4)) // Unlucky, not unskilled.
+						if(L.stat_roll(STATKEY_LCK,4,10,TRUE)) // Unlucky, not unskilled.
 							bar_health -= craftdiff
 				if(bar_health <= 0)
 					user.visible_message("<span class='danger'>[user] destroys the bar!</span>")
@@ -98,14 +98,14 @@
 				if(!HAS_TRAIT(user, TRAIT_MALUMFIRE))
 					skill_quality += (rand(skill_level*6, skill_level*15) * moveup) // Lesser quality for self-learned non-professional smiths by trade
 					if(skill_level < 3) // Non-blacksmith jobs can't level past 3. Ever.
-						user.mind.adjust_experience(appro_skill, floor(amt2raise * boon), FALSE)
+						user.mind.add_sleep_experience(appro_skill, floor(amt2raise * boon), FALSE)
 				else
 					skill_quality += (rand(skill_level*8, skill_level*17) * moveup)
 					if(skill_level < 3)
 						amt2raise /= 2 // Let's not get out of hand it's for lower levels with high chances of failure
-						user.mind.adjust_experience(appro_skill, amt2raise * boon, FALSE)
+						user.mind.add_sleep_experience(appro_skill, amt2raise * boon, FALSE)
 					else // Sanity, no expert blacksmith has lower skill than 3, for if admins manually add the trait or blacksmith vampire thralls
-						user.mind.adjust_experience(appro_skill, amt2raise, FALSE)
+						user.mind.add_sleep_experience(appro_skill, amt2raise, FALSE)
 
 		if(breakthrough)
 			user.visible_message("<span class='deadsay'>[user] deftly strikes the bar!</span>")

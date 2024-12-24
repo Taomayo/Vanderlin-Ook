@@ -4,7 +4,7 @@
 	overlay_state = "comedy"
 	antimagic_allowed = TRUE
 	invocation_type = "shout"
-	charge_max = 600
+	charge_max = 1 MINUTES
 
 /obj/effect/proc_holder/spell/self/telljoke/cast(list/targets,mob/user = usr)
 	..()
@@ -30,7 +30,7 @@
 	overlay_state = "tragedy"
 	antimagic_allowed = TRUE
 	invocation_type = "shout"
-	charge_max = 600
+	charge_max = 1 MINUTES
 
 /obj/effect/proc_holder/spell/self/telltragedy/cast(list/targets,mob/user = usr)
 	..()
@@ -49,3 +49,18 @@
 			CA.add_stress(/datum/stressevent/tragedy)
 			CA.emote(pick("sigh","hmm"), forced = TRUE)
 		sleep(rand(1,5))
+
+/obj/effect/proc_holder/spell/self/fart
+	name = "Fart"
+	desc = "Unleash a vile sound."
+	overlay_state = "orison"
+	antimagic_allowed = TRUE
+	invocation_type = "shout"
+	charge_max = 1 MINUTES
+
+/obj/effect/proc_holder/spell/self/fart/cast(list/targets, mob/user = usr)
+	..()
+	var/fard = pick('sound/vo/fart1.ogg','sound/vo/fart2.ogg','sound/vo/fart3.ogg')
+	user.emote("me",1,"grits their teeth and farts!",TRUE, custom_me = TRUE)
+	sleep(10)
+	playsound(get_turf(user), fard, 150)

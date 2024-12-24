@@ -20,11 +20,12 @@
 		"Dwarf",
 		"Tiefling",
 		"Dark Elf",
-		"Aasimar"
+		"Aasimar",
+		"Half-Orc"
 	)
 	allowed_sexes = list(MALE, FEMALE)
 
-	cmode_music = 'sound/music/combat_physician.ogg'
+	cmode_music = 'sound/music/cmode/nobility/combat_physician.ogg'
 
 /datum/outfit/job/roguetown/feldsher/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -40,7 +41,7 @@
 	mask = /obj/item/clothing/mask/rogue/feld
 	neck = /obj/item/clothing/neck/roguetown/feld
 	belt = /obj/item/storage/belt/rogue/leather
-	beltl = /obj/item/keyring/doctor
+	beltl = /obj/item/storage/keyring/doctor
 
 	if(H.mind)
 		H.mind?.adjust_skillrank(/datum/skill/misc/reading, 5, TRUE)
@@ -59,3 +60,4 @@
 	ADD_TRAIT(H, TRAIT_EMPATH, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_STEELHEARTED, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_NOSTINK, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_LEGENDARY_ALCHEMIST, TRAIT_GENERIC)

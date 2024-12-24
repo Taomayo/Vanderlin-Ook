@@ -7,9 +7,6 @@
 	icon_state = "wall"
 	explosion_block = 1
 
-	thermal_conductivity = WALL_HEAT_TRANSFER_COEFFICIENT
-	heat_capacity = 312500 //a little over 5 cm thick , 312500 for 1 m by 2.5 m by 0.25 m plasteel wall
-
 	baseturfs = list(/turf/open/floor/rogue/dirt/road)
 
 	var/hardness = 40 //lower numbers are harder. Used to determine the probability of a hulk smashing through.
@@ -43,32 +40,39 @@
 
 /turf/closed/wall/proc/dismantle_wall(devastated=0, explode=0)
 	playsound(src, 'sound/blank.ogg', 100, TRUE)
-
-	for(var/obj/O in src.contents) //Eject contents!
-		if(istype(O, /obj/structure/sign/poster))
-			var/obj/structure/sign/poster/P = O
-			P.roll_and_drop(src)
-
 	ScrapeAway()
 
-/turf/closed/wall/ex_act(severity, target)
+/turf/closed/wall/ex_act(severity, target, epicenter, devastation_range, heavy_impact_range, light_impact_range, flame_range)
 	if(target == src)
 		dismantle_wall(1,1)
+		take_damage(INFINITY, BRUTE, "blunt", 0)
 		return
-	switch(severity)
-		if(1)
-			//SN src = null
-			var/turf/NT = ScrapeAway()
-			NT.contents_explosion(severity, target)
-			return
-		if(2)
-			if (prob(50))
-				dismantle_wall(0,1)
-			else
-				dismantle_wall(1,1)
-		if(3)
-			if (prob(hardness))
-				dismantle_wall(0,1)
+	var/ddist = devastation_range
+	var/hdist = heavy_impact_range
+	var/ldist = light_impact_range
+	var/fdist = flame_range
+	var/fodist = get_dist(src, epicenter)
+	var/brute_loss = 0
+	var/dmgmod = round(rand(0.1, 2), 0.1)
+
+	switch (severity)
+		if (EXPLODE_DEVASTATE)
+			brute_loss = ((250 * ddist) - (250 * fodist) * dmgmod)
+
+		if (EXPLODE_HEAVY)
+			brute_loss = ((100 * hdist) - (100 * fodist) * dmgmod)
+
+		if(EXPLODE_LIGHT)
+			brute_loss = ((25 * ldist) - (25 * fodist) * dmgmod)
+
+	if(fodist == 0)
+		brute_loss *= 2
+	take_damage(brute_loss, BRUTE, "blunt", 0)
+
+	if(fdist && !QDELETED(src))
+		var/stacks = ((fdist - fodist) * 2)
+		fire_act(stacks)
+
 	if(!density)
 		..()
 
@@ -85,27 +89,12 @@
 		dismantle_wall(1)
 		return
 
-/turf/closed/wall/attack_hulk(mob/user)
-	..()
-	if(prob(hardness))
-		playsound(src, 'sound/blank.ogg', 100, TRUE)
-		user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ), forced = "hulk")
-		dismantle_wall(1)
-	else
-		playsound(src, 'sound/blank.ogg', 50, TRUE)
-		add_dent(WALL_DENT_HIT)
-		user.visible_message("<span class='danger'>[user] smashes \the [src]!</span>", \
-					"<span class='danger'>I smash \the [src]!</span>", \
-					"<span class='hear'>I hear a booming smash!</span>")
-	return TRUE
-
 /turf/closed/wall/attack_hand(mob/user)
 	. = ..()
 	if(.)
 		return
 	user.changeNext_move(CLICK_CD_MELEE)
-	to_chat(user, "<span class='notice'>I push the wall but nothing happens!</span>")
-	playsound(src, 'sound/blank.ogg', 25, TRUE)
+	feel_turf(user)
 	add_fingerprint(user)
 
 /turf/closed/wall/attackby(obj/item/W, mob/user, params)
@@ -132,7 +121,7 @@
 			user.do_attack_animation(src)
 		visible_message("<span class='warning'>[user] slams \the [W] against \the [src]!</span>",
 						"<span class='warning'>I slam \the [W] against \the [src]!</span>",null ,COMBAT_MESSAGE_RANGE)
-		W.take_damage(10, BRUTE, "melee")
+		W.take_damage(10, BRUTE, "blunt")
 		return
 
 	return ..()
@@ -156,17 +145,6 @@
 	return FALSE
 
 /turf/closed/wall/proc/try_wallmount(obj/item/W, mob/user, turf/T)
-	//check for wall mounted frames
-	if(istype(W, /obj/item/wallframe))
-		var/obj/item/wallframe/F = W
-		if(F.try_build(src, user))
-			F.attach(src, user)
-		return TRUE
-	//Poster stuff
-	else if(istype(W, /obj/item/poster))
-		place_poster(W,user)
-		return TRUE
-
 	return FALSE
 
 /turf/closed/wall/proc/try_decon(obj/item/I, mob/user, turf/T)

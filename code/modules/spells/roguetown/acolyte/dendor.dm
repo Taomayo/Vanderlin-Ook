@@ -21,7 +21,7 @@
 	invocation = "The Treefather commands thee, be fruitful!"
 	invocation_type = "shout" //can be none, whisper, emote and shout
 	miracle = TRUE
-	devotion_cost = -15
+	devotion_cost = 15
 
 /obj/effect/proc_holder/spell/targeted/blesscrop/cast(list/targets,mob/user = usr)
 	. = ..()
@@ -37,9 +37,8 @@
 			break
 	if(growed)
 		visible_message("<FONT COLOR='green'>[usr] blesses the crop with Dendor's Favour!</FONT><BR>")
-	return growed
-
-
+		return ..()
+	return FALSE
 //===========================================================================================
 
 // ---------------------- BESTIAL SENSES ----------------------------
@@ -54,6 +53,8 @@
 	invocation_type = "whisper"
 	cooldown_min = 10 MINUTES
 	releasedrain = 30
+	miracle = TRUE
+	devotion_cost = 15
 
 /obj/effect/proc_holder/spell/self/beastsense/cast(list/targets,mob/living/user = usr)
 	playsound(get_turf(user), 'sound/vo/smokedrag.ogg', 100, TRUE)
@@ -63,8 +64,9 @@
 	sleep(20)
 	if((iself(user)))	// already got night vision so lets not fuck it up, instead get +1 PER
 		user.apply_status_effect(/datum/status_effect/buff/beastsense_elf)
-		return
-	user.apply_status_effect(/datum/status_effect/buff/beastsense)
+	else
+		user.apply_status_effect(/datum/status_effect/buff/beastsense)
+	return ..()
 
 
 //===========================================================================================
@@ -86,7 +88,7 @@
 	invocation = "Be still and calm, brotherbeast."
 	invocation_type = "whisper" //can be none, whisper, emote and shout
 	miracle = TRUE
-	devotion_cost = -60
+	devotion_cost = 60
 
 /obj/effect/proc_holder/spell/targeted/beasttame/cast(list/targets,mob/user = usr)
 	playsound(get_turf(user), 'sound/vo/smokedrag.ogg', 100, TRUE)
@@ -96,6 +98,7 @@
 			continue
 		B.aggressive = 0
 		B.tamed(user)
+	return ..()
 
 
 //===========================================================================================
@@ -121,28 +124,15 @@
 	var/turf/T = user.loc
 	var/already_grown = locate(/obj/structure/kneestingers) in (T)
 	var/area/area = get_area(T)
-
 	if(!area.outdoors)
 		to_chat(user, span_notice("The open air is more suited for Dendors miracles..."))
-		return ..()
-
+		return FALSE
 	if(already_grown)
 		to_chat(user, span_notice("There are too many mycelia here already..."))
-		return ..()
-
-	sleep(10)
+		return FALSE
 	playsound(get_turf(user), 'sound/foley/gross.ogg', 90, TRUE)
 	new /obj/structure/kneestingers/decaying(T)
-
-/* The old terrible version made by YuiY1997 that spwans 4 kneestingers. Don't use.
-/obj/effect/proc_holder/spell/targeted/conjure_kneestingers/cast(list/targets,mob/user = usr)
-	var/turf/T = user.loc
-	for(var/X in GLOB.cardinals)
-		var/turf/TT = get_step(T, X)
-		if(!isclosedturf(TT) && !locate(/obj/structure/kneestingers) in TT)
-			new /obj/structure/kneestingers(TT)
-	return TRUE
-*/
+	return ..()
 
 
 //===========================================================================================
@@ -155,12 +145,15 @@
 	overlay_state = "trollshape"
 	charge_max = 30 MINUTES // cast once every 30 minutes, lasts for 3 minutes
 	req_items = list(/obj/item/clothing/neck/roguetown/psycross/silver/dendor)
-	invocation = "DENDOR LEND ME YOUR POWER!!"
+	invocation = "DENDOR; LEND ME YOUR POWER!!"
 	invocation_type = "shout"
 	cooldown_min = 25 MINUTES
 	releasedrain = 100
+	miracle = TRUE
+	devotion_cost = 100
 
 /obj/effect/proc_holder/spell/self/trollshape/cast(list/targets,mob/living/user = usr)
+	. = ..()
 	user.emote("rage", forced = TRUE)
 	playsound(get_turf(user), 'sound/vo/smokedrag.ogg', 100, TRUE)
 	user.Immobilize(30)
@@ -180,4 +173,5 @@
 	playsound(get_turf(user), 'sound/gore/flesh_eat_03.ogg', 140, TRUE)
 	user.apply_status_effect(/datum/status_effect/buff/trollshape)
 	to_chat(user, span_warning("For a time, I manifest the power of a troll!"))
+
 

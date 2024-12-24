@@ -7,7 +7,7 @@
 	drag_slowdown = 1.5		// Same as a prone mob
 	max_integrity = 200
 	integrity_failure = 0.25
-	armor = list("melee" = 20, "bullet" = 10, "laser" = 10, "energy" = 0, "bomb" = 10, "bio" = 0, "rad" = 0, "fire" = 70, "acid" = 60)
+	armor = list("blunt" = 20, "slash" = 20, "stab" = 20,  "piercing" = 10, "fire" = 70, "acid" = 60)
 
 	var/icon_door = null
 	var/icon_door_override = FALSE //override to have open overlay use icon different to its base's
@@ -259,16 +259,15 @@
 /obj/structure/closet/attackby(obj/item/W, mob/user, params)
 	if(user in src)
 		return
-	if(istype(W, /obj/item/roguekey) || istype(W, /obj/item/keyring))
-		trykeylock(W, user)
-		return
+	if(istype(W, /obj/item/key) || istype(W, /obj/item/storage/keyring))
+		if(trykeylock(W, user))
+			return
 	if(istype(W, /obj/item/lockpick))
-		trypicklock(W, user)
-		return
+		if(trypicklock(W, user))
+			return
 	if(src.tool_interact(W,user))
 		return 1 // No afterattack
-	else
-		return ..()
+	return ..()
 
 /obj/structure/closet/proc/trykeylock(obj/item/I, mob/user)
 	if(opened)
@@ -279,27 +278,28 @@
 	if(broken)
 		to_chat(user, "<span class='warning'>The lock is broken.</span>")
 		return
-	if(istype(I,/obj/item/keyring))
-		var/obj/item/keyring/R = I
-		if(!R.keys.len)
+	if(istype(I,/obj/item/storage/keyring))
+		var/obj/item/storage/keyring/R = I
+		if(!R.contents.len)
 			return
-		var/list/keysy = shuffle(R.keys.Copy())
-		for(var/obj/item/roguekey/K in keysy)
+		var/list/keysy = shuffle(R.contents.Copy())
+		for(var/obj/item/key/K in keysy)
 			if(user.cmode)
 				if(!do_after(user, 10, TRUE, src))
 					break
 			if(K.lockhash == lockhash)
 				togglelock(user)
-				break
+				return TRUE
 			else
 				if(user.cmode)
 					playsound(src, 'sound/foley/doors/lockrattle.ogg', 100)
+		playsound(src, 'sound/foley/doors/lockrattle.ogg', 100)
 		return
 	else
-		var/obj/item/roguekey/K = I
+		var/obj/item/key/K = I
 		if(K.lockhash == lockhash)
 			togglelock(user)
-			return
+			return TRUE
 		else
 			playsound(src, 'sound/foley/doors/lockrattle.ogg', 100)
 
@@ -351,14 +351,14 @@
 					var/boon = L.mind.get_learning_boon(/datum/skill/misc/lockpicking)
 					L.mind.adjust_experience(/datum/skill/misc/lockpicking, amt2raise * boon)
 				if(lockprogress >= locktreshold)
-					to_chat(user, "<span class='deadsay'>The locking mechanism gives.</span>")
+					to_chat(user, "<span class='deadsay'>The locking mechanism gives way.</span>")
 					togglelock(user)
-					break
+					return TRUE
 				else
 					continue
 			else
 				playsound(loc, 'sound/items/pickbad.ogg', 40, TRUE)
-				I.take_damage(1, BRUTE, "melee")
+				I.take_damage(1, BRUTE, "blunt")
 				to_chat(user, "<span class='warning'>Clack.</span>")
 				continue
 		return
@@ -481,23 +481,6 @@
 	locked = FALSE //applies to critter crates and secure lockers only
 	broken = TRUE //applies to secure lockers only
 	open()
-/*
-/obj/structure/closet/AltClick(mob/user)
-	..()
-	return
-	if(!user.canUseTopic(src, BE_CLOSE) || !isturf(loc))
-		return
-	if(opened || !secure)
-		return
-	else
-		togglelock(user)
-*/
-/obj/structure/closet/CtrlShiftClick(mob/living/user)
-	if(!HAS_TRAIT(user, TRAIT_SKITTISH))
-		return ..()
-	if(!user.canUseTopic(src, BE_CLOSE) || !isturf(user.loc))
-		return
-	dive_into(user)
 
 /obj/structure/closet/proc/togglelock(mob/living/user, silent)
 	user.changeNext_move(CLICK_CD_MELEE)
@@ -526,32 +509,10 @@
 	if(user.stat == DEAD || !(user.sight & (SEEOBJS|SEEMOBS)))
 		user.overlay_fullscreen("remote_view", /atom/movable/screen/fullscreen/impaired, 1)
 
-/obj/structure/closet/emp_act(severity)
-	. = ..()
-	if(. & EMP_PROTECT_SELF)
-		return
-	if (!(. & EMP_PROTECT_CONTENTS))
-		for(var/obj/O in src)
-			O.emp_act(severity)
-	if(secure && !broken && !(. & EMP_PROTECT_SELF))
-		if(prob(50 / severity))
-			locked = !locked
-			update_icon()
-		if(prob(20 / severity) && !opened)
-			if(!locked)
-				open()
-			else
-				req_access = list()
-				req_access += pick(get_all_accesses())
-
 /obj/structure/closet/contents_explosion(severity, target)
 	for(var/atom/A in contents)
 		A.ex_act(severity, target)
 		CHECK_TICK
-
-/obj/structure/closet/singularity_act()
-	dump_contents()
-	..()
 
 /obj/structure/closet/AllowDrop()
 	return TRUE
@@ -560,23 +521,3 @@
 /obj/structure/closet/return_temperature()
 	return
 
-/obj/structure/closet/proc/dive_into(mob/living/user)
-	var/turf/T1 = get_turf(user)
-	var/turf/T2 = get_turf(src)
-	if(!opened)
-		if(locked)
-			togglelock(user, TRUE)
-		if(!open(user))
-			to_chat(user, "<span class='warning'>It won't budge!</span>")
-			return
-	step_towards(user, T2)
-	T1 = get_turf(user)
-	if(T1 == T2)
-		user.resting = TRUE //so people can jump into crates without slamming the lid on their head
-		if(!close(user))
-			to_chat(user, "<span class='warning'>I can't get [src] to close!</span>")
-			user.resting = FALSE
-			return
-		user.resting = FALSE
-		togglelock(user)
-		T1.visible_message("<span class='warning'>[user] dives into [src]!</span>")

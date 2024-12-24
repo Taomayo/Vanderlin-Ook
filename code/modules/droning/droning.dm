@@ -21,6 +21,8 @@ SUBSYSTEM_DEF(droning)
 	var/list/new_droning = list()
 	new_droning |= area_entered.droning_sound_current
 
+	if(HAS_TRAIT(entering.mob, TRAIT_SCHIZO_AMBIENCE))
+		new_droning = list('sound/music/dreamer_is_still_asleep.ogg')
 	if(HAS_TRAIT(entering.mob, TRAIT_DRUQK))
 		new_droning = list('sound/music/spice.ogg', 'sound/music/spice2.ogg', 100)
 
@@ -37,36 +39,38 @@ SUBSYSTEM_DEF(droning)
 
 		if(!area_player.droning_sound)
 			return
-		var/used_gay
+		var/used_sound
 
 		if(GLOB.tod == "dawn")
 			if(area_player.droning_sound_dawn)
-				used_gay = area_player.droning_sound_dawn
+				used_sound = area_player.droning_sound_dawn
 			else
-				used_gay = area_player.droning_sound
+				used_sound = area_player.droning_sound
 
 		if(GLOB.tod == "day")
 			if(area_player.droning_sound)
-				used_gay = area_player.droning_sound
+				used_sound = area_player.droning_sound
 			else
-				used_gay = null
+				used_sound = null
 
 		if(GLOB.tod == "dusk")
 			if(area_player.droning_sound_dusk)
-				used_gay = area_player.droning_sound_dusk
+				used_sound = area_player.droning_sound_dusk
 			else
-				used_gay = area_player.droning_sound
+				used_sound = area_player.droning_sound
 
 		if(GLOB.tod == "night")
 			if(area_player.droning_sound_night)
-				used_gay = area_player.droning_sound_night
+				used_sound = area_player.droning_sound_night
 			else
-				used_gay = area_player.droning_sound
+				used_sound = area_player.droning_sound
 
-		if(HAS_TRAIT(listener.mob, TRAIT_DRUQK))
-			used_gay = list('sound/music/spice.ogg', 100)
+		if(HAS_TRAIT(listener.mob, TRAIT_SCHIZO_AMBIENCE))
+			used_sound = list('sound/music/dreamer_is_still_asleep.ogg')
+		else if(HAS_TRAIT(listener.mob, TRAIT_DRUQK))
+			used_sound = list('sound/music/spice.ogg', 100)
 		//our music for real
-		area_player.droning_sound_current = used_gay
+		area_player.droning_sound_current = used_sound
 		//last phase!
 		if(listener?.mob.cmode)
 			last_phase(area_player, listener, shouldskip = TRUE)
@@ -78,12 +82,6 @@ SUBSYSTEM_DEF(droning)
 		return
 
 	var/frenq = 1
-/*
-	if(HAS_TRAIT(dreamer.mob, TRAIT_LEAN))
-		return
-	if(HAS_TRAIT(dreamer.mob, TRAIT_BLOODARN))
-		return
-*/
 
 	if(HAS_TRAIT(dreamer.mob, TRAIT_DRUQK))
 		frenq = -1
@@ -115,7 +113,10 @@ SUBSYSTEM_DEF(droning)
 	if(shouldskip)
 		var/sound/droning = sound(pick(area_player.droning_sound_current), area_player.droning_repeat, area_player.droning_wait, area_player.droning_channel, listener?.prefs.musicvol)
 
-		if(HAS_TRAIT(listener.mob, TRAIT_DRUQK))
+
+		if(HAS_TRAIT(listener.mob, TRAIT_SCHIZO_AMBIENCE))
+			droning.file = 'sound/music/dreamer_is_still_asleep.ogg'
+		else if(HAS_TRAIT(listener.mob, TRAIT_DRUQK))
 			droning.file = 'sound/music/spice.ogg'
 
 		listener.droning_sound = droning
@@ -136,7 +137,9 @@ SUBSYSTEM_DEF(droning)
 		listener.last_droning_sound = null
 		var/sound/droning = sound(pick(area_player.droning_sound_current), area_player.droning_repeat, area_player.droning_wait, area_player.droning_channel, listener?.prefs.musicvol)
 
-		if(HAS_TRAIT(listener.mob, TRAIT_DRUQK))
+		if(HAS_TRAIT(listener.mob, TRAIT_SCHIZO_AMBIENCE))
+			droning.file = 'sound/music/dreamer_is_still_asleep.ogg'
+		else if(HAS_TRAIT(listener.mob, TRAIT_DRUQK))
 			droning.file = 'sound/music/spice.ogg'
 
 		listener.droning_sound = droning
@@ -158,18 +161,18 @@ SUBSYSTEM_DEF(droning)
 	//kill the previous looping
 	kill_loop(dreamer)
 
-	var/retard = null
+	var/amb_sound_list = null
 	if(area_entered.loopniqqa)
 		if(GLOB.tod == "night")
 			if(area_entered.ambientnight)
-				retard = area_entered.ambientnight
+				amb_sound_list = area_entered.ambientnight
 		else
 			if(area_entered.ambientsounds)
-				retard = area_entered.ambientsounds
+				amb_sound_list = area_entered.ambientsounds
 
-	if(!retard)
+	if(!amb_sound_list)
 		return
-	var/sound/loop_sound = sound(pick(retard), repeat = TRUE, wait = 0, channel = CHANNEL_MUSIC, volume = dreamer?.prefs.musicvol)
+	var/sound/loop_sound = sound(pick(amb_sound_list), repeat = TRUE, wait = 0, channel = CHANNEL_MUSIC, volume = dreamer?.prefs.musicvol)
 	SEND_SOUND(dreamer, loop_sound)
 	dreamer.loop_sound = TRUE
 
@@ -190,12 +193,12 @@ SUBSYSTEM_DEF(droning)
 		return
 	kill_rain(dreamer)
 
-	var/retard = null
+	var/amb_sound_list = null
 	if(area_entered.ambientrain)
-		retard = area_entered.ambientrain
+		amb_sound_list = area_entered.ambientrain
 
-	if(!retard)
+	if(!amb_sound_list)
 		return
-	var/sound/loop_sound = sound(pick(retard), repeat = TRUE, wait = 0, channel = CHANNEL_RAIN, volume = dreamer?.prefs.musicvol)
+	var/sound/loop_sound = sound(pick(amb_sound_list), repeat = TRUE, wait = 0, channel = CHANNEL_RAIN, volume = dreamer?.prefs.musicvol)
 	SEND_SOUND(dreamer, loop_sound)
 	dreamer.rain_sound = TRUE

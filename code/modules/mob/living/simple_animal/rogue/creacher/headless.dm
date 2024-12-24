@@ -31,9 +31,9 @@
 	food_type = list()
 	footstep_type = null
 	pooptype = null
-	STACON = 6
-	STASTR = 13
-	STASPD = 10
+	TOTALCON = 6
+	TOTALSTR = 13
+	TOTALSPD = 10
 	deaggroprob = 0
 	defprob = 10
 	defdrain = 5
@@ -44,12 +44,21 @@
 	aggressive = 1
 	remains_type = null
 	body_eater = TRUE
+
+	ai_controller = /datum/ai_controller/headless
+	AIStatus = AI_OFF
+	can_have_ai = FALSE
+
 	var/mob/living/swallowed_mob
 	var/health_at_swallow = 1000
 	var/stomach_burn_cooldown = 0
 	var/stomach_burn_delay = 10
 	var/swallow_cooldown = 0
 	var/swallow_cooldown_delay = 30 SECONDS
+
+/mob/living/simple_animal/hostile/retaliate/rogue/headless/Initialize()
+	. = ..()
+	AddElement(/datum/element/ai_flee_while_injured, 0.75, retreat_health)
 
 /mob/living/simple_animal/hostile/retaliate/rogue/headless/AttackingTarget()
 	//If its a carbon, your cooldown is up, and your above 30% health you can eat them

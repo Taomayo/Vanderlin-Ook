@@ -66,6 +66,7 @@
 	icon_state = "inbash"
 	hitsound = list('sound/combat/shieldbash_wood.ogg')
 	chargetime = 0
+	item_damage_type = "blunt"
 
 /datum/intent/shield/bash/metal
 	hitsound = list('sound/combat/shieldbash_metal.ogg')
@@ -78,6 +79,7 @@
 	chargetime = 5
 	hitsound = list('sound/combat/shieldbash_wood.ogg')
 	warnie = "shieldwarn"
+	item_damage_type = "blunt"
 
 /datum/intent/shield/block/metal
 	hitsound = list('sound/combat/shieldbash_metal.ogg')
@@ -92,9 +94,13 @@
 
 /obj/item/rogueweapon/shield/wood/attack_hand(mob/user)
 	if(!overlays.len)
-		var/icon/J = new('icons/roguetown/weapons/wood_heraldry.dmi')
-		var/list/istates = J.IconStates()
-		var/picked_name = input(user, "Choose a Heraldry", "ROGUETOWN", name) as null|anything in sortList(istates)
+		if(!('icons/roguetown/weapons/wood_heraldry.dmi' in GLOB.IconStates_cache))
+			var/icon/J = new('icons/roguetown/weapons/wood_heraldry.dmi')
+			var/list/istates = J.IconStates()
+			GLOB.IconStates_cache |= icon
+			GLOB.IconStates_cache['icons/roguetown/weapons/wood_heraldry.dmi'] = istates
+
+		var/picked_name = input(user, "Choose a Heraldry", "ROGUETOWN", name) as null|anything in sortList(GLOB.IconStates_cache['icons/roguetown/weapons/wood_heraldry.dmi'])
 		if(!picked_name)
 			picked_name = "none"
 		var/mutable_appearance/M = mutable_appearance('icons/roguetown/weapons/wood_heraldry.dmi', picked_name)
@@ -120,9 +126,12 @@
 /obj/item/rogueweapon/shield/wood/adept/Initialize()
 	..()
 	if(!overlays.len)
-		var/icon/J = new('icons/roguetown/weapons/wood_heraldry.dmi')
-		var/list/istates = J.IconStates()
-		if("Psydon" in istates)
+		if(!('icons/roguetown/weapons/wood_heraldry.dmi' in GLOB.IconStates_cache))
+			var/icon/J = new('icons/roguetown/weapons/wood_heraldry.dmi')
+			var/list/istates = J.IconStates()
+			GLOB.IconStates_cache |= icon
+			GLOB.IconStates_cache['icons/roguetown/weapons/wood_heraldry.dmi'] = istates
+		if("Psydon" in GLOB.IconStates_cache['icons/roguetown/weapons/wood_heraldry.dmi'])
 			var/picked_name = "Psydon"
 			var/mutable_appearance/M = mutable_appearance('icons/roguetown/weapons/wood_heraldry.dmi', picked_name)
 			M.alpha = 178
@@ -133,7 +142,7 @@
 			update_icon()
 		else
 			return
-	
+
 /obj/item/rogueweapon/shield/tower
 	name = "tower shield"
 	desc = "A gigantic, iron reinforced shield that covers the entire body, a design-copy of the Aasimar shields of an era gone by."
@@ -229,9 +238,12 @@
 
 /obj/item/rogueweapon/shield/tower/metal/attack_hand(mob/user)
 	if(!overlays.len)
-		var/icon/J = new('icons/roguetown/weapons/shield_heraldry.dmi')
-		var/list/istates = J.IconStates()
-		var/picked_name = input(user, "Choose a Heraldry", "ROGUETOWN", name) as null|anything in sortList(istates)
+		if(!('icons/roguetown/weapons/shield_heraldry.dmi' in GLOB.IconStates_cache))
+			var/icon/J = new('icons/roguetown/weapons/shield_heraldry.dmi')
+			var/list/istates = J.IconStates()
+			GLOB.IconStates_cache |= icon
+			GLOB.IconStates_cache['icons/roguetown/weapons/shield_heraldry.dmi'] = istates
+		var/picked_name = input(user, "Choose a Heraldry", "ROGUETOWN", name) as null|anything in sortList(GLOB.IconStates_cache['icons/roguetown/weapons/shield_heraldry.dmi'])
 		if(!picked_name)
 			picked_name = "none"
 		var/mutable_appearance/M = mutable_appearance('icons/roguetown/weapons/shield_heraldry.dmi', picked_name)

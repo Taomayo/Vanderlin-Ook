@@ -10,9 +10,9 @@
 	robust_searching = 1
 	turns_per_move = 1
 	move_to_delay = 3
-	STACON = 9
-	STASTR = 9
-	STASPD = 8
+	TOTALCON = 9
+	TOTALSTR = 9
+	TOTALSPD = 8
 	maxHealth = 100
 	health = 100
 	harm_intent_damage = 10
@@ -181,5 +181,5 @@
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
 	woundclass = BCLASS_STAB
-	flag = "bullet"
+	flag =  "piercing"
 	speed = 2

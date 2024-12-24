@@ -11,32 +11,6 @@
 	var/activecolor = "#FFFFFF"
 	/// Allow holder'd mobs
 	var/allow_mobs = TRUE
-	var/list/allowed_types = list(
-			/obj/item/clothing/suit/roguetown/shirt/robe,
-			/obj/item/clothing/suit/roguetown/shirt/dress,
-			/obj/item/clothing/suit/roguetown/shirt/undershirt,
-			/obj/item/clothing/suit/roguetown/shirt/shortshirt,
-			/obj/item/clothing/suit/roguetown/shirt/tunic,
-			/obj/item/clothing/under/roguetown/tights,
-			/obj/item/clothing/cloak/raincloak,
-			/obj/item/clothing/cloak/cape,
-			/obj/item/clothing/cloak/half,
-			/obj/item/clothing/head/roguetown/roguehood,
-			/obj/item/clothing/head/roguetown/headband,
-			/obj/item/clothing/head/roguetown/armingcap,
-			/obj/item/clothing/head/roguetown/chaperon,
-			/obj/item/clothing/head/roguetown/cookhat,
-			/obj/item/clothing/neck/roguetown/coif/cloth,
-			/obj/item/clothing/neck/roguetown/keffiyeh,
-			/obj/item/clothing/cloak/apron/cook,
-			/obj/item/clothing/cloak/apron/waist,
-			/obj/item/storage/belt/rogue/leather/rope,
-			/obj/item/storage/belt/rogue/leather/cloth,
-			/obj/item/clothing/shoes/roguetown/simpleshoes,
-			/obj/item/clothing/suit/roguetown/armor/gambeson,
-			/obj/item/clothing/suit/roguetown/armor/gambeson/light,
-			/obj/item/clothing/suit/roguetown/armor/gambeson/heavy
-			)
 	var/static/list/selectable_colors = list(
 		"White" ="#ffffff",
 		"Ash Grey" ="#999999",
@@ -72,7 +46,7 @@
 
 
 /obj/machinery/dye_bin/Destroy()
-	inserted?.forceMove(drop_location())
+	inserted?.forceMove(get_turf(src))
 	return ..()
 
 /obj/machinery/dye_bin/Destroy()
@@ -96,9 +70,12 @@
 		if(!QDELETED(H))
 			H.release()
 
-	if(is_type_in_list(I, allowed_types) && is_operational())
+	if(I.sewrepair)
+		if(user.mind.get_skill_level(/datum/skill/misc/sewing) <= 2) // We're not letting people with 0 knowledge in sewing do dying, so they don't step on the toes of the seamstress
+			to_chat(user, "<span class='warning'>I do not know enough about this craft...</span>")
+			return
 		if(inserted)
-			user.visible_message("<span class='notice'>[src] is already full.</span>")
+			to_chat(user, "<span class='warning'>There is already something inside the dye bin!</span>")
 			return
 		if(!user.transferItemToLoc(I, src))
 			to_chat(user, "<span class='warning'>[I] is stuck to your hand!</span>")
@@ -106,8 +83,12 @@
 		user.visible_message("<span class='notice'>[user] inserts [I] into [src].</span>")
 
 		inserted = I
+		return
 	else
 		return ..()
+
+/obj/machinery/dye_bin/attack_hand(mob/living/user)
+	ui_interact(user)
 
 /obj/machinery/dye_bin/AllowDrop()
 	return FALSE
@@ -125,18 +106,18 @@
 		dat += "No item inserted."
 	else
 		dat += "Item inserted: [inserted]<HR>"
-		dat += "<A href='?src=\ref[src];select=1'>Select new color.</A><BR>"
+		dat += "<A href='byond://?src=\ref[src];select=1'>Select new color.</A><BR>"
 		dat += "Color: <font color='[activecolor]'>&#9899;</font>"
-		dat += "<A href='?src=\ref[src];paint=1'>Apply new dye.</A><BR><BR>"
-		dat += "<A href='?src=\ref[src];clear=1'>Bleach out the color.</A><BR><BR>"
-		dat += "<A href='?src=\ref[src];eject=1'>Remove item.</A><BR><BR>"
+		dat += "<A href='byond://?src=\ref[src];paint=1'>Apply new dye.</A><BR><BR>"
+		dat += "<A href='byond://?src=\ref[src];clear=1'>Bleach out the color.</A><BR><BR>"
+		dat += "<A href='byond://?src=\ref[src];eject=1'>Remove item.</A><BR><BR>"
 
 	var/datum/browser/menu = new(user, "colormate","Dye Station", 400, 400, src)
 	menu.set_content(dat.Join(""))
 	menu.open()
 
 /obj/machinery/dye_bin/Topic(href, href_list)
-	if((. = ..()))
+	if(!(. = ..()))
 		return
 
 	add_fingerprint(usr)
@@ -169,7 +150,7 @@
 	if(href_list["eject"])
 		if(!inserted)
 			return
-		inserted.forceMove(drop_location())
+		inserted.forceMove(get_turf(usr))
 		inserted = null
 		updateUsrDialog()
 
@@ -204,32 +185,6 @@
 	var/activecolor = "#FFFFFF"
 	/// Allow holder'd mobs
 	var/allow_mobs = TRUE
-	var/list/allowed_types = list(
-			/obj/item/clothing/suit/roguetown/shirt/robe,
-			/obj/item/clothing/suit/roguetown/shirt/dress,
-			/obj/item/clothing/suit/roguetown/shirt/undershirt,
-			/obj/item/clothing/suit/roguetown/shirt/shortshirt,
-			/obj/item/clothing/suit/roguetown/shirt/tunic,
-			/obj/item/clothing/under/roguetown/tights,
-			/obj/item/clothing/cloak/raincloak,
-			/obj/item/clothing/cloak/cape,
-			/obj/item/clothing/cloak/half,
-			/obj/item/clothing/head/roguetown/roguehood,
-			/obj/item/clothing/head/roguetown/headband,
-			/obj/item/clothing/head/roguetown/armingcap,
-			/obj/item/clothing/head/roguetown/chaperon,
-			/obj/item/clothing/head/roguetown/cookhat,
-			/obj/item/clothing/neck/roguetown/keffiyeh,
-			/obj/item/clothing/neck/roguetown/coif/cloth,
-			/obj/item/clothing/cloak/apron/cook,
-			/obj/item/clothing/cloak/apron/waist,
-			/obj/item/storage/belt/rogue/leather/rope,
-			/obj/item/storage/belt/rogue/leather/cloth,
-			/obj/item/clothing/shoes/roguetown/simpleshoes,
-			/obj/item/clothing/suit/roguetown/armor/gambeson,
-			/obj/item/clothing/suit/roguetown/armor/gambeson/light,
-			/obj/item/clothing/suit/roguetown/armor/gambeson/heavy
-			)
 	var/static/list/selectable_colors = list(
 		"White" ="#ffffff",
 		"Ash Grey" ="#999999",
@@ -282,7 +237,13 @@
 		if(!QDELETED(H))
 			H.release()
 
-	if(is_type_in_list(I, allowed_types) && is_operational())
+	if(I.sewrepair)
+		if(user.mind.get_skill_level(/datum/skill/misc/sewing) <= 2) // We're not letting people with 0 knowledge in sewing do dying, so they don't step on the toes of the seamstress
+			to_chat(user, "<span class='warning'>I do not know enough about this craft...</span>")
+			return
+		if(inserted)
+			to_chat(user, "<span class='warning'>There is already something inside the dye bin!</span>")
+			return
 		if(!user.transferItemToLoc(I, src))
 			to_chat(user, "<span class='warning'>[I] is stuck to your hand!</span>")
 			return
@@ -290,10 +251,14 @@
 
 		inserted = I
 	else
+		to_chat(user, "<span class='warning'>I don't think this item can be dyed this way.</span>")
 		return ..()
 
 /obj/machinery/simple_dye_bin/AllowDrop()
 	return FALSE
+
+/obj/machinery/simple_dye_bin/attack_hand(mob/living/user)
+	ui_interact(user)
 
 /obj/machinery/simple_dye_bin/ui_interact(mob/user)
 	if( user.used_intent.type == /datum/intent/grab )
@@ -308,18 +273,18 @@
 		dat += "No item inserted."
 	else
 		dat += "Item inserted: [inserted]<HR>"
-		dat += "<A href='?src=\ref[src];select=1'>Select new color.</A><BR>"
+		dat += "<A href='byond://?src=\ref[src];select=1'>Select new color.</A><BR>"
 		dat += "Color: <font color='[activecolor]'>&#9899;</font>"
-		dat += "<A href='?src=\ref[src];paint=1'>Apply new dye.</A><BR><BR>"
-		dat += "<A href='?src=\ref[src];clear=1'>Bleach out the color.</A><BR><BR>"
-		dat += "<A href='?src=\ref[src];eject=1'>Remove item.</A><BR><BR>"
+		dat += "<A href='byond://?src=\ref[src];paint=1'>Apply new dye.</A><BR><BR>"
+		dat += "<A href='byond://?src=\ref[src];clear=1'>Bleach out the color.</A><BR><BR>"
+		dat += "<A href='byond://?src=\ref[src];eject=1'>Remove item.</A><BR><BR>"
 
 	var/datum/browser/menu = new(user, "colormate","Dye Station", 400, 400, src)
 	menu.set_content(dat.Join(""))
 	menu.open()
 
 /obj/machinery/simple_dye_bin/Topic(href, href_list)
-	if((. = ..()))
+	if(!(. = ..()))
 		return
 
 	add_fingerprint(usr)
@@ -352,7 +317,7 @@
 	if(href_list["eject"])
 		if(!inserted)
 			return
-		inserted.forceMove(drop_location())
+		inserted.forceMove(get_turf(usr))
 		inserted = null
 		updateUsrDialog()
 

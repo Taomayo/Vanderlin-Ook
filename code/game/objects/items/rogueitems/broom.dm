@@ -1,14 +1,13 @@
 /obj/item/broom
 	name = "broom"
 	desc = "A broom, made from a bundle of twigs."
-	icon = 'icons/obj/wizard.dmi'
+	icon = 'icons/roguetown/weapons/tools.dmi'
 	icon_state = "broom"
 	possible_item_intents = list(/datum/intent/use)
 	gripped_intents = list(/datum/intent/use, /datum/intent/mace/strike/wood)
 	force = 2
 	force_wielded = 4
 	throwforce = 1
-	obj_flags = null
 	firefuel = 10 MINUTES
 	resistance_flags = FLAMMABLE
 	slot_flags = ITEM_SLOT_BACK

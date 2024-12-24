@@ -5,10 +5,6 @@
 	if(unique_name)
 		name = "[name] ([rand(1, 1000)])"
 		real_name = name
-	var/datum/atom_hud/data/human/medical/advanced/medhud = GLOB.huds[DATA_HUD_MEDICAL_ADVANCED]
-	medhud.add_to_hud(src)
-	for(var/datum/atom_hud/data/diagnostic/diag_hud in GLOB.huds)
-		diag_hud.add_to_hud(src)
 	faction += "[REF(src)]"
 	GLOB.mob_living_list += src
 	init_faith()
@@ -27,9 +23,7 @@
 	if(buckled)
 		buckled.unbuckle_mob(src,force=1)
 
-	remove_from_all_data_huds()
 	GLOB.mob_living_list -= src
-	QDEL_LIST(diseases)
 	for(var/s in ownedSoullinks)
 		var/datum/soullink/S = s
 		S.ownerDies(FALSE)
@@ -42,13 +36,6 @@
 	sharedSoullinks = null
 	return ..()
 
-/mob/living/prepare_huds()
-	..()
-	prepare_data_huds()
-
-/mob/living/proc/prepare_data_huds()
-	med_hud_set_health()
-	med_hud_set_status()
 
 /mob/living/onZImpact(turf/T, levels)
 	if(HAS_TRAIT(src, TRAIT_NOFALLDAMAGE1))
@@ -558,11 +545,6 @@
 /mob/living/proc/InFullCritical()
 	return ((health <= HEALTH_THRESHOLD_FULLCRIT) && stat == UNCONSCIOUS)
 
-//This proc is used for mobs which are affected by pressure to calculate the amount of pressure that actually
-//affects them once clothing is factored in. ~Errorage
-/mob/living/proc/calculate_affecting_pressure(pressure)
-	return pressure
-
 /mob/living/proc/getMaxHealth()
 	return maxHealth
 
@@ -653,6 +635,7 @@
 		else
 			to_chat(src, "<span class='warning'>I fail to get up!</span>")
 	update_cone_show()
+	SEND_SIGNAL(src, COMSIG_LIVING_SET_RESTING, rest)
 
 /mob/living/proc/update_resting()
 	update_rest_hud_icon()
@@ -686,10 +669,8 @@
 		// You dont have any blood and your not bloodloss immune? Dead.
 		if(blood_volume <= 0)
 			health = 0
-	staminaloss = getStaminaLoss()
 	update_stat()
-	med_hud_set_health()
-	med_hud_set_status()
+	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE)
 
 //Proc used to resuscitate a mob, for full_heal see fully_heal()
 /mob/living/proc/revive(full_heal = FALSE, admin_revive = FALSE)
@@ -720,7 +701,6 @@
 	SetImmobilized(0, FALSE)
 	SetParalyzed(0, FALSE)
 	SetSleeping(0, FALSE)
-	setStaminaLoss(0)
 	SetUnconscious(0, FALSE)
 	if(should_update_mobility)
 		update_mobility()
@@ -748,7 +728,6 @@
 	setCloneLoss(0, 0)
 	remove_CC(FALSE)
 	set_disgust(0)
-	radiation = 0
 	set_nutrition(NUTRITION_LEVEL_FED + 50)
 	bodytemperature = BODYTEMP_NORMAL
 	set_blindness(0)
@@ -758,7 +737,7 @@
 	cure_blind()
 	cure_husk()
 	hallucination = 0
-	heal_overall_damage(INFINITY, INFINITY, INFINITY, null, TRUE) //heal brute and burn dmg on both organic and robotic limbs, and update health right away.
+	heal_overall_damage(INFINITY, INFINITY, null, TRUE) //heal brute and burn dmg on both organic and robotic limbs, and update health right away.
 	for(var/datum/wound/wound as anything in get_wounds())
 		if(admin_revive)
 			qdel(wound)
@@ -911,35 +890,6 @@
 	else
 		return pick("trails_1", "trails_2")
 
-/mob/living/experience_pressure_difference(pressure_difference, direction, pressure_resistance_prob_delta = 0)
-	if(buckled)
-		return
-	if(client && client.move_delay >= world.time + world.tick_lag*2)
-		pressure_resistance_prob_delta -= 30
-
-	var/list/turfs_to_check = list()
-
-	if(has_limbs)
-		var/turf/T = get_step(src, angle2dir(dir2angle(direction)+90))
-		if (T)
-			turfs_to_check += T
-
-		T = get_step(src, angle2dir(dir2angle(direction)-90))
-		if(T)
-			turfs_to_check += T
-
-		for(var/t in turfs_to_check)
-			T = t
-			if(T.density)
-				pressure_resistance_prob_delta -= 20
-				continue
-			for (var/atom/movable/AM in T)
-				if (AM.density && AM.anchored)
-					pressure_resistance_prob_delta -= 20
-					break
-	if(!force_moving)
-		..(pressure_difference, direction, pressure_resistance_prob_delta)
-
 /mob/living/can_resist()
 	return !((next_move > world.time) || incapacitated(ignore_restraints = TRUE, ignore_stasis = TRUE))
 
@@ -1048,7 +998,7 @@
 	if(moving_resist && client) //we resisted by trying to move
 		client.move_delay = world.time + 20
 	if(prob(resist_chance))
-		rogfat_add(rand(5,15))
+		adjust_stamina(rand(5,15))
 		visible_message("<span class='warning'>[src] breaks free of [pulledby]'s grip!</span>", \
 						"<span class='notice'>I break free of [pulledby]'s grip!</span>", null, null, pulledby)
 		to_chat(pulledby, "<span class='danger'>[src] breaks free of my grip!</span>")
@@ -1062,7 +1012,7 @@
 
 		return FALSE
 	else
-		rogfat_add(rand(5,15))
+		adjust_stamina(rand(5,15))
 		var/shitte = ""
 //		if(client?.prefs.showrolls)
 //			shitte = " ([resist_chance]%)"
@@ -1222,15 +1172,6 @@
 	animate(pixel_x = final_pixel_x , pixel_y = final_pixel_y , time = 2)
 	setMovetype(movement_type & ~FLOATING) // If we were without gravity, the bouncing animation got stopped, so we make sure to restart it in next life().
 
-/mob/living/proc/get_temperature(datum/gas_mixture/environment)
-	var/loc_temp = environment ? environment.temperature : T0C
-	if(isobj(loc))
-		var/obj/oloc = loc
-		var/obj_temp = oloc.return_temperature()
-		if(obj_temp != null)
-			loc_temp = obj_temp
-	return loc_temp
-
 /mob/living/proc/get_standard_pixel_x_offset(lying = 0)
 	var/_x = initial(pixel_x)
 	for(var/o in mob_offsets)
@@ -1296,9 +1237,6 @@
 		return FALSE
 	return TRUE
 
-/mob/living/proc/update_stamina()
-	return
-
 /mob/living/proc/owns_soul()
 	if(mind)
 		return mind.soulOwner == mind
@@ -1327,21 +1265,6 @@
 	else
 		new_mob.key = key
 
-/mob/living/rad_act(amount)
-	. = ..()
-
-	if(!amount || (amount < RAD_MOB_SKIN_PROTECTION) || HAS_TRAIT(src, TRAIT_RADIMMUNE))
-		return
-
-	amount -= RAD_BACKGROUND_RADIATION // This will always be at least 1 because of how skin protection is calculated
-
-	var/blocked = getarmor(null, "rad")
-
-	if(amount > RAD_BURN_THRESHOLD)
-		apply_damage(log(amount)*2, BURN, null, blocked)
-
-	apply_effect((amount*RAD_MOB_COEFFICIENT)/max(1, (radiation**2)*RAD_OVERDOSE_REDUCTION), EFFECT_IRRADIATE, blocked)
-
 /mob/living/anti_magic_check(magic = TRUE, holy = FALSE, tinfoil = FALSE, chargecost = 1, self = FALSE)
 	. = ..()
 	if(.)
@@ -1354,9 +1277,6 @@
 
 /mob/living/proc/fakefire()
 	return
-
-/mob/living/proc/unfry_mob() //Callback proc to tone down spam from multiple sizzling frying oil dipping.
-	REMOVE_TRAIT(src, TRAIT_OIL_FRIED, "cooking_oil_react")
 
 //Mobs on Fire
 /mob/living/proc/IgniteMob()
@@ -1480,6 +1400,7 @@
 	else
 		mobility_flags |= MOBILITY_STAND
 		lying = 0
+	update_cone_show()
 
 /*
 	if(should_be_lying || restrained || incapacitated())
@@ -1688,7 +1609,6 @@
 			OXY:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=oxygen' id='oxygen'>[getOxyLoss()]</a>
 			CLONE:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=clone' id='clone'>[getCloneLoss()]</a>
 			BRAIN:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=brain' id='brain'>[getOrganLoss(ORGAN_SLOT_BRAIN)]</a>
-			STAMINA:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=stamina' id='stamina'>[getStaminaLoss()]</a>
 		</font>
 	"}
 
@@ -1720,6 +1640,7 @@
 	var/looktime = 50 - (STAPER * 2)
 	if(do_after(src, looktime, target = src))
 		// var/huhsneak
+		SEND_GLOBAL_SIGNAL(COMSIG_MOB_ACTIVE_PERCEPTION,src)
 		for(var/mob/living/M in view(7,src))
 			if(M == src)
 				continue
@@ -1753,6 +1674,15 @@
 					found_ping(get_turf(M), client, "trap")
 			if(istype(O, /obj/structure/flora/roguegrass/maneater/real))
 				found_ping(get_turf(O), client, "trap")
+
+		for(var/obj/effect/skill_tracker/potential_track in orange(7, src)) //Can't use view because they're invisible by default.
+			if(!can_see(src, potential_track, 10))
+				continue
+			if(!potential_track.check_reveal(src))
+				continue
+			found_ping(get_turf(potential_track), client, "hidden")
+			potential_track.handle_revealing(src)
+
 
 /proc/found_ping(atom/A, client/C, state)
 	if(!A || !C || !state)

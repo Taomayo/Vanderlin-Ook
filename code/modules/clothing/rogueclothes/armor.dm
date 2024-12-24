@@ -2,6 +2,21 @@
 /obj/item/clothing/proc/step_action() //this was made to rewrite clown shoes squeaking
 	SEND_SIGNAL(src, COMSIG_CLOTHING_STEP_ACTION)
 
+/obj/item/clothing
+	var/do_sound_chain = FALSE
+	var/do_sound_plate = FALSE
+
+/obj/item/clothing/Initialize()
+	. = ..()
+	if(do_sound_chain)
+		AddComponent(/datum/component/squeak, list('sound/foley/footsteps/armor/chain (1).ogg',\
+													'sound/foley/footsteps/armor/chain (2).ogg',\
+													'sound/foley/footsteps/armor/chain (3).ogg'), 100)
+	else if(do_sound_plate)
+		AddComponent(/datum/component/squeak, list('sound/foley/footsteps/armor/plate (1).ogg',\
+													'sound/foley/footsteps/armor/plate (2).ogg',\
+													'sound/foley/footsteps/armor/plate (3).ogg'), 100)
+
 /obj/item/clothing/suit/roguetown/armor
 	slot_flags = ITEM_SLOT_ARMOR
 	icon = 'icons/roguetown/clothing/armor.dmi'
@@ -128,7 +143,8 @@
 /obj/item/clothing/suit/roguetown/armor/gambeson/shadowrobe
 	name = "stalker robe"
 	desc = "A robe-like gambeson of moth-eaten cloth and cheap purple dye. No self-respecting elf would be seen wearing this."
-	allowed_race = list("elf", "dark elf")
+	mob_overlay_icon = 'icons/roguetown/clothing/newclothes/onmob/onmobdrip.dmi'
+	sleeved = 'icons/roguetown/clothing/newclothes/onmob/sleeves_robes.dmi'
 	icon_state = "shadowrobe"
 
 
@@ -174,6 +190,27 @@
 	body_parts_covered = COVERAGE_TORSO
 	prevent_crits = ALL_EXCEPT_CHOP_AND_STAB
 	max_integrity = INTEGRITY_STANDARD
+	salvage_result = /obj/item/natural/hide/cured
+
+/obj/item/clothing/suit/roguetown/armor/leather/advanced
+	name = "hardened leather coat"
+	desc = "Sturdy, durable, flexible. Will keep you alive in style."
+	max_integrity = 350
+	body_parts_covered = CHEST|GROIN|VITALS|LEGS|ARMS
+	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
+	armor = list("blunt" = 75, "slash" = 60, "stab" = 30, "piercing" = 10, "fire" = 0, "acid" = 0)
+
+/obj/item/clothing/suit/roguetown/armor/leather/masterwork
+	name = "masterwork leather coat"
+	desc = "This coat is a craftsmanship marvel. Made with the finest leather. Strong, nimible, reliable."
+	icon_state = "leather"
+	max_integrity = 400
+	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST, BCLASS_CHOP) //we're adding chop here!
+	armor = list("blunt" = 100, "slash" = 70, "stab" = 40, "piercing" = 10, "fire" = 0, "acid" = 0)
+
+/obj/item/clothing/suit/roguetown/armor/leather/masterwork/Initialize()
+	. = ..()
+	filters += filter(type="drop_shadow", x=0, y=0, size=0.5, offset=1, color=rgb(218, 165, 32))
 
 //................ Hide Armor ............... //
 /obj/item/clothing/suit/roguetown/armor/leather/hide
@@ -183,6 +220,7 @@
 	sellprice = VALUE_LEATHER_ARMOR_FUR
 
 	armor = ARMOR_LEATHER
+	salvage_result = /obj/item/natural/hide/cured
 
 //................ Splint Mail ............... //
 /obj/item/clothing/suit/roguetown/armor/leather/splint
@@ -212,6 +250,7 @@
 	armor = ARMOR_LEATHER_BAD
 	body_parts_covered = COVERAGE_VEST
 	prevent_crits = CUT_AND_MINOR_CRITS
+	salvage_result = /obj/item/natural/hide/cured
 
 /obj/item/clothing/suit/roguetown/armor/leather/vest/random/Initialize()
 	color = pick(CLOTHING_SOOT_BLACK, CLOTHING_BARK_BROWN, CLOTHING_FOREST_GREEN)
@@ -402,13 +441,7 @@
 	sellprice = VALUE_STEEL_ARMOR_FINE
 
 	body_parts_covered = COVERAGE_FULL
-
-/obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/Initialize()
-	. = ..()
-	AddComponent(/datum/component/squeak, list('sound/foley/footsteps/armor/chain (1).ogg',\
-												'sound/foley/footsteps/armor/chain (2).ogg',\
-												'sound/foley/footsteps/armor/chain (3).ogg'), 80)
-
+	do_sound_chain = TRUE
 
 /*-----------------------\
 |  Cuirass & Breastplate |
@@ -557,13 +590,7 @@
 	body_parts_covered = COVERAGE_ALL_BUT_ARMS
 	prevent_crits = ALL_EXCEPT_STAB
 	max_integrity = INTEGRITY_STRONGEST
-
-/obj/item/clothing/suit/roguetown/armor/plate/Initialize()
-	. = ..()
-	AddComponent(/datum/component/squeak, list('sound/foley/footsteps/armor/plate (1).ogg',\
-												'sound/foley/footsteps/armor/plate (2).ogg',\
-												'sound/foley/footsteps/armor/plate (3).ogg'), 100)
-
+	do_sound_plate = TRUE
 
 //................ Full Plate Armor ............... //
 /obj/item/clothing/suit/roguetown/armor/plate/full
@@ -621,12 +648,7 @@
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS
 	max_integrity = INTEGRITY_STRONGEST
 	prevent_crits = ALL_EXCEPT_STAB
-
-/obj/item/clothing/suit/roguetown/armor/brigandine/Initialize()
-	. = ..()
-	AddComponent(/datum/component/squeak, list('sound/foley/footsteps/armor/coatplates (1).ogg',\
-												'sound/foley/footsteps/armor/coatplates (2).ogg',\
-												'sound/foley/footsteps/armor/coatplates (3).ogg'), 100)
+	do_sound_plate = TRUE
 
 /obj/item/clothing/suit/roguetown/armor/brigandine/update_icon()
 	cut_overlays()
@@ -718,7 +740,7 @@
 
 /obj/item/clothing/suit/roguetown/armor/rare/grenzelplate
 	name = "grenzelhoftian plate regalia"
-	desc = "Engraved on this masterwork of humen metallurgy lies \"Thrice Slain, Thrice Risen, Thrice Pronged\" alongside the symbol of The Forgotten God in its neck guard."
+	desc = "Engraved on this masterwork of humen metallurgy lies \"Thrice Slain, Thrice Risen, Thrice Pronged\" alongside the symbol of Psydon in its neck guard."
 	icon_state = "human_swordchest"
 	allowed_race = list("human")
 	allowed_sex = list(MALE)
@@ -793,7 +815,8 @@
 	icon = 'icons/roguetown/clothing/special/blkknight.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/blkknight.dmi'
 	sleeved = 'icons/roguetown/clothing/special/onmob/blkknight.dmi'
-
+	anvilrepair = /datum/skill/craft/blacksmithing
+	smeltresult = /obj/item/ingot/blacksteel
 
 
 // VAMPIRE ARMORS BELOW

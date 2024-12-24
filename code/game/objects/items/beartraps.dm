@@ -21,8 +21,8 @@
 	throw_speed = 1
 	throw_range = 1
 	icon_state = "beartrap"
-	desc = "A crude and rusty spring trap, used to snare interlopers, or prey on a hunt. Looks almost like falling apart."
-	var/rusty = TRUE // Is it an old trap? Will most likely be destroyed if not handled right
+	desc = "A crude and old spring trap, used to snare interlopers, or prey on a hunt. Looks almost like falling apart."
+	var/old = TRUE // Is it an old trap? Will most likely be destroyed if not handled right
 	var/armed = FALSE // Is it armed?
 	var/trap_damage = 90 // How much brute damage the trap will do to its victim
 	var/used_time = 12 SECONDS // How many seconds it takes to disarm the trap
@@ -36,7 +36,7 @@
 		var/obj/item/bodypart/BP = C.get_bodypart(def_zone)
 		if(!BP)
 			return FALSE
-		if(C.badluck(5)) // UNLUCKY
+		if(C.stat_roll(STATKEY_LCK,5,10,TRUE))
 			add_mob_blood(C)
 			if(!BP.is_object_embedded(src))
 				BP.add_embedded_object(src)
@@ -47,7 +47,7 @@
 			C.Stun(80)
 			BP.add_wound(/datum/wound/fracture)
 			BP.update_disabled()
-			C.apply_damage(trap_damage, BRUTE, def_zone, C.run_armor_check(def_zone, "melee", damage = trap_damage))
+			C.apply_damage(trap_damage, BRUTE, def_zone, C.run_armor_check(def_zone, "stab", damage = trap_damage))
 			C.update_sneak_invis(TRUE)
 			C.consider_ambush()
 			return FALSE
@@ -73,7 +73,7 @@
 				C.emote("agony")
 				BP.add_wound(/datum/wound/fracture)
 				BP.update_disabled()
-				C.apply_damage(trap_damage, BRUTE, def_zone, C.run_armor_check(def_zone, "melee", damage = trap_damage))
+				C.apply_damage(trap_damage, BRUTE, def_zone, C.run_armor_check(def_zone, "stab", damage = trap_damage))
 				C.update_sneak_invis(TRUE)
 				C.consider_ambush()
 				return FALSE
@@ -128,8 +128,8 @@
 				L.mind?.adjust_experience(/datum/skill/craft/traps, L.STAINT * boon, FALSE) // We learn how to set them better, little by little.
 				to_chat(user, "<span class='notice'>I arm |the [src].</span>")
 			else
-				if(rusty)
-					user.visible_message("<span class='warning'>The rusty [src.name] breaks under stress!</span>")
+				if(old)
+					user.visible_message("<span class='warning'>The old [src.name] breaks under stress!</span>")
 					playsound(src.loc, 'sound/foley/breaksound.ogg', 100, TRUE, -1)
 					qdel(src)
 				else
@@ -182,13 +182,13 @@
 				close_trap()
 				L.visible_message("<span class='danger'>[L] triggers \the [src].</span>", \
 						"<span class='danger'>I trigger \the [src]!</span>")
-				if(L.apply_damage(trap_damage, BRUTE, def_zone, L.run_armor_check(def_zone, "melee", damage = trap_damage)))
+				if(L.apply_damage(trap_damage, BRUTE, def_zone, L.run_armor_check(def_zone, "stab", damage = trap_damage)))
 					L.Stun(80)
 				L.consider_ambush()
 	..()
 
 // When craftable beartraps get added, make these the ones crafted.
 /obj/item/restraints/legcuffs/beartrap/crafted
-	rusty = FALSE
+	old = FALSE
 	desc = "Curious is the trapmaker's art. Their efficacy unwitnessed by their own eyes."
 	smeltresult = /obj/item/ingot/iron

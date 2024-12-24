@@ -56,7 +56,7 @@
 				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
 
 /obj/item/rogue/instrument/Initialize()
-	soundloop = new(list(src), FALSE)
+	soundloop = new(src, FALSE)
 	. = ..()
 
 /obj/item/rogue/instrument/dropped(mob/living/user, silent)
@@ -327,6 +327,7 @@
 	name = "accordion"
 	desc = "A complex piece of dwarven intuition, composed of metal, wood, hide and ivory. Favored by Abyssorian bards."
 	icon_state = "accordion"
+	item_state = "accordion"
 	song_list = list(
 	"Song 1" = 'modular/Barding/sound/instruments/accord (1).ogg',
 	"Song 2" = 'modular/Barding/sound/instruments/accord (2).ogg',
@@ -343,6 +344,7 @@
 	desc = "A corrupted lute, a heritage instrument of Tiefling pedigree."
 	possible_item_intents = list(/datum/intent/mace/strike/wood)
 	icon_state = "guitar"
+	item_state = "guitar"
 	song_list = list(
 	"Song 1" = 'modular/Barding/sound/instruments/guitar (1).ogg',
 	"Song 2" = 'modular/Barding/sound/instruments/guitar (2).ogg',
@@ -374,7 +376,7 @@
 
 /obj/item/rogue/instrument/flute // small rats approach a little when begin playing
 	name = "flute"
-	desc = "A cacophonous wind-instrument, played primarily by humens all around Grimoria."
+	desc = "A cacophonous wind-instrument, played primarily by humens all around Psydonia."
 	icon_state = "flute"
 	icon_prefix = "flute" // used for inhands switch
 	dynamic_icon = TRUE // used for inhands switch

@@ -53,7 +53,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/w_class = WEIGHT_CLASS_NORMAL
 	var/slot_flags = 0		//This is used to determine on which slots an item can fit.
 	pass_flags = PASSTABLE
-	pressure_resistance = 4
 	var/obj/item/master = null
 
 	var/heat_protection = 0 //flags which determine which body parts are protected from heat. Use the HEAD, CHEST, GROIN, etc. flags. See setup.dm
@@ -167,8 +166,11 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 	var/wlength = WLENGTH_NORMAL		//each weapon length class has its own inherent dodge properties
 	var/wbalance = 0
-	var/wdefense = 0 //better at defending. Each points gives a flat 10% bonus to parry
-	var/minstr = 0  //for weapons
+	var/wdefense = 0					//Flat bonus to defense
+	var/wdodgebonus = 0					//Bonus for dodging
+	var/wparrybonus = 0					//Bonus to parrying
+	var/wparryspeed = 0					//Minor reduction in parry cooldown time, for
+	var/minstr = 0						//for weapons
 
 	var/sleeved = null
 	var/sleevetype = null
@@ -220,16 +222,25 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/list/blocksound //played when an item that is equipped blocks a hit
 
 	var/list/onprop = list()
+	var/damage_type = "blunt"
 	var/force_reupdate_inhand = TRUE
+
+	var/is_silver = FALSE
+	var/last_used = 0
 
 	// Boolean sanity var for smelteries to avoid runtimes. Is this is a bar smelted through ore for exp gain?
 	var/smelted = FALSE
 	// Can this be used against a training dummy to learn skills? Prevents dumb exploits.
 	var/istrainable = FALSE
-	// Takes an item path. What it turns into after being grinded by a mortar and pestle.
-	var/dust_result
-	// Takes a text string. What weight will this item give towards a given potion result when used on an alchemy cauldron
-	var/possible_potion
+
+	/// This is what we get when we either tear up or salvage a piece of clothing
+	var/obj/item/salvage_result = null
+	/// The amount of salvage we get out of salvaging with scissors
+	var/salvage_amount = 0 //This will be more accurate when sewing recipes get sorted
+	/// Temporary snowflake var to be used in the rare cases clothing doesn't require fibers to sew, to avoid material duping
+	var/fiber_salvage = FALSE
+	/// Number of torn sleves, important for salvaging calculations and examine text
+	var/torn_sleeve_number = 0
 
 /obj/item/Initialize()
 	. = ..()
@@ -358,6 +369,12 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		else if(isliving(loc))
 			var/mob/living/embedded_mob = loc
 			embedded_mob.simple_remove_embedded_object(src)
+	if(artrecipe)
+		QDEL_NULL(artrecipe)
+	if(istype(loc, /obj/machinery/artificer_table))
+		var/obj/machinery/artificer_table/A = loc
+		A.material = null
+		A.update_icon()
 	return ..()
 
 /obj/item/proc/check_allowed_items(atom/target, not_inside, target_self)
@@ -464,7 +481,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 /obj/item/get_inspect_button()
 	if(has_inspect_verb || (obj_integrity < max_integrity))
-		return " <span class='info'><a href='?src=[REF(src)];inspect=1'>{?}</a></span>"
+		return " <span class='info'><a href='byond://?src=[REF(src)];inspect=1'>{?}</a></span>"
 	return ..()
 
 
@@ -796,8 +813,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 			M.become_blind(EYE_DAMAGE)
 			to_chat(M, "<span class='danger'>I go blind!</span>")
 
-/obj/item/singularity_pull()
-
 /obj/item/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	if(hit_atom && !QDELETED(hit_atom))
 		SEND_SIGNAL(src, COMSIG_MOVABLE_IMPACT, hit_atom, throwingdatum)
@@ -821,7 +836,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 		else
 			playsound(src, drop_sound, YEET_SOUND_VOLUME, TRUE, ignore_walls = FALSE)
-		return hit_atom.hitby(src, 0, itempush, throwingdatum=throwingdatum)
+		return hit_atom.hitby(src, 0, itempush, throwingdatum=throwingdatum, damage_type = src.damage_type)
 
 /obj/item/throw_at(atom/target, range, speed, mob/thrower, spin=1, diagonals_first = 0, datum/callback/callback, force)
 	thrownby = thrower
@@ -958,11 +973,9 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	else
 		. = ""
 
-/obj/item/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum)
-	return
+/obj/item/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum, damage_type = "blunt")
+	return SEND_SIGNAL(src, COMSIG_ATOM_HITBY, AM, skipcatch, hitpush, blocked, throwingdatum, damage_type)
 
-/obj/item/attack_hulk(mob/living/carbon/human/user)
-	return FALSE
 
 /obj/item/attack_animal(mob/living/simple_animal/M)
 	if (obj_flags & CAN_BE_HIT)
@@ -1053,7 +1066,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 	if(tool_behaviour == TOOL_MINING && ishuman(user))
 		var/mob/living/carbon/human/H = user
-		skill_modifier = H.mind.get_skill_speed_modifier(/datum/skill/mining)
+		skill_modifier = H.mind.get_skill_speed_modifier(/datum/skill/labor/mining)
 
 	delay *= toolspeed * skill_modifier
 

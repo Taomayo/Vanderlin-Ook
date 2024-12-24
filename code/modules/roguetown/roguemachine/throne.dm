@@ -1,5 +1,5 @@
 /obj/structure/roguethrone
-	name = "throne of rockhill"
+	name = "throne of vanderlin"
 	desc = "A big throne, to hold the Lord's giant personality. Say 'help' with the crown on your head if you are confused."
 	icon = 'icons/roguetown/misc/96x96.dmi'
 	icon_state = "throne"
@@ -8,6 +8,7 @@
 	pixel_x = -32
 	max_integrity = 999999
 	buckle_lying = FALSE
+	obj_flags = NONE
 
 /obj/structure/roguethrone/post_buckle_mob(mob/living/M)
 	..()

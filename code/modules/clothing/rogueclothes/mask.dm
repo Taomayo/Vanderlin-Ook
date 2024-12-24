@@ -35,7 +35,7 @@
 
 /obj/item/clothing/mask/rogue/spectacles/Crossed(mob/crosser)
 	if(isliving(crosser) && !obj_broken)
-		take_damage(11, BRUTE, "melee", 1)
+		take_damage(11, BRUTE, "blunt", 1)
 	..()
 
 /obj/item/clothing/mask/rogue/equipped(mob/user, slot)
@@ -55,6 +55,7 @@
 	block2add = FOV_RIGHT
 	body_parts_covered = RIGHT_EYE
 	resistance_flags = FLAMMABLE
+	salvage_amount = 1
 
 /obj/item/clothing/mask/rogue/eyepatch/left
 	desc = "An eyepatch, fitted for the left eye."
@@ -79,7 +80,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("melee" = 80, "bullet" = 50, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -117,7 +118,7 @@
 /obj/item/clothing/mask/rogue/facemask/steel
 	name = "steel mask"
 	icon_state = "smask"
-	armor = list("melee" = 100, "bullet" = 80, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 100, "slash" = 100, "stab" = 100,  "piercing" = 80, "fire" = 0, "acid" = 0)
 	desc = "A knightly steel mask that both conceals and protects the face. Usually paired with a bascinet."
 	max_integrity = 300
 
@@ -136,6 +137,7 @@
 	resistance_flags = FLAMMABLE
 	toggle_icon_state = TRUE
 	experimental_onhip = TRUE
+	salvage_amount = 1
 
 /obj/item/clothing/mask/rogue/shepherd/AdjustClothes(mob/user)
 	if(loc == user)
@@ -195,7 +197,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("melee" = 50, "bullet" = 50, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 50, "slash" = 50, "stab" = 50,  "piercing" = 50, "fire" = 0, "acid" = 0)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
 	block2add = FOV_BEHIND
@@ -230,8 +232,7 @@
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/gen_drop.ogg'
 	resistance_flags = FIRE_PROOF
-	//armor = list("blunt" = 10, "slash" = 40, "stab" = 40, "bullet" = 8, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-	armor = list("melee" = 40, "bullet" = 8, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = 10, "slash" = 40, "stab" = 40,  "piercing" = 8, "fire" = 0, "acid" = 0)
 	prevent_crits = null
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -239,3 +240,10 @@
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HIP
 	experimental_onhip = TRUE
 	smeltresult = /obj/item/alch/bone
+
+/obj/item/clothing/mask/rogue/facemask/goldmask
+	name = "Gold Mask"
+	icon_state = "goldmask"
+	max_integrity = 150
+	sellprice = 100
+	smeltresult = /obj/item/ingot/gold

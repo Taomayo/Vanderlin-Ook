@@ -11,14 +11,14 @@
 
 /obj/item/reagent_containers/powder/spice
 	name = "spice"
-	desc = ""
+	desc = "A potent powder that opens the mind to previously unseen possibilities..."
 	icon = 'icons/roguetown/items/produce.dmi'
 	icon_state = "spice"
 	item_state = "spice"
 	possible_transfer_amounts = list()
 	volume = 15
 	list_reagents = list(/datum/reagent/druqks = 15)
-	sellprice = 6
+	sellprice = 16
 
 /datum/reagent/druqks
 	name = "Drukqs"
@@ -53,7 +53,7 @@
 	show_when_dead = FALSE
 
 /datum/reagent/druqks/overdose_start(mob/living/M)
-	M.flash_fullscreen("hey")
+	//M.flash_fullscreen("hey") NO. NONE OF THAT.
 	M.visible_message("<span class='warning'>Blood runs from [M]'s nose.</span>")
 
 /datum/reagent/druqks/overdose_process(mob/living/M)
@@ -185,8 +185,7 @@
 	possible_transfer_amounts = list()
 	volume = 15
 	list_reagents = list(/datum/reagent/ozium = 15)
-	sellprice = 5
-	possible_potion = "perpot"
+	sellprice = 8
 
 /datum/reagent/ozium
 	name = "Ozium"
@@ -207,9 +206,9 @@
 /datum/reagent/ozium/on_mob_life(mob/living/carbon/M)
 	if(M.has_flaw(/datum/charflaw/addiction/junkie))
 		M.sate_addiction()
-	if(prob(10))
-		M.playsound_local(get_turf(M), 'sound/misc/jumpscare (2).ogg', 25)
-		M.flash_fullscreen("hey")
+	//if(prob(10))
+	//	M.playsound_local(get_turf(M), 'sound/misc/jumpscare (2).ogg', 25)
+	//	M.flash_fullscreen("hey")														WHAT THE HELL? WHY?
 	if(prob(20))
 		M.flash_fullscreen("whiteflash")
 	M.apply_status_effect(/datum/status_effect/buff/ozium)
@@ -230,8 +229,7 @@
 	possible_transfer_amounts = list()
 	volume = 15
 	list_reagents = list(/datum/reagent/moondust = 15)
-	sellprice = 10
-	possible_potion = "intpot"
+	sellprice = 16
 
 /datum/reagent/moondust/overdose_process(mob/living/M)
 	M.adjustToxLoss(0.25*REM, 0)
@@ -271,8 +269,7 @@
 	possible_transfer_amounts = list()
 	volume = 18
 	list_reagents = list(/datum/reagent/moondust_purest = 18)
-	sellprice = 14
-	possible_potion = "spdpot"
+	sellprice = 20
 
 /datum/reagent/moondust_purest
 	name = "Purest Moondust"

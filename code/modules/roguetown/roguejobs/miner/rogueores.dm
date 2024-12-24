@@ -9,7 +9,6 @@
 	icon_state = "oregold1"
 	smeltresult = /obj/item/ingot/gold
 	sellprice = 10
-	dust_result = /obj/item/alch/golddust
 
 /obj/item/rogueore/gold/Initialize()
 	icon_state = "oregold[rand(1,3)]"
@@ -21,7 +20,6 @@
 	icon_state = "oresilv1"
 	smeltresult = /obj/item/ingot/silver
 	sellprice = 8
-	dust_result = /obj/item/alch/silverdust
 
 /obj/item/rogueore/silver/Initialize()
 	icon_state = "oresilv[rand(1,3)]"
@@ -33,7 +31,6 @@
 	icon_state = "oreiron1"
 	smeltresult = /obj/item/ingot/iron
 	sellprice = 5
-	dust_result = /obj/item/alch/irondust 
 
 /obj/item/rogueore/iron/Initialize()
 	icon_state = "oreiron[rand(1,3)]"
@@ -50,13 +47,23 @@
 	icon_state = "orecop[rand(1,3)]"
 	..()
 
+/obj/item/rogueore/tin
+	name = "raw tin"
+	desc = "A mass of soft, almost malleable white ore."
+	icon_state = "oretin1"
+	smeltresult = /obj/item/ingot/tin
+	sellprice = 4
+
+/obj/item/rogueore/tin/Initialize()
+	icon_state = "oretin[rand(1,3)]"
+	..()
+
 /obj/item/rogueore/coal
 	name = "coal"
 	icon_state = "orecoal1"
 	firefuel = 5 MINUTES
 	smeltresult = /obj/item/rogueore/coal
 	sellprice = 1
-	dust_result = /obj/item/alch/coaldust
 
 /obj/item/rogueore/coal/Initialize()
 	icon_state = "orecoal[rand(1,3)]"
@@ -119,7 +126,6 @@
 	icon_state = "ingotgold"
 	smeltresult = /obj/item/ingot/gold
 	sellprice = 100
-	dust_result = /obj/item/alch/golddust
 
 /obj/item/ingot/iron
 	name = "iron bar"
@@ -127,7 +133,6 @@
 	icon_state = "ingotiron"
 	smeltresult = /obj/item/ingot/iron
 	sellprice = 25
-	dust_result = /obj/item/alch/irondust
 
 /obj/item/ingot/copper
 	name = "copper bar"
@@ -136,13 +141,26 @@
 	smeltresult = /obj/item/ingot/copper
 	sellprice = 10
 
+/obj/item/ingot/tin
+	name = "tin bar"
+	desc = "An ingot of strangely soft and malleable essence."
+	icon_state = "ingottin"
+	smeltresult = /obj/item/ingot/tin
+	sellprice = 15
+
+/obj/item/ingot/bronze
+	name = "bronze bar"
+	desc = "A hard and durable alloy favored by engineers and followers of Malum alike."
+	icon_state = "ingotbronze"
+	smeltresult = /obj/item/ingot/bronze
+	sellprice = 30
+
 /obj/item/ingot/silver
 	name = "silver bar"
 	desc = "A bar of glistening silver. The bane of nitewalkers."
 	icon_state = "ingotsilv"
 	smeltresult = /obj/item/ingot/silver
 	sellprice = 60
-	dust_result = /obj/item/alch/silverdust
 
 /obj/item/ingot/steel
 	name = "steel bar"
@@ -150,3 +168,10 @@
 	icon_state = "ingotsteel"
 	smeltresult = /obj/item/ingot/steel
 	sellprice = 40
+
+/obj/item/ingot/blacksteel
+	name = "blacksteel bar"
+	desc = "Sacrificing the holy elements of silver for raw strength, this strange and powerful ingot's origin carries dark rumors.."
+	icon_state = "ingotblacksteel"
+	smeltresult = /obj/item/ingot/blacksteel
+	sellprice = 90
