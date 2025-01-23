@@ -254,6 +254,14 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	if(!experimental_inhand)
 		inhand_x_dimension = 32
 		inhand_y_dimension = 32
+
+	if(grid_width <= 0)
+		grid_width = (w_class * world.icon_size)
+	if(grid_height <= 0)
+		grid_height = (w_class * world.icon_size)
+
+	if(is_silver)
+		enchant(/datum/enchantment/silver)
 	update_transform()
 
 
@@ -462,10 +470,14 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		if(istype(src,/obj/item/clothing))
 			var/obj/item/clothing/C = src
 			if(C.prevent_crits)
-				if(C.prevent_crits.len)
-					inspec += "\n<b>DEFENSE</b>"
+				if(length(C.prevent_crits))
+					inspec += "\n<b>DEFENSE:</b>"
 					for(var/X in C.prevent_crits)
 						inspec += "\n<b>[X] damage</b>"
+			if(C.body_parts_covered)
+				inspec += "\n<b>COVERAGE:</b>"
+				for(var/zone in body_parts_covered2organ_names(C.body_parts_covered))
+					inspec += "\n<b>[parse_zone(zone)]</b>"
 
 //**** General durability
 
@@ -553,6 +565,9 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		if(!do_mob(user,src,30*grav_power))
 			return
 
+	if(SEND_SIGNAL(loc, COMSIG_STORAGE_BLOCK_USER_TAKE, src, user, TRUE))
+		return
+
 	if(!ontable() && isturf(loc))
 		if(!move_after(user,3,target = src))
 			return
@@ -575,6 +590,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	else
 		if(twohands_required)
 			wield(user)
+	afterpickup(user)
 
 /atom/proc/ontable()
 	if(!isturf(src.loc))
@@ -592,9 +608,13 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 			if(edelay_type)
 				if(move_after(C, minone(unequip_delay_self-C.STASPD), target = C))
 					return TRUE
+				else
+					return FALSE
 			else
 				if(do_after(C, minone(unequip_delay_self-C.STASPD), target = C))
 					return TRUE
+				else
+					return FALSE
 
 	return TRUE
 
@@ -661,6 +681,12 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	SHOULD_CALL_PARENT(TRUE)
 	SEND_SIGNAL(src, COMSIG_ITEM_PICKUP, user)
 	item_flags |= IN_INVENTORY
+
+// called just as an item is picked up (loc is not yet changed)
+/obj/item/proc/afterpickup(mob/user)
+
+/obj/item/proc/afterdrop(mob/user)
+
 
 // called when "found" in pockets and storage items. Returns 1 if the search should end.
 /obj/item/proc/on_found(mob/finder)
@@ -1151,6 +1177,14 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	if(HAS_TRAIT(src, TRAIT_NODROP))
 		return
 	return ..()
+
+/obj/item/proc/embedded(atom/embedded_target, obj/item/bodypart/part)
+	return
+
+/obj/item/proc/unembedded()
+	if(item_flags & DROPDEL && !QDELETED(src))
+		qdel(src)
+		return TRUE
 
 /obj/item/proc/canStrip(mob/stripper, mob/owner)
 	return !HAS_TRAIT(src, TRAIT_NODROP)

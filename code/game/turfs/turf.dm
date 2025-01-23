@@ -120,7 +120,6 @@
 	T = GET_TURF_BELOW(src)
 	if(T)
 		T.multiz_turf_del(src, UP)
-	STOP_PROCESSING(SSweather,src)
 	if(force)
 		..()
 		//this will completely wipe turf state
@@ -330,6 +329,9 @@
 
 /turf/Entered(atom/movable/AM)
 	..()
+	SEND_SIGNAL(src, COMSIG_TURF_ENTERED, AM)
+	SEND_SIGNAL(AM, COMSIG_MOVABLE_TURF_ENTERED, src)
+
 	if(explosion_level && AM.ex_check(explosion_id))
 		AM.ex_act(explosion_level)
 
@@ -347,7 +349,6 @@
 			O.make_unfrozen()
 	if(!AM.zfalling)
 		zFall(AM)
-	trigger_weather(AM)
 
 /turf/proc/is_plasteel_floor()
 	return FALSE

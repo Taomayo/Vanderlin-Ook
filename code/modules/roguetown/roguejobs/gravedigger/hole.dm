@@ -56,12 +56,10 @@
 			. += "<span class='warning'>Better let this one sleep.</span>"
 
 /obj/structure/closet/dirthole/insertion_allowed(atom/movable/AM)
-	if(istype(AM, /obj/structure/closet/crate/chest) || istype(AM, /obj/structure/closet/burial_shroud))
+	if(istype(AM, /obj/structure/closet/crate/chest) || istype(AM, /obj/structure/closet/burial_shroud) || istype(AM, /obj/structure/closet/crate/coffin))
 		for(var/mob/living/M in contents)
 			return FALSE
 		for(var/obj/structure/closet/C in contents)
-			if(istype(C, /obj/structure/closet/crate/coffin))
-				return TRUE
 			return FALSE
 		return TRUE
 	. = ..()
@@ -76,12 +74,13 @@
 		if(bucket.reagents)
 			testing("reagent check complete")
 			var/datum/reagent/master_reagent = bucket.reagents.get_master_reagent()
+			var/reagent_volume = master_reagent.volume
 			if(do_after(user, 10 SECONDS, target = src))
 				if(bucket.reagents.remove_reagent(master_reagent.type, clamp(master_reagent.volume, 1, 100)))
 					testing("remove reagent proc complete")
-					var/turf/open/water/creatable/W = new(get_turf(src))
+					var/turf/open/water/river/creatable/W = new(get_turf(src))
 					W.water_reagent = master_reagent.type
-					W.water_volume = clamp(master_reagent.volume, 1, 100)
+					W.water_volume = clamp(reagent_volume, 1, 100)
 					W.update_icon()
 					playsound(W, 'sound/foley/waterenter.ogg', 100, FALSE)
 					QDEL_NULL(src) // Somehow this actually makes it disappear. Hilarious.
@@ -297,14 +296,13 @@
 		T.holie = src
 		if(T.muddy)
 			if(!(locate(/obj/item/natural/worms) in T))
-				if(prob(55))
-					if(prob(20))
-						if(prob(5))
-							new /obj/item/natural/worms/grubs(T)
-						else
-							new /obj/item/natural/worms/leech(T)
+				if(prob(40))
+					if(prob(10))
+						new /obj/item/natural/worms/grubs(T)
 					else
-						new /obj/item/natural/worms(T)
+						new /obj/item/natural/worms/leech(T)
+				else
+					new /obj/item/natural/worms(T)
 		else
 			if(!(locate(/obj/item/natural/stone) in T))
 				if(prob(23))
@@ -313,8 +311,9 @@
 
 /obj/structure/closet/dirthole/Destroy()
 	QDEL_NULL(abovemob)
-	if(mastert && mastert.holie == src)
-		mastert.holie = null
+	if(istype(mastert))
+		if(mastert && mastert?.holie == src)
+			mastert.holie = null
 	return ..()
 
 /obj/structure/closet/dirthole/post_buckle_mob(mob/living/M)

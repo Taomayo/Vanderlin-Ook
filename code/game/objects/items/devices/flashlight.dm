@@ -135,7 +135,7 @@
 	light_color = "#ffb773"
 	on_damage = 2
 	flags_1 = null
-	possible_item_intents = list(/datum/intent/hit, /datum/intent/use)
+	possible_item_intents = list(/datum/intent/use, /datum/intent/hit)
 	slot_flags = ITEM_SLOT_HIP
 	var/datum/looping_sound/torchloop/soundloop
 	var/should_self_destruct = TRUE //added for torch burnout
@@ -144,6 +144,9 @@
 	light_depth = 0
 	light_height = 0
 	metalizer_result = /obj/item/flashlight/flare/torch/lantern
+
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/flashlight/flare/torch/getonmobprop(tag)
 	. = ..()
@@ -156,7 +159,7 @@
 
 /obj/item/flashlight/flare/torch/Initialize()
 	. = ..()
-	soundloop = new(src, FALSE)
+	//soundloop = new(src, FALSE)
 
 /obj/item/flashlight/flare/torch/process()
 	open_flame(heat)
@@ -195,8 +198,8 @@
 		turn_off()
 
 /obj/item/flashlight/flare/torch/turn_off()
-	playsound(src.loc, 'sound/items/firesnuff.ogg', 100)
-	soundloop.stop()
+	playsound(src.loc, 'sound/items/firesnuff.ogg', 50)
+	soundloop?.stop()
 	STOP_PROCESSING(SSobj, src)
 	..()
 	if(ismob(loc))
@@ -214,7 +217,7 @@
 			damtype = BURN
 			update_brightness()
 			force = on_damage
-			soundloop.start()
+			//soundloop.start()
 			if(ismob(loc))
 				var/mob/M = loc
 				M.update_inv_hands()

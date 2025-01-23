@@ -61,9 +61,15 @@
 			Thou wilt be alone on these barren lands."
 	icon_state = "fisherhat"
 
-/obj/item/clothing/head/roguetown/flathat
-	name = "flat hat"
-	icon_state = "flathat"
+/obj/item/clothing/head/roguetown/stewardtophat
+	name = "top hat"
+	icon_state = "stewardtophat"
+	icon = 'icons/roguetown/clothing/special/steward.dmi'
+	mob_overlay_icon = 'icons/roguetown/clothing/onmob/64x64/head.dmi'
+	worn_x_dimension = 64
+	worn_y_dimension = 64
+	bloody_icon = 'icons/effects/blood64x64.dmi'
+	bloody_icon_state = "helmetblood_big"
 
 /obj/item/clothing/head/roguetown/knitcap
 	name = "knit cap"
@@ -97,6 +103,9 @@
 	desc = "A simple brimmed hat that provides some relief from the sun."
 	icon_state = "brimmed"
 
+/obj/item/clothing/head/roguetown/articap
+	desc = "A sporting cap with a small gear adornment. Popular fashion amongst Heartfelt engineers."
+	icon_state = "articap"
 
 //................ Fur Hats ............... //
 /obj/item/clothing/head/roguetown/hatfur
@@ -128,10 +137,16 @@
 	desc = "A comfortable and fashionable headgear."
 	icon_state = "chap_alt"
 	flags_inv = HIDEEARS
-
+	color = CLOTHING_LINEN
 /obj/item/clothing/head/roguetown/chaperon/greyscale/random/Initialize()
 	. = ..()
-	color = pick(CLOTHING_ROYAL_TEAL, CLOTHING_FOREST_GREEN, CLOTHING_FYRITIUS_DYE, CLOTHING_ROYAL_MAJENTA, CLOTHING_MUSTARD_YELLOW,CLOTHING_SALMON, CLOTHING_SKY_BLUE, CLOTHING_YELLOW_OCHRE, CLOTHING_RED_OCHRE, CLOTHING_RUSSET)
+	color = RANDOM_NOBLE_DYES
+
+/obj/item/clothing/head/roguetown/chaperon/greyscale/silk
+	icon_state = "chap_silk"
+/obj/item/clothing/head/roguetown/chaperon/greyscale/silk/random/Initialize()
+	. = ..()
+	color = RANDOM_NOBLE_DYES
 
 /obj/item/clothing/head/roguetown/chaperon/greyscale/chaperonsecondary
 	color = CLOTHING_PLUM_PURPLE
@@ -182,8 +197,6 @@
 	desc = "A simple leather hat with a fancy plume on top. A corny attempt at appearing regal \
 			despite one's status. Typically worn by travelling minstrels of all kinds."
 	icon_state = "bardhat"
-
-
 
 /obj/item/clothing/head/roguetown/antlerhood
 	name = "antlerhood"
@@ -341,6 +354,7 @@
 	worn_x_dimension = 64
 	worn_y_dimension = 64
 	dynamic_hair_suffix = ""
+	salvage_result = /obj/item/natural/silk
 
 //................ Opera Hood ............... //	- The "upgraded" headwear for Eoran acolytes
 /obj/item/clothing/head/roguetown/roguehood/eora
@@ -353,8 +367,8 @@
 	worn_x_dimension = 64
 	worn_y_dimension = 64
 	resistance_flags = FIRE_PROOF // Made of metal
-
 	armor = ARMOR_WEAK
+	salvage_result = NUTRITION_LEVEL_HUNGRY
 
 
 //................ Sun Hood ............... //	- Basic Astrata Acolyte
@@ -468,6 +482,11 @@
 	icon_state = "nile"
 	sellprice = VALUE_GOLD_ITEM
 
+/obj/item/clothing/head/roguetown/crown/nyle/consortcrown
+	name = "jewel of nyle"
+	icon_state = "consortcrown"
+	sellprice = VALUE_GOLD_ITEM
+
 //................ Hennin ............... //
 /obj/item/clothing/head/roguetown/hennin
 	name = "hennin"
@@ -542,6 +561,9 @@
 	armor = ARMOR_PLATE_BAD
 	body_parts_covered = COVERAGE_SKULL
 	prevent_crits = ALL_EXCEPT_STAB
+
+	grid_height = 64
+	grid_width = 64
 
 
 //................ Nasal Helmet ............... //
@@ -816,7 +838,13 @@
 /obj/item/clothing/head/roguetown/helmet/visored/knight/black
 	color = CLOTHING_SOOT_BLACK
 
-
+//................. Captain's Helmet .............. //
+/obj/item/clothing/head/roguetown/helmet/visored/captain
+	name = "captain's helmet"
+	desc = "An elegant barbute, fitted with the gold trim and polished metal of nobility."
+	icon = 'icons/roguetown/clothing/special/captain.dmi'
+	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/captain.dmi'
+	icon_state = "capbarbute"
 
 //......................................................................................................
 /*------------------\
@@ -966,6 +994,12 @@
 	item_state = "malumhelm"
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 
+/obj/item/clothing/head/roguetown/helmet/heavy/ravox
+	name = "ravoxian helmet"
+	desc = "Headwear commonly worn by Templars in service to Ravox. It resembles an heavily adorned visored sallet."
+	icon_state = "ravoxhelm"
+	item_state = "ravoxhelm"
+	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 
 //............... Sinistar (Graggar) Helmet ............... //
 /obj/item/clothing/head/roguetown/helmet/heavy/sinistar
@@ -1148,6 +1182,7 @@
 	body_parts_covered = HEAD|HAIR
 	prevent_crits =  MINOR_CRITICALS
 	max_integrity = INTEGRITY_POOR
+	clothing_flags = NONE
 
 
 //............... Arming Cap ............... //
@@ -1449,6 +1484,13 @@
 	bloody_icon_state = "helmetblood_big"
 
 	prevent_crits =  MINOR_CRITICALS
+
+/obj/item/clothing/head/roguetown/wizhat/witch
+	name = "witch hat"
+	desc = ""
+	icon_state = "witchhat"
+	detail_tag = "_detail"
+	detail_color = CLOTHING_SOOT_BLACK
 
 /obj/item/clothing/head/roguetown/wizhat/gen
 	icon_state = "wizardhatgen"

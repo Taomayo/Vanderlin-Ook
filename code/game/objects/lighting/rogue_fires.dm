@@ -60,13 +60,13 @@
 	name = "standing fire"
 	icon_state = "standing1"
 	base_state = "standing"
-	bulb_colour = "#ff9648"
+	bulb_colour = "#ff9e54"
 	cookonme = FALSE
 	crossfire = FALSE
 
 
 /obj/machinery/light/rogue/firebowl/standing/blue
-	bulb_colour = "#b9bcff"
+	bulb_colour = "#8468ff"
 	icon_state = "standingb1"
 	base_state = "standingb"
 
@@ -116,6 +116,7 @@
 	name = "candles"
 	icon_state = "wallcandle1"
 	base_state = "wallcandle"
+	bulb_colour = "#ffa35c"
 	crossfire = FALSE
 	cookonme = FALSE
 	pixel_y = 32
@@ -150,7 +151,7 @@
 	pixel_x = -32
 
 /obj/machinery/light/rogue/wallfire/candle/blue
-	bulb_colour = "#b9bcff"
+	bulb_colour = "#8d73ff"
 	icon_state = "wallcandleb1"
 	base_state = "wallcandleb"
 
@@ -210,7 +211,6 @@
 				update_icon()
 				if(soundloop)
 					soundloop.start()
-				addtimer(CALLBACK(src, PROC_REF(trigger_weather)), rand(5,20))
 				return TRUE
 
 /obj/machinery/light/rogue/torchholder/Initialize()
@@ -277,7 +277,6 @@
 					on = TRUE
 					update()
 					update_icon()
-					addtimer(CALLBACK(src, PROC_REF(trigger_weather)), rand(5,20))
 					return
 			if(!LR.on && on)
 				if(LR.fuel > 0)
@@ -292,7 +291,6 @@
 				on = TRUE
 				update()
 				update_icon()
-				addtimer(CALLBACK(src, PROC_REF(trigger_weather)), rand(5,20))
 			else
 				if(!user.transferItemToLoc(LR, src))
 					return
@@ -337,6 +335,7 @@
 	climb_offset = 14
 	on = FALSE
 	cookonme = TRUE
+	soundloop = /datum/looping_sound/fireloop
 	var/obj/item/attachment = null
 	var/obj/item/reagent_containers/food/snacks/food = null
 	var/datum/looping_sound/boilloop/boilloop
@@ -416,7 +415,7 @@
 		if(istype(attachment, /obj/item/cooking/pan))
 			if(food)
 				if(rawegg)
-					to_chat(user, "<span class='notice'>Throws away the raw egg.</span>")
+					to_chat(user, "<span class='notice'>You throw away the raw egg.</span>")
 					rawegg = FALSE
 					qdel(food)
 					update_icon()
@@ -499,6 +498,7 @@
 	bulb_colour = "#da5e21"
 	cookonme = TRUE
 	max_integrity = 30
+	soundloop = /datum/looping_sound/fireloop
 
 /obj/machinery/light/rogue/campfire/process()
 	..()

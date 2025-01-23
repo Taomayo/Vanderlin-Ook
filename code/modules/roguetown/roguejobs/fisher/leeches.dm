@@ -17,6 +17,7 @@
 		"embedded_fall_chance" = 0,
 		"embedded_bloodloss"= 0,
 	)
+	bundletype = null
 	/// Consistent AKA no lore
 	var/consistent = FALSE
 	/// Are we giving or receiving blood?
@@ -46,6 +47,9 @@
 	if(!drainage)
 		return PROCESS_KILL
 	blood_storage = max(blood_storage - drainage, 0)
+
+/obj/item/natural/worms/update_icon()
+	icon_state = "leech"
 
 /obj/item/natural/worms/leech/examine(mob/user)
 	. = ..()
@@ -96,7 +100,7 @@
 /obj/item/natural/worms/leech/on_embed_life(mob/living/user, obj/item/bodypart/bodypart)
 	if(!user)
 		return
-	user.adjustToxLoss(toxin_healing)
+	user.adjustToxLoss(bodypart.has_wound(/datum/wound/slash/incision) ? toxin_healing * 2 : toxin_healing)
 	if(giving)
 		var/blood_given = min(BLOOD_VOLUME_MAXIMUM - user.blood_volume, blood_storage, blood_sucking)
 		user.blood_volume += blood_given
@@ -194,11 +198,6 @@
 		desc = "[desc] [jointext(descs, " ")]"
 	return TRUE
 
-/obj/item/natural/worms/leeches/update_icon()
-	..()
-	if(amt > 1)
-		name = "[initial(name)]es"
-
 /obj/item/natural/worms/leech/parasite
 	name = "the parasite"
 	desc = "A foul, wriggling creecher. Known to suck whole villages of their blood, these rare freeks have been domesticated for medical purposes."
@@ -211,6 +210,10 @@
 	toxin_healing = -3
 	blood_storage = BLOOD_VOLUME_SURVIVE
 	blood_maximum = BLOOD_VOLUME_BAD
+
+/obj/item/natural/worms/leech/parasite/update_icon()
+	. = ..()
+	icon_state = initial(icon_state)
 
 /obj/item/natural/worms/leech/parasite/attack_self(mob/user)
 	. = ..()

@@ -20,6 +20,8 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 	/turf/open/transparent/openspace
 	)))
 
+#define isclient(A) istype(A, /client)
+
 #define isgroundlessturf(A) (is_type_in_typecache(A, GLOB.turfs_without_ground))
 
 #define isopenturf(A) (istype(A, /turf/open))
@@ -84,10 +86,6 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 #define iscow(A) (istype(A, /mob/living/simple_animal/cow))
 
 #define iscat(A) (istype(A, /mob/living/simple_animal/pet/cat))
-
-#define isdog(A) (istype(A, /mob/living/simple_animal/pet/dog))
-
-#define iscorgi(A) (istype(A, /mob/living/simple_animal/pet/dog/corgi))
 
 #define ishostile(A) (istype(A, /mob/living/simple_animal/hostile))
 

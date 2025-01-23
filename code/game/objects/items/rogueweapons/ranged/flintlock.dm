@@ -5,7 +5,7 @@
 	lefthand_file = 'icons/mob/inhands/weapons/guns_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/weapons/guns_righthand.dmi'
 	icon_state = "puffer_uncocked_ramrod"
-	item_state = "gun"
+	item_state = "puffer"
 	bigboy = FALSE
 	recoil = 8
 	randomspread = 2
@@ -31,6 +31,8 @@
 	slot_flags = ITEM_SLOT_HIP
 	w_class = WEIGHT_CLASS_NORMAL
 	sellprice = 200 // This kind of equipment is very hard to come by in Rockhill.
+	grid_height = 32
+	grid_width = 96
 	var/cocked = FALSE
 	var/ramrod_inserted = TRUE
 	var/powdered = FALSE

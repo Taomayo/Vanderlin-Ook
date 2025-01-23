@@ -24,7 +24,7 @@
 		/obj/item/roguecoin/silver/pile = 15,
 		/obj/item/rogueweapon/knife/dagger/steel = 4,
 		/obj/item/rogueweapon/axe/iron = 10,
-		/obj/item/quiver/arrows = 5,
+		/obj/item/ammo_holder/quiver/arrows = 5,
 		/obj/item/rogueweapon/sword/short = 5,
 		/obj/item/clothing/suit/roguetown/armor/cuirass/iron = 10,
 		/obj/item/clothing/suit/roguetown/armor/gambeson = 10,
@@ -461,6 +461,7 @@
 	icon_state = "stickyweb1"
 	resistance_flags = FLAMMABLE
 	alpha = 109
+	max_integrity = 50
 	opacity = TRUE
 
 /obj/structure/spider/stickyweb/CanPass(atom/movable/mover, turf/target)
@@ -751,17 +752,6 @@
 	icon_state = "wallpipe"
 	pixel_x = 0
 	pixel_y = 32
-
-
-/obj/structure/fluff/shipssprote
-	name = ""
-	desc = ""
-	icon = 'icons/obj/atmospherics/pipes/disposal.dmi'
-	icon_state = "pipe"
-	mouse_opacity = 0
-	color = "#5a4621"
-	pixel_y = -16
-
 
 /obj/structure/fluff/walldeco/bath/random
 	icon_state = "bath"

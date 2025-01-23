@@ -34,7 +34,7 @@
 	contains = /obj/item/sleepingbag
 
 /datum/supply_pack/rogue/tools/scroll
-	name = "Paper Scroll"
+	name = "Parchment Scroll"
 	cost = 2
 	contains = /obj/item/paper/scroll
 
@@ -79,7 +79,7 @@
 /datum/supply_pack/rogue/tools/hammer
 	name = "Hammer"
 	cost = 20
-	contains = /obj/item/rogueweapon/hammer
+	contains = /obj/item/rogueweapon/hammer/iron
 
 /datum/supply_pack/rogue/tools/shovel
 	name = "Shovel"

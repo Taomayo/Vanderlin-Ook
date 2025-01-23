@@ -1,3 +1,4 @@
+#define BLOWDART_DAMAGE		20
 #define ARROW_DAMAGE		33
 #define BOLT_DAMAGE			44
 #define BULLET_DAMAGE		80
@@ -21,6 +22,7 @@
 	dropshrink = 0.8
 	max_integrity = 10
 	force = 10
+	embedding = list("embedded_pain_multiplier" = 3, "embedded_fall_chance" = 0)
 
 /obj/projectile/bullet/reusable/bolt
 	name = "bolt"
@@ -34,7 +36,7 @@
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
 	armor_penetration = BOLT_PENETRATION
-	woundclass = BCLASS_STAB
+	woundclass = BCLASS_SHOT
 	flag =  "piercing"
 	speed = 0.3
 	accuracy = 85 //Crossbows have higher accuracy
@@ -153,6 +155,7 @@
 	dropshrink = 0.8
 	possible_item_intents = list(/datum/intent/dagger/cut, /datum/intent/dagger/thrust)
 	max_integrity = 20
+	embedding = list("embedded_pain_multiplier" = 3, "embedded_fall_chance" = 0)
 
 /obj/projectile/bullet/reusable/arrow
 	name = "arrow"
@@ -166,7 +169,7 @@
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
 	armor_penetration = ARROW_PENETRATION
-	woundclass = BCLASS_STAB
+	woundclass = BCLASS_SHOT
 	flag =  "piercing"
 	speed = 0.4
 
@@ -399,6 +402,11 @@
 | Darts |
 \------*/
 
+
+/*------\
+| Darts |
+\------*/
+
 /obj/item/ammo_casing/caseless/rogue/dart
 	name = "dart"
 	desc = "A thorn fasioned into a primitive dart."
@@ -406,28 +414,63 @@
 	caliber = "dart"
 	icon = 'icons/roguetown/weapons/ammo.dmi'
 	icon_state = "dart"
-	dropshrink = 0.8
+	dropshrink = 0.9
 	max_integrity = 10
 	force = 10
 
 /obj/projectile/bullet/reusable/dart
 	name = "dart"
 	desc = "A thorn faschioned into a primitive dart."
-	damage = 20
+	damage = BLOWDART_DAMAGE
 	damage_type = BRUTE
 	icon = 'icons/roguetown/weapons/ammo.dmi'
 	icon_state = "dart_proj"
 	ammo_type = /obj/item/ammo_casing/caseless/rogue/dart
-	range = 20
+	range = 6
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
-	embedchance = 100
-	armor_penetration = 10
+	embedchance = 0
+	armor_penetration = 0
 	woundclass = BCLASS_STAB
-	flag = "dart"
+	flag = "piercing"
 	speed = 0.3
 	accuracy = 50
 
+//................ Poison Dart ............... //
+/obj/item/ammo_casing/caseless/rogue/dart/poison
+	name = "poison dart"
+	desc = "A dart with it's tip drenched in a weak poison."
+	projectile_type = /obj/projectile/bullet/reusable/dart/poison
+	icon_state = "dart_poison"
 
+/obj/projectile/bullet/reusable/dart/poison
+	name = "poison dart"
+	desc = "A dart with its tip drenched in a powerful poison."
+	var/piercing = FALSE
+
+/obj/projectile/bullet/reusable/dart/poison/Initialize()
+	. = ..()
+	create_reagents(50, NO_REACT)
+	reagents.add_reagent(/datum/reagent/berrypoison, 3)
+
+/obj/projectile/bullet/reusable/dart/poison/on_hit(atom/target, blocked = FALSE)
+	if(iscarbon(target))
+		var/mob/living/carbon/M = target
+		if(blocked != 100) // not completely blocked
+			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
+				..()
+				reagents.reaction(M, INJECT)
+				reagents.trans_to(M, reagents.total_volume)
+				return BULLET_ACT_HIT
+			else
+				blocked = 100
+				target.visible_message(	span_danger("\The [src] was deflected!"), span_danger("My armor protected me against \the [src]!"))
+
+	..(target, blocked)
+	DISABLE_BITFIELD(reagents.flags, NO_REACT)
+	reagents.handle_reactions()
+	return BULLET_ACT_HIT
+
+#undef BLOWDART_DAMAGE
 #undef ARROW_DAMAGE
 #undef BOLT_DAMAGE
 #undef BULLET_DAMAGE
