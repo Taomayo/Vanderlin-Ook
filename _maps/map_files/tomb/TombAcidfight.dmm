@@ -1,0 +1,2473 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"aj" = (
+/obj/machinery/light/rogue/firebowl,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"au" = (
+/obj/structure/fluff/statue/shisha,
+/obj/structure/fluff/walldeco/rpainting/crown{
+	pixel_y = 32
+	},
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"aw" = (
+/obj/structure/table/wood/counter{
+	dir = 1
+	},
+/obj/item/reagent_containers/powder/spice{
+	pixel_y = 14;
+	pixel_x = -11
+	},
+/obj/item/reagent_containers/powder/ozium,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"aO" = (
+/obj/item/perfume/random{
+	pixel_x = 12
+	},
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"bE" = (
+/obj/structure/fluff/railing/border{
+	dir = 6
+	},
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"bP" = (
+/obj/structure/fluff/walldeco/rpainting{
+	pixel_y = 32
+	},
+/obj/item/dmusicbox{
+	pixel_y = 6
+	},
+/obj/structure/table/wood/large/corner_blue,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"cd" = (
+/obj/structure/bars,
+/obj/structure/bars,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"cy" = (
+/obj/item/clothing/ring/silver,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"di" = (
+/turf/closed/wall/mineral/rogue/decostone/cand/reddish,
+/area/rogue)
+"dk" = (
+/obj/machinery/light/rogue/wallfire/candle/blue/l,
+/obj/item/roguecoin/gold,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"dK" = (
+/obj/structure/table/wood/counter{
+	dir = 1
+	},
+/obj/item/reagent_containers/powder/ozium{
+	pixel_x = -5;
+	pixel_y = 11
+	},
+/obj/item/reagent_containers/powder/ozium{
+	pixel_x = -10;
+	pixel_y = 1
+	},
+/obj/item/reagent_containers/powder/ozium{
+	pixel_x = 3;
+	pixel_y = 2
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"es" = (
+/turf/open/floor/rogue/churchbrick,
+/area/rogue)
+"fK" = (
+/obj/item/trash/applecore,
+/obj/item/trash/applecore{
+	pixel_y = -19;
+	pixel_x = -18
+	},
+/turf/open/floor/rogue/churchbrick,
+/area/rogue)
+"iu" = (
+/obj/item/chair/stool/bar/rogue/crafted,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"jo" = (
+/obj/structure/chair/stool/rogue/crafted,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"jR" = (
+/obj/item/perfume/random{
+	pixel_y = 14;
+	pixel_x = -11
+	},
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"lq" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/item/rogueweapon/knife/copper,
+/obj/item/clothing/mask/rogue/facemask/copper,
+/obj/item/clothing/suit/roguetown/armor/cuirass/copperchest,
+/obj/item/clothing/head/roguetown/helmet/coppercap,
+/obj/item/clothing/neck/roguetown/gorget/copper,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"lW" = (
+/obj/structure/bed/rogue/shit,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"mi" = (
+/obj/structure/table/wood/counter/end{
+	dir = 1
+	},
+/obj/item/reagent_containers/powder/ozium,
+/obj/item/clothing/mask/cigarette{
+	pixel_y = 11
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"mY" = (
+/mob/living/carbon/human/species/orc/warrior,
+/obj/item/rogueweapon/mace/steel,
+/obj/item/clothing/suit/roguetown/armor/medium/scale,
+/obj/item/clothing/neck/roguetown/gorget/copper,
+/obj/item/clothing/head/roguetown/helmet/orc,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/obj/item/clothing/under/roguetown/trou/leather,
+/obj/item/clothing/gloves/roguetown/leather,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"nS" = (
+/obj/structure/roguetent,
+/obj/structure/trap/wall_projectile,
+/obj/structure/trap/wall_projectile,
+/obj/structure/trap/wall_projectile,
+/obj/structure/trap/wall_projectile,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"oL" = (
+/obj/structure/fluff/railing/border{
+	dir = 10
+	},
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"pn" = (
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"pO" = (
+/obj/structure/bed/rogue/shit,
+/obj/machinery/light/rogue/torchholder/l,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"pZ" = (
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"qz" = (
+/obj/item/clothing/mask/cigarette{
+	pixel_y = -1
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"tq" = (
+/obj/item/trash/applecore,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"uy" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/effect/decal/cleanable/blood/gibs/torso,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"uz" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/item/clothing/mask/rogue/facemask/copper,
+/obj/item/clothing/suit/roguetown/armor/cuirass/copperchest,
+/obj/item/clothing/head/roguetown/helmet/coppercap,
+/obj/item/clothing/neck/roguetown/gorget/copper,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"uC" = (
+/obj/item/bodypart/r_arm/prosthetic/gold,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"uZ" = (
+/obj/structure/bars,
+/obj/effect/decal/cleanable/blood/gibs/torso,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"vq" = (
+/obj/structure/fluff/statue/femalestatue,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"vs" = (
+/mob/living/simple_animal/hostile/rogue/skeleton/bow,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"wt" = (
+/mob/living/simple_animal/hostile/rogue/orc/orc_marauder/ravager,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"xu" = (
+/obj/structure/table/wood/counter/end,
+/obj/item/reagent_containers/powder/moondust{
+	pixel_x = 3;
+	pixel_y = 7
+	},
+/obj/item/reagent_containers/powder/moondust{
+	pixel_x = -10;
+	pixel_y = -1
+	},
+/obj/item/reagent_containers/powder/moondust{
+	pixel_x = 10;
+	pixel_y = -1
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"xw" = (
+/mob/living/simple_animal/pet/cat/rogue,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"yu" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/item/rogueweapon/knife/stone,
+/obj/item/clothing/mask/rogue/facemask/copper,
+/obj/item/clothing/suit/roguetown/armor/cuirass/copperchest,
+/obj/item/clothing/head/roguetown/helmet/coppercap,
+/obj/item/clothing/neck/roguetown/gorget/copper,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"yv" = (
+/obj/structure/bars/pipe,
+/obj/structure/fluff/walldeco/bath/wallpipes{
+	pixel_y = 15
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"yz" = (
+/obj/structure/table/church,
+/obj/item/reagent_containers/powder/moondust_purest{
+	pixel_y = 8
+	},
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"yC" = (
+/obj/structure/handcart,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"yD" = (
+/obj/item/natural/poo,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"zo" = (
+/mob/living/carbon/human/species/orc/warrior,
+/obj/item/rogueweapon/mace/steel/morningstar,
+/obj/item/clothing/suit/roguetown/armor/medium/scale,
+/obj/item/clothing/neck/roguetown/gorget/copper,
+/obj/item/clothing/head/roguetown/helmet/orc,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/obj/item/clothing/under/roguetown/trou/leather,
+/obj/item/clothing/gloves/roguetown/leather,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"Af" = (
+/obj/structure/bed/rogue/shit,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"AB" = (
+/obj/item/trash/candle,
+/turf/open/floor/rogue/churchbrick,
+/area/rogue)
+"Bh" = (
+/turf/open/transparent/openspace,
+/area/rogue)
+"Bj" = (
+/obj/structure/roguetent,
+/obj/item/restraints/legcuffs/beartrap/armed,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"BP" = (
+/obj/structure/roguetent,
+/obj/structure/trap/bomb,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Ce" = (
+/obj/item/clothing/mask/cigarette{
+	pixel_y = 11
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Cw" = (
+/obj/structure/mineral_door/bars,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"CE" = (
+/obj/item/natural/poo,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"CY" = (
+/turf/closed/wall/mineral/rogue/stonebrick/reddish,
+/area/rogue)
+"Ev" = (
+/obj/item/natural/poo,
+/obj/effect/decal/cleanable/blood/gibs/core,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"FW" = (
+/obj/structure/fluff/customsign{
+	desc = "Schnityz Powdery"
+	},
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"Gc" = (
+/turf/closed/wall/mineral/rogue/tent,
+/area/rogue)
+"Ge" = (
+/obj/structure/fluff/railing/border{
+	dir = 4
+	},
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"Gf" = (
+/turf/closed/mineral/rogue/bedrock,
+/area/rogue)
+"GK" = (
+/obj/item/grown/log/tree/stake,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"GP" = (
+/obj/item/clothing/shoes/roguetown/boots/armor/light,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"HG" = (
+/obj/machinery/light/rogue/wallfire/candle/blue/r,
+/obj/item/perfume/random,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"Jv" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/item/rogueweapon/knife/cleaver/combat,
+/obj/item/clothing/mask/rogue/facemask/copper,
+/obj/item/clothing/suit/roguetown/armor/cuirass/copperchest,
+/obj/item/clothing/head/roguetown/helmet/coppercap,
+/obj/item/clothing/neck/roguetown/gorget/copper,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"JH" = (
+/obj/structure/bars,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"JZ" = (
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"Kd" = (
+/obj/machinery/light/rogue/torchholder/l,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"KA" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/item/rogueweapon/knife/cleaver,
+/obj/item/clothing/mask/rogue/facemask/copper,
+/obj/item/clothing/suit/roguetown/armor/cuirass/copperchest,
+/obj/item/clothing/head/roguetown/helmet/coppercap,
+/obj/item/clothing/neck/roguetown/gorget/copper,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"KZ" = (
+/obj/structure/mineral_door/bars,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"Mj" = (
+/obj/item/rogueweapon/hoe/copper,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Mx" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/structure/bed/rogue/shit,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"MF" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"Nf" = (
+/obj/structure/fluff/walldeco/chains,
+/obj/effect/decal/cleanable/blood,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"NH" = (
+/obj/structure/fluff/railing/border{
+	dir = 8
+	},
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"NU" = (
+/obj/structure/table/church/m,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"OW" = (
+/obj/structure/bars,
+/obj/effect/decal/cleanable/blood/gibs,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"Pk" = (
+/obj/item/ingot/copper,
+/obj/item/ingot/copper{
+	pixel_y = -4;
+	pixel_x = 9
+	},
+/obj/item/ingot/copper{
+	pixel_y = 4;
+	pixel_x = 7
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"PT" = (
+/obj/structure/bed/rogue/shit,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"RP" = (
+/obj/machinery/light/rogue/campfire/longlived,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"Si" = (
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"Sj" = (
+/mob/living/simple_animal/pet/cat/rogue/black,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Tl" = (
+/obj/item/trash/candle,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"Tp" = (
+/obj/structure/mineral_door/wood/violet,
+/turf/open/floor/rogue/churchbrick,
+/area/rogue)
+"TE" = (
+/obj/structure/chair/bench/throne{
+	desc = "the seat is still warm. The whole reason the king sends people into the tomb.";
+	pixel_y = 1;
+	pixel_x = 8;
+	dir = 4;
+	name = "The kings old Cuck Chair"
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"TM" = (
+/obj/structure/table/wood/counter{
+	dir = 1
+	},
+/obj/item/reagent_containers/powder/spice,
+/obj/item/reagent_containers/powder/spice{
+	pixel_y = 14;
+	pixel_x = -11
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Ug" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"Ux" = (
+/obj/item/roguecoin/gold,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"UC" = (
+/mob/living/carbon/human/species/orc/warlord/skilled,
+/obj/item/clothing/suit/roguetown/armor/plate/orc/warlord,
+/obj/item/clothing/head/roguetown/helmet/orc/warlord,
+/obj/item/rogueweapon/sword/rapier,
+/obj/effect/mapping_helpers/floor_clothing_equipper,
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"UL" = (
+/obj/machinery/light/rogue/torchholder/r,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"UU" = (
+/obj/item/reagent_containers/glass/cup/silver,
+/obj/item/reagent_containers/glass/cup/silver{
+	pixel_y = -18;
+	pixel_x = -8
+	},
+/obj/item/reagent_containers/glass/cup/silver{
+	pixel_y = -17;
+	pixel_x = 6
+	},
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Vh" = (
+/obj/structure/bed/rogue/bear,
+/obj/item/clothing/neck/roguetown/psycross/silver,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Vm" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/obj/structure/fluff/walldeco/chains,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"VF" = (
+/obj/structure/table/church{
+	dir = 1
+	},
+/obj/item/roguegem/violet{
+	pixel_x = -3
+	},
+/obj/item/roguegem/violet{
+	pixel_x = 10;
+	pixel_y = 8
+	},
+/obj/item/roguegem/violet{
+	pixel_x = 6;
+	pixel_y = 1
+	},
+/turf/open/floor/carpet/purple,
+/area/rogue)
+"XN" = (
+/obj/item/storage/belt/rogue/leather/plaquegold,
+/turf/open/floor/rogue/ruinedwood/spiral,
+/area/rogue)
+"Yi" = (
+/turf/closed/mineral/rogue,
+/area/rogue)
+"Ys" = (
+/obj/item/rope/chain,
+/turf/open/floor/rogue/concrete,
+/area/rogue)
+"Yy" = (
+/obj/structure/bars,
+/turf/open/floor/rogue/naturalstone,
+/area/rogue)
+"YF" = (
+/obj/item/trash/applecore,
+/turf/open/floor/rogue/churchbrick,
+/area/rogue)
+
+(1,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(2,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(3,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+"}
+(4,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+"}
+(5,1,1) = {"
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+"}
+(6,1,1) = {"
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Yi
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+"}
+(7,1,1) = {"
+Gf
+Si
+Si
+Si
+Si
+Si
+Yi
+Yi
+Yi
+Yi
+Yi
+Yi
+Yi
+Si
+Si
+Si
+Ug
+Si
+Si
+Si
+Si
+Yi
+Si
+Si
+Gf
+Gf
+Si
+Si
+Si
+Gf
+"}
+(8,1,1) = {"
+Gf
+Si
+Si
+Si
+Si
+Yi
+Yi
+GP
+TE
+Gc
+pn
+pn
+Yi
+Si
+Ug
+Si
+Si
+Si
+Yi
+Yi
+Yi
+Yi
+Si
+Si
+Si
+Gf
+Si
+Si
+Si
+Gf
+"}
+(9,1,1) = {"
+Gf
+Si
+Si
+Si
+Si
+Yi
+yv
+Mj
+pn
+Gc
+pn
+pn
+Yi
+Yi
+Si
+Si
+Si
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Si
+Si
+Gf
+"}
+(10,1,1) = {"
+Gf
+Si
+Si
+Si
+Si
+Yi
+Pk
+Vh
+pn
+Gc
+pn
+pn
+Yi
+Yi
+Yi
+Yi
+Ug
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+"}
+(11,1,1) = {"
+Gf
+Si
+Si
+Si
+Si
+Yi
+UU
+uC
+pn
+BP
+pn
+KA
+Yi
+yC
+Si
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+"}
+(12,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+Yi
+Gc
+Gc
+Gc
+Gc
+pn
+Gc
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+"}
+(13,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+Kd
+Sj
+pn
+CE
+Gc
+pn
+pn
+Bj
+Si
+Si
+Si
+Ug
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+"}
+(14,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+pn
+pn
+lq
+pn
+Gc
+pn
+pn
+Bj
+Si
+Ug
+Si
+Si
+Si
+Yi
+Yi
+Yi
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+"}
+(15,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+xu
+pn
+pn
+pn
+pn
+pn
+Gc
+Yi
+FW
+Si
+GK
+jo
+Si
+Yi
+lW
+Si
+lW
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+"}
+(16,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+dK
+pn
+qz
+CE
+xw
+pn
+KA
+Yi
+Si
+jo
+RP
+Si
+Si
+Yi
+vs
+Si
+Si
+vs
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+"}
+(17,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+TM
+pn
+pn
+pn
+pn
+pn
+pn
+Yi
+Si
+Si
+Si
+iu
+Si
+Yi
+Si
+cy
+Si
+Si
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+"}
+(18,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+aw
+Ce
+xw
+pn
+uz
+CE
+xw
+Yi
+Ug
+Si
+Si
+GK
+Yi
+Yi
+Si
+RP
+Si
+Si
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+"}
+(19,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+mi
+pn
+pn
+pn
+pn
+pn
+pn
+Yi
+Si
+Si
+Si
+Si
+Yi
+Yy
+Yy
+Yy
+Cw
+Yy
+Yi
+Si
+Si
+Si
+Si
+Si
+Gf
+"}
+(20,1,1) = {"
+Si
+Si
+Si
+Si
+Yi
+pn
+Jv
+pn
+pn
+Gc
+Gc
+Gc
+Yi
+Yi
+Ug
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Yi
+Si
+Si
+Si
+Si
+Si
+Gf
+"}
+(21,1,1) = {"
+Gf
+Si
+Si
+Si
+Yi
+Yi
+pn
+pn
+Sj
+Gc
+CE
+pn
+pO
+Yi
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+"}
+(22,1,1) = {"
+Gf
+Si
+Si
+Si
+Si
+Yi
+UL
+pn
+pn
+nS
+pn
+CE
+XN
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Ug
+Si
+Yi
+Si
+Si
+Si
+Si
+Si
+Gf
+"}
+(23,1,1) = {"
+Gf
+Si
+Si
+Si
+Si
+Yi
+Yi
+pn
+yu
+Gc
+pn
+pn
+Af
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Yi
+Si
+Si
+Si
+Si
+Si
+Gf
+"}
+(24,1,1) = {"
+Gf
+Gf
+Si
+Si
+Si
+Si
+Yi
+Yi
+pn
+Gc
+Af
+Af
+Yi
+Yi
+Si
+Si
+Si
+Yi
+Yi
+Yi
+Yi
+Yi
+Yi
+Yi
+Si
+Si
+Si
+Si
+Gf
+Gf
+"}
+(25,1,1) = {"
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Yi
+Yi
+Yi
+Yi
+Yi
+Yi
+Si
+Si
+Si
+Yi
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+"}
+(26,1,1) = {"
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Yi
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+"}
+(27,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+"}
+(28,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(29,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(30,1,1) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+
+(1,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(2,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(3,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Bh
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+Gf
+"}
+(4,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+"}
+(5,1,2) = {"
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+"}
+(6,1,2) = {"
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+"}
+(7,1,2) = {"
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Gf
+"}
+(8,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Bh
+Bh
+Bh
+Gf
+"}
+(9,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Bh
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+Bh
+Bh
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Gf
+"}
+(10,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Bh
+pZ
+di
+CY
+CY
+CY
+CY
+CY
+CY
+di
+pZ
+pZ
+pZ
+Si
+Si
+Bh
+cd
+JH
+JH
+cd
+Bh
+Bh
+Si
+Si
+Si
+Gf
+"}
+(11,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Bh
+pZ
+CY
+dk
+JZ
+es
+AB
+es
+mY
+CY
+JH
+JH
+pZ
+Si
+Bh
+Bh
+JH
+Mx
+yD
+JH
+Bh
+Bh
+Si
+Si
+Si
+Gf
+"}
+(12,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Si
+pZ
+CY
+bP
+Ux
+es
+fK
+YF
+es
+CY
+Vm
+OW
+NH
+NH
+NH
+NH
+JH
+Ev
+MF
+JH
+Bh
+Bh
+Si
+Si
+Si
+Si
+"}
+(13,1,2) = {"
+Si
+Bh
+Bh
+Bh
+Si
+pZ
+CY
+JZ
+tq
+es
+AB
+es
+es
+CY
+JH
+JH
+pZ
+pZ
+mY
+pZ
+cd
+JH
+KZ
+JH
+Bh
+Bh
+aj
+Si
+Si
+Si
+"}
+(14,1,2) = {"
+Si
+Si
+Si
+Si
+Si
+pZ
+CY
+JZ
+yz
+JZ
+Tl
+JZ
+es
+CY
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+oL
+NH
+NH
+Si
+Si
+Si
+Si
+"}
+(15,1,2) = {"
+Si
+Si
+Si
+Si
+Si
+pZ
+CY
+vq
+NU
+UC
+JZ
+JZ
+es
+Tp
+pZ
+pZ
+wt
+Ys
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+Si
+Si
+Si
+Si
+"}
+(16,1,2) = {"
+Si
+Si
+Si
+Si
+Si
+pZ
+CY
+JZ
+VF
+JZ
+JZ
+JZ
+es
+CY
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+bE
+Ge
+Ge
+Si
+Si
+Si
+Si
+"}
+(17,1,2) = {"
+Si
+Si
+Si
+Si
+Si
+pZ
+CY
+aO
+JZ
+es
+es
+es
+AB
+CY
+uZ
+JH
+pZ
+pZ
+zo
+pZ
+JH
+JH
+KZ
+cd
+Bh
+Bh
+aj
+Si
+Si
+Si
+"}
+(18,1,2) = {"
+Si
+Si
+Si
+Si
+Si
+pZ
+CY
+au
+jR
+es
+YF
+es
+AB
+CY
+uy
+JH
+Ge
+Ge
+Ge
+Ge
+JH
+Nf
+yD
+JH
+Bh
+Bh
+Si
+Si
+Si
+Si
+"}
+(19,1,2) = {"
+Gf
+Si
+Si
+Si
+Si
+pZ
+CY
+HG
+JZ
+AB
+YF
+es
+mY
+CY
+JH
+JH
+pZ
+Si
+Si
+Si
+JH
+PT
+MF
+JH
+Bh
+Bh
+Si
+Si
+Si
+Si
+"}
+(20,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Si
+pZ
+di
+CY
+CY
+CY
+CY
+CY
+CY
+di
+pZ
+pZ
+pZ
+Si
+Si
+Si
+cd
+JH
+JH
+cd
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+"}
+(21,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Si
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+pZ
+Si
+Bh
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+"}
+(22,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Si
+Si
+Si
+Si
+Bh
+Bh
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+"}
+(23,1,2) = {"
+Gf
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Bh
+Bh
+Si
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+"}
+(24,1,2) = {"
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+"}
+(25,1,2) = {"
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Si
+Si
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+"}
+(26,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+Gf
+"}
+(27,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(28,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(29,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Bh
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Si
+Si
+Bh
+Bh
+Bh
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
+(30,1,2) = {"
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Si
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+Gf
+"}
