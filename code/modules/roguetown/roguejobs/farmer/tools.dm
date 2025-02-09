@@ -1,6 +1,9 @@
 //copper tools
 
 /obj/item/rogueweapon/hoe/copper
+	experimental_inhand = TRUE
+	experimental_onback = TRUE
+	experimental_onhip = TRUE
 	force = 10
 	force_wielded = 15
 	possible_item_intents = list(/datum/intent/pick)
@@ -10,6 +13,7 @@
 	icon = 'icons/roguetown/weapons/tools.dmi'
 	icon_state = "choe"
 	smeltresult = /obj/item/ingot/copper
+	time_multiplier = 0.5
 
 /obj/item/rogueweapon/sickle/copper
 	force = 10
@@ -22,6 +26,9 @@
 
 
 /obj/item/rogueweapon/pitchfork/copper
+	experimental_inhand = TRUE
+	experimental_onback = TRUE
+	experimental_onhip = TRUE
 	force = 10
 	force_wielded = 15
 	possible_item_intents = list(POLEARM_THRUST, POLEARM_BASH)

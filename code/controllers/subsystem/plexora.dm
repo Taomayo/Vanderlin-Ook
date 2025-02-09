@@ -125,6 +125,7 @@ SUBSYSTEM_DEF(plexora)
 	// Send current status to Plexora
 	var/datum/world_topic/status/status_handler = new()
 	var/list/status = status_handler.Run()
+	status["round_id"] = GLOB.round_id
 
 	http_request(
 		RUSTG_HTTP_METHOD_POST,
@@ -133,7 +134,7 @@ SUBSYSTEM_DEF(plexora)
 		default_headers
 	).begin_async()
 
-/datum/controller/subsystem/plexora/Shutdown(hard = FALSE, requestedby)
+/datum/controller/subsystem/plexora/proc/_Shutdown(hard = FALSE, requestedby)
 	http_basicasync("serverupdates", list(
 		"type" = "servershutdown",
 		"timestamp" = rustg_unix_timestamp(),

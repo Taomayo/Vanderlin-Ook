@@ -151,12 +151,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/list/offset_features_child = list(OFFSET_ID = list(0,0), OFFSET_GLOVES = list(0,0),\
 	OFFSET_CLOAK = list(0,-4), OFFSET_FACEMASK = list(0,-4), OFFSET_HEAD = list(0,-4), \
 	OFFSET_FACE = list(0,-4), OFFSET_BELT = list(0,0), OFFSET_BACK = list(0,0), \
-	OFFSET_NECK = list(0,-4), OFFSET_MOUTH = list(0,0), OFFSET_PANTS = list(0,0), \
+	OFFSET_NECK = list(0,-4), OFFSET_MOUTH = list(0,-4), OFFSET_PANTS = list(0,0), \
 	OFFSET_SHIRT = list(0,0), OFFSET_ARMOR = list(0,0), OFFSET_HANDS = list(0,-3), \
 	OFFSET_ID_F = list(0,0), OFFSET_GLOVES_F = list(0,0), OFFSET_HANDS_F = list(0,-3), \
 	OFFSET_CLOAK_F = list(0,-4), OFFSET_FACEMASK_F = list(0,-4), OFFSET_HEAD_F = list(0,-4), \
 	OFFSET_FACE_F = list(0,-4), OFFSET_BELT_F = list(0,0), OFFSET_BACK_F = list(0,0), \
-	OFFSET_NECK_F = list(0,-4), OFFSET_MOUTH_F = list(0,0), OFFSET_PANTS_F = list(0,0), \
+	OFFSET_NECK_F = list(0,-4), OFFSET_MOUTH_F = list(0,-4), OFFSET_PANTS_F = list(0,0), \
 	OFFSET_SHIRT_F = list(0,0), OFFSET_ARMOR_F = list(0,0), OFFSET_UNDIES = list(0,0), OFFSET_UNDIES_F = list(0,0))
 
 ///////////
@@ -1565,12 +1565,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(!I.equip_delay_self || bypass_equip_delay_self)
 		return TRUE
 	if(HAS_TRAIT(H, TRAIT_CHUNKYFINGERS))
-		return do_after(H, 5 MINUTES, target = H)
-//	H.visible_message("<span class='notice'>[H] start putting on [I]...</span>", "<span class='notice'>I start putting on [I]...</span>")
-	if(I.edelay_type)
-		return move_after(H, minone(I.equip_delay_self-H.STASPD), target = H)
-	else
-		return do_after(H, minone(I.equip_delay_self-H.STASPD), target = H)
+		return do_after(H, 5 MINUTES)
+	var/doafter_flags = I.edelay_type ? (IGNORE_USER_LOC_CHANGE) : (NONE)
+	return do_after(H, min((I.equip_delay_self - H.STASPD), 1), timed_action_flags = doafter_flags)
 
 /datum/species/proc/before_equip_job(datum/job/J, mob/living/carbon/human/H)
 	return
@@ -1691,10 +1688,16 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 //				H.apply_status_effect(/datum/status_effect/debuff/fat)
 		if(NUTRITION_LEVEL_HUNGRY to NUTRITION_LEVEL_FED)
 			H.apply_status_effect(/datum/status_effect/debuff/hungryt1)
+			H.remove_status_effect(/datum/status_effect/debuff/hungryt2)
+			H.remove_status_effect(/datum/status_effect/debuff/hungryt3)
 		if(NUTRITION_LEVEL_STARVING to NUTRITION_LEVEL_HUNGRY)
 			H.apply_status_effect(/datum/status_effect/debuff/hungryt2)
+			H.remove_status_effect(/datum/status_effect/debuff/hungryt1)
+			H.remove_status_effect(/datum/status_effect/debuff/hungryt3)
 		if(0 to NUTRITION_LEVEL_STARVING)
 			H.apply_status_effect(/datum/status_effect/debuff/hungryt3)
+			H.remove_status_effect(/datum/status_effect/debuff/hungryt1)
+			H.remove_status_effect(/datum/status_effect/debuff/hungryt2)
 			if(prob(3))
 				playsound(get_turf(H), pick('sound/vo/hungry1.ogg','sound/vo/hungry2.ogg','sound/vo/hungry3.ogg'), 100, TRUE, -1)
 
@@ -1703,10 +1706,16 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 //			H.apply_status_effect(/datum/status_effect/debuff/waterlogged)
 		if(HYDRATION_LEVEL_THIRSTY to HYDRATION_LEVEL_SMALLTHIRST)
 			H.apply_status_effect(/datum/status_effect/debuff/thirstyt1)
+			H.remove_status_effect(/datum/status_effect/debuff/thirstyt2)
+			H.remove_status_effect(/datum/status_effect/debuff/thirstyt3)
 		if(HYDRATION_LEVEL_DEHYDRATED to HYDRATION_LEVEL_THIRSTY)
 			H.apply_status_effect(/datum/status_effect/debuff/thirstyt2)
+			H.remove_status_effect(/datum/status_effect/debuff/thirstyt1)
+			H.remove_status_effect(/datum/status_effect/debuff/thirstyt3)
 		if(0 to HYDRATION_LEVEL_DEHYDRATED)
 			H.apply_status_effect(/datum/status_effect/debuff/thirstyt3)
+			H.remove_status_effect(/datum/status_effect/debuff/thirstyt1)
+			H.remove_status_effect(/datum/status_effect/debuff/thirstyt2)
 
 
 /datum/species/proc/update_health_hud(mob/living/carbon/human/H)
@@ -2665,7 +2674,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			var/knockback_tiles = 0
 			var/damage = actual_damage
 			if(chungus_str >= 3)
-				knockback_tiles = FLOOR(damage/((chungus_str - 2) * 2.5), 1)
+				knockback_tiles = FLOOR(damage/((chungus_str - 2) * 4), 1)
 			else
 				knockback_tiles = FLOOR(damage/2, 1)
 			if(knockback_tiles >= 1)
@@ -2687,7 +2696,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				var/knockback_tiles = 0
 				var/newforce = actual_damage
 				if(endurance >= 3)
-					knockback_tiles = FLOOR(newforce/((endurance - 2) * 2.5), 1)
+					knockback_tiles = FLOOR(newforce/((endurance - 2) * 4), 1)
 				else
 					knockback_tiles = FLOOR(newforce/2, 1)
 				if(knockback_tiles >= 1)

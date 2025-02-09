@@ -228,6 +228,7 @@ GLOBAL_LIST_INIT(roguetraits, list(
 				};\
 		}\
 	} while (0)
+
 #define HAS_TRAIT(target, trait) (target.status_traits ? (target.status_traits[trait] ? TRUE : FALSE) : FALSE)
 #define HAS_TRAIT_FROM(target, trait, source) (target.status_traits ? (target.status_traits[trait] ? (source in target.status_traits[trait]) : FALSE) : FALSE)
 
@@ -236,6 +237,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 */
 
 //mob traits
+#define TRAIT_INCAPACITATED		"incapacitated"
 #define TRAIT_BLIND 			"blind"
 #define TRAIT_MUTE				"mute"
 #define TRAIT_ZOMBIE_SPEECH 	"zombie_speech"
@@ -322,6 +324,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 ///trait determines if this mob can breed given by /datum/component/breeding
 #define TRAIT_MOB_BREEDER "mob_breeder"
 #define TRAIT_UNTARGETTABLE "untargettable" //can't be targetted by basic mobs
+#define TRAIT_IMPERCEPTIBLE "imperceptible" //! can't be percieved in any way
 
 //bodypart traits
 #define TRAIT_PARALYSIS	"paralysis" //Used for limb-based paralysis and full body paralysis

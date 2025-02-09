@@ -6,7 +6,14 @@
 	name = "thresher"
 	desc = "Crushes grain, or skulls."
 	icon_state = "thresher"
-	icon = 'modular/Neu_Farming/icons/farmtools.dmi'
+	icon = 'icons/roguetown/weapons/tools.dmi'
+	mob_overlay_icon = 'icons/roguetown/onmob/onmob.dmi'
+	lefthand_file = 'icons/roguetown/onmob/lefthand.dmi'
+	righthand_file = 'icons/roguetown/onmob/righthand.dmi'
+	experimental_inhand = FALSE
+	experimental_onback = FALSE
+	experimental_onhip = FALSE
+	gripspriteonmob = TRUE
 	slot_flags = ITEM_SLOT_BACK
 	sharpness = IS_BLUNT
 	wlength = WLENGTH_LONG
@@ -95,34 +102,6 @@
 "eflip" = 0)
 			if("onbelt")
 				return list("shrink" = 0.4,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
-
-/*
-/obj/item/rogueweapon/thresher/getonmobprop(tag)
-	. = ..()
-	if(tag)
-		switch(tag)
-			if("gen")
-				return list("shrink" = 0.7,"sx" = -7,"sy" = 1,"nx" = 8,"ny" = 1,"wx" = -5,"wy" = 0,"ex" = 2,"ey" = 2,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0,"nturn" = -38,"sturn" = 37,"wturn" = 32,"eturn" = -32,"nflip" = 0,"sflip" = 8,"wflip" = 8,"eflip" = 0)
-			if("wielded")
-				return list("shrink" = 0.7,"sx" = 5,"sy" = -3,"nx" = -5,"ny" = -2,"wx" = -4,"wy" = -2,"ex" = 5,"ey" = -3,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0,"nturn" = 7,"sturn" = -7,"wturn" = 16,"eturn" = -22,"nflip" = 8,"sflip" = 0,"wflip" = 8,"eflip" = 0)
-			if("onbelt")
-				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
-*/
-/obj/item/rogueweapon/thresher/Initialize()
-	. = ..()
-	pixel_y = -16
-	pixel_x = -16
-
-/obj/item/rogueweapon/thresher/dropped()
-	. = ..()
-	pixel_y = -16
-	pixel_x = -16
-
-/obj/item/rogueweapon/thresher/equipped()
-	. = ..()
-	pixel_y = 0
-	pixel_x = 0
-
 
 /obj/item/rogueweapon/thresher/afterattack(obj/target, mob/user, proximity)
 	if(user.used_intent.type == /datum/intent/flailthresh)
@@ -230,8 +209,15 @@
 	name = "hoe"
 	desc = ""
 	icon_state = "hoe"
-	icon = 'modular/Neu_Farming/icons/farmtools.dmi'
-//	icon = 'icons/roguetown/weapons/tools.dmi'
+	icon = 'icons/roguetown/weapons/tools.dmi'
+	mob_overlay_icon = 'icons/roguetown/onmob/onmob.dmi'
+	lefthand_file = 'icons/roguetown/onmob/lefthand.dmi'
+	righthand_file = 'icons/roguetown/onmob/righthand.dmi'
+	experimental_inhand = FALSE
+	experimental_onback = FALSE
+	experimental_onhip = FALSE
+	gripspriteonmob = TRUE
+
 	wlength = WLENGTH_LONG
 	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = ITEM_SLOT_BACK
@@ -240,14 +226,16 @@
 	walking_stick = TRUE
 	drop_sound = 'sound/foley/dropsound/wooden_drop.ogg'
 	smeltresult = /obj/item/ingot/iron
-	possible_item_intents = list(/datum/intent/pick)
+	possible_item_intents = list(POLEARM_BASH)
 	gripped_intents = list(TILL_INTENT,/datum/intent/pick,POLEARM_BASH)
 	associated_skill = /datum/skill/combat/polearms
 
 	force = 5
-	force_wielded = 10
+	force_wielded = 7
 	wdefense = MEDIOCHRE_PARRY
 	wlength = 66
+	var/time_multiplier = 1
+	max_integrity = 150
 
 /obj/item/rogueweapon/hoe/getonmobprop(tag)
 	. = ..()
@@ -305,14 +293,14 @@
 		user.changeNext_move(CLICK_CD_MELEE)
 		if(istype(T, /turf/open/floor/rogue/grass))
 			playsound(T,'sound/items/dig_shovel.ogg', 100, TRUE)
-			if (do_after(user, 3 SECONDS, target = src))
+			if(do_after(user, 3 SECONDS * time_multiplier, src))
 				apply_farming_fatigue(user, 10)
 				T.ChangeTurf(/turf/open/floor/rogue/dirt, flags = CHANGETURF_INHERIT_AIR)
 				playsound(T,'sound/items/dig_shovel.ogg', 100, TRUE)
 			return
 		if(istype(T, /turf/open/floor/rogue/dirt))
 			playsound(T,'sound/items/dig_shovel.ogg', 100, TRUE)
-			if(do_after(user, 2 SECONDS, target = src))
+			if(do_after(user, 2 SECONDS * time_multiplier, src))
 				playsound(T,'sound/items/dig_shovel.ogg', 100, TRUE)
 				var/obj/structure/soil/soil = get_soil_on_turf(T)
 				if(soil)
@@ -331,6 +319,17 @@
 	candodge = FALSE
 	misscost = 0
 
+/obj/item/rogueweapon/hoe/stone
+	name = "stone hoe"
+	desc = "A makeshift hoe made out of stone."
+	icon_state = "stonehoe"
+	force = 3
+	force_wielded = 5
+	smeltresult = null
+	anvilrepair = null
+	max_integrity = 100
+	time_multiplier = 2
+
 /*------------\
 |  Pitchfork  |
 \------------*/
@@ -339,8 +338,14 @@
 	name = "pitchfork"
 	desc = "Compost, chaff, hay, it matters not."
 	icon_state = "pitchfork"
-	icon = 'modular/Neu_Farming/icons/farmtools.dmi'
-//	icon = 'icons/roguetown/weapons/64.dmi'
+	icon = 'icons/roguetown/weapons/tools.dmi'
+	mob_overlay_icon = 'icons/roguetown/onmob/onmob.dmi'
+	lefthand_file = 'icons/roguetown/onmob/lefthand.dmi'
+	righthand_file = 'icons/roguetown/onmob/righthand.dmi'
+	experimental_inhand = FALSE
+	experimental_onback = FALSE
+	experimental_onhip = FALSE
+	gripspriteonmob = TRUE
 	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = ITEM_SLOT_BACK
 	blade_dulling = DULLING_BASHCHOP
